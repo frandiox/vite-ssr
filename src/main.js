@@ -1,5 +1,6 @@
 import './index.css'
+import vueflare from '@vueflare'
 
-export default async function ({ app }) {
-  // custom
-}
+vueflare(({ app, router }) => {
+  // setup
+})
