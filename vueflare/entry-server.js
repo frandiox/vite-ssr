@@ -16,6 +16,13 @@ export default function (App, { routes }, hook) {
 
     await router.isReady()
 
-    return renderer.renderToString(app)
+    const html = await renderer.renderToString(app)
+
+    if (html) {
+      // This string is replaced at build time.
+      return { html: `__HTML__` }
+    }
+
+    return { html: `` }
   }
 }

@@ -10,14 +10,8 @@ server.use(
 )
 
 server.get('*', async (req, res) => {
-  const html = await handler(req)
-
-  if (html) {
-    // This string is replaced at build time.
-    return res.end(`__HTML__`)
-  }
-
-  res.end()
+  const { html } = await handler(req)
+  res.end(html)
 })
 
 console.log('started server...')
