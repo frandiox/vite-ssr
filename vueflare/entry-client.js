@@ -1,11 +1,10 @@
 import { createSSRApp } from 'vue'
-import App from '../src/App.vue'
-import createRouter from '../src/router'
+import createRouter from './router'
 
-export default async function (hook) {
+export default async function (App, { routes, hook }) {
+  const router = createRouter({ type: 'client', routes })
+
   const app = createSSRApp(App)
-  const router = createRouter('client')
-
   app.use(router)
 
   if (hook) {

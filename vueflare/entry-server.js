@@ -1,23 +1,21 @@
-import { handler } from './ssr'
-const express = require('express')
-const path = require('path')
+import { createSSRApp } from 'vue'
+import renderer from '@vue/server-renderer'
+import createRouter from './router'
 
-const server = express()
+export default function (App, { routes }, hook) {
+  return async function ({ url }) {
+    const router = createRouter({ type: 'server', routes })
+    const app = createSSRApp(App)
+    app.use(router)
 
-server.use(
-  '/_assets',
-  express.static(path.join(__dirname, '../../client/_assets'))
-)
+    router.push(url)
 
-server.get('*', async (req, res) => {
-  const html = await handler(req)
+    if (hook) {
+      await hook({ app, router })
+    }
 
-  if (html) {
-    return res.end(`__HTML__`)
+    await router.isReady()
+
+    return renderer.renderToString(app)
   }
-
-  res.end()
-})
-
-console.log('started server...')
-server.listen(8080)
+}

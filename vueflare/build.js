@@ -6,7 +6,10 @@ const replace = require('@rollup/plugin-replace')
   const clientResult = await build({
     outDir: path.resolve(process.cwd(), 'dist/client'),
     rollupInputOptions: {
-      input: path.resolve(__dirname, 'entry-client.js'),
+      input: path.resolve(process.cwd(), 'src/main.js'),
+    },
+    alias: {
+      '@vueflare': '/vueflare/entry-client.js',
     },
   })
 
@@ -25,7 +28,10 @@ const replace = require('@rollup/plugin-replace')
           ),
         }),
       ],
-      input: path.resolve(__dirname, 'entry-server.js'),
+      input: path.resolve(process.cwd(), 'vueflare/node-server'),
+    },
+    alias: {
+      '@vueflare': '/vueflare/entry-server.js',
     },
   })
 

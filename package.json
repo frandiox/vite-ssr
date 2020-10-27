@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite --port 1337 --open",
     "build": "node ./vueflare/build.js",
-    "serve": "node dist/server/src/entry-server"
+    "serve": "node dist/server/vueflare/node-server"
   },
   "dependencies": {
     "vue": "^3.0.0",
