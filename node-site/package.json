@@ -1,0 +1,10 @@
+{
+  "name": "node-server-example",
+  "version": "0.0.0",
+  "scripts": {
+    "serve": "node index.js"
+  },
+  "devDependencies": {
+    "express": "^4.17.1"
+  }
+}
