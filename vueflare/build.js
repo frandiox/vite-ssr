@@ -2,23 +2,24 @@ const path = require('path')
 const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
 
+const input = path.resolve(process.cwd(), 'src/main')
+
 ;(async () => {
   const clientResult = await build({
     outDir: path.resolve(process.cwd(), 'dist/client'),
-    rollupInputOptions: {
-      input: path.resolve(process.cwd(), 'src/main.js'),
-    },
+    rollupInputOptions: { input },
     alias: {
-      '@vueflare': '/vueflare/entry-client.js',
+      '@vueflare': '/vueflare/entry-client',
     },
   })
 
   await ssrBuild({
-    outDir: path.resolve(process.cwd(), 'dist/server'),
-    rollupOutputOptions: {
-      preserveModules: true,
+    outDir: path.resolve(process.cwd(), 'dist/ssr'),
+    alias: {
+      '@vueflare': '/vueflare/entry-server',
     },
     rollupInputOptions: {
+      input,
       preserveEntrySignatures: 'strict',
       plugins: [
         replace({
@@ -28,10 +29,9 @@ const replace = require('@rollup/plugin-replace')
           ),
         }),
       ],
-      input: path.resolve(process.cwd(), 'vueflare/node-server'),
     },
-    alias: {
-      '@vueflare': '/vueflare/entry-server.js',
+    rollupOutputOptions: {
+      preserveModules: true,
     },
   })
 
