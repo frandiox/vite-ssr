@@ -1,6 +1,30 @@
 {
   "name": "vite-ssr",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Vite for server side rendering in Node or in a Cloudflare Worker",
+  "main": "plugin.js",
+  "scripts": {
+    "dev": "cd example && yarn dev",
+    "build": "cd example && yarn build",
+    "serve:worker": "cd worker-site && yarn serve",
+    "serve:node": "cd node-site && yarn serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frandiox/vite-ssr.git"
+  },
+  "keywords": [
+    "vite",
+    "ssr",
+    "worker",
+    "cloudflare"
+  ],
+  "author": "Fran Dios",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frandiox/vite-ssr/issues"
+  },
+  "homepage": "https://github.com/frandiox/vite-ssr#readme",
   "peerDependencies": {
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1",
@@ -11,7 +35,6 @@
     "@vue/server-renderer": "^3.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-replace": "^2.3.3",
-    "rimraf": "^3.0.2"
+    "@rollup/plugin-replace": "^2.3.3"
   }
 }

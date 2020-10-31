@@ -2,6 +2,11 @@
 
 > Use Vite for server side rendering in Node or in a Cloudflare Worker
 
+References:
+
+- [@tbgse](https://github.com/tbgse)'s [vue3-vite-ssr-example](https://github.com/tbgse/vue3-vite-ssr-example/)
+- [@l5x](https://github.com/l5x)'s [vue-ssr-cloudflare-workers-template](https://github.com/l5x/vue-ssr-cloudflare-workers-template)
+
 ## Usage
 
 This is a WIP prototype, use with caution.
