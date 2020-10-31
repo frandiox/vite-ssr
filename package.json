@@ -9,6 +9,8 @@
     "lib": "core"
   },
   "scripts": {
+    "setup": "(cd core && yarn) && yarn refresh && (cd node-site && yarn) && (cd worker-site && yarn)",
+    "refresh": "cd example && rm -rf node_modules && yarn",
     "dev": "cd example && yarn dev",
     "build": "cd example && yarn build",
     "serve:worker": "cd worker-site && yarn serve",

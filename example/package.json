@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --port 1337 --open",
-    "build": "rimraf dist && node node_modules/vite-ssr/build"
+    "build": "rm -rf dist && node node_modules/vite-ssr/build"
   },
   "dependencies": {
     "vite": "^1.0.0-rc.4",

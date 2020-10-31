@@ -3,12 +3,6 @@
   "version": "0.0.1",
   "description": "Vite for server side rendering in Node or in a Cloudflare Worker",
   "main": "plugin.js",
-  "scripts": {
-    "dev": "cd example && yarn dev",
-    "build": "cd example && yarn build",
-    "serve:worker": "cd worker-site && yarn serve",
-    "serve:node": "cd node-site && yarn serve"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frandiox/vite-ssr.git"
