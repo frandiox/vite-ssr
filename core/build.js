@@ -2,6 +2,7 @@ const path = require('path')
 const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
 
+const name = 'vite-ssr'
 const input = path.resolve(process.cwd(), 'src/main')
 
 ;(async () => {
@@ -9,14 +10,14 @@ const input = path.resolve(process.cwd(), 'src/main')
     outDir: path.resolve(process.cwd(), 'dist/client'),
     rollupInputOptions: { input },
     alias: {
-      '@vueflare': path.resolve(__dirname, 'entry-client'),
+      [name]: path.resolve(__dirname, 'entry-client'),
     },
   })
 
   await ssrBuild({
     outDir: path.resolve(process.cwd(), 'dist/ssr'),
     alias: {
-      '@vueflare': path.resolve(__dirname, 'entry-server'),
+      [name]: path.resolve(__dirname, 'entry-server'),
     },
     rollupInputOptions: {
       input,

@@ -1,5 +1,5 @@
 {
-  "name": "vueflare",
+  "name": "vite-ssr",
   "version": "0.0.0",
   "scripts": {
     "dev": "cd example && yarn dev",

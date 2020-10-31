@@ -1,4 +1,4 @@
-name = "vueflare"
+name = "vite-ssr"
 type = "webpack"
 account_id = "<ADD YOUR ID>"
 workers_dev = true

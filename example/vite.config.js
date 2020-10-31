@@ -6,6 +6,6 @@ module.exports = {
     preserveModules: true,
   },
   alias: {
-    '@vueflare': '@vueflare/entry-client.js',
+    'vite-ssr': 'vite-ssr/entry-client.js',
   },
 }
