@@ -1,11 +1,5 @@
+const viteSSRPlugin = require('vite-ssr/plugin')
+
 module.exports = {
-  rollupInputOptions: {
-    preserveEntrySignatures: 'strict',
-  },
-  rollupOutputOptions: {
-    preserveModules: true,
-  },
-  alias: {
-    'vite-ssr': 'vite-ssr/entry-client.js',
-  },
+  plugins: [viteSSRPlugin],
 }

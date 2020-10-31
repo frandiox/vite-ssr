@@ -24,7 +24,7 @@ export default function (App, { routes }, hook) {
 
     if (html) {
       // This string is replaced at build time.
-      return { html: `__HTML__` }
+      return { html: `__VITE_SSR_HTML__` }
     }
 
     return { html: `` }

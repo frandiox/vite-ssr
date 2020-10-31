@@ -1,17 +1,16 @@
-const path = require('path')
 const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
+const path = require('path')
+const config = require('./plugin')
 
-const name = 'vite-ssr'
+const [name] = Object.keys(config.alias)
 const input = path.resolve(process.cwd(), 'src/main')
 
 ;(async () => {
   const clientResult = await build({
     outDir: path.resolve(process.cwd(), 'dist/client'),
     rollupInputOptions: { input },
-    alias: {
-      [name]: path.resolve(__dirname, 'entry-client'),
-    },
+    alias: config.alias,
   })
 
   await ssrBuild({
@@ -20,20 +19,18 @@ const input = path.resolve(process.cwd(), 'src/main')
       [name]: path.resolve(__dirname, 'entry-server'),
     },
     rollupInputOptions: {
+      ...config.rollupInputOptions,
       input,
-      preserveEntrySignatures: 'strict',
       plugins: [
         replace({
-          __HTML__: clientResult[0].html.replace(
+          __VITE_SSR_HTML__: clientResult[0].html.replace(
             '<div id="app">',
             '<div id="app" data-server-rendered="true">${html}'
           ),
         }),
       ],
     },
-    rollupOutputOptions: {
-      preserveModules: true,
-    },
+    rollupOutputOptions: config.rollupOutputOptions,
   })
 
   process.exit()
