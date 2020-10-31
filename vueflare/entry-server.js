@@ -1,10 +1,14 @@
 import { createSSRApp } from 'vue'
 import renderer from '@vue/server-renderer'
-import createRouter from './router'
+import { createRouter, createMemoryHistory } from 'vue-router'
 
 export default function (App, { routes }, hook) {
   return async function ({ url }) {
-    const router = createRouter({ type: 'server', routes })
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes,
+    })
+
     const app = createSSRApp(App)
     app.use(router)
 
