@@ -9,14 +9,14 @@ const input = path.resolve(process.cwd(), 'src/main')
     outDir: path.resolve(process.cwd(), 'dist/client'),
     rollupInputOptions: { input },
     alias: {
-      '@vueflare': '/vueflare/entry-client',
+      '@vueflare': path.resolve(__dirname, 'entry-client'),
     },
   })
 
   await ssrBuild({
     outDir: path.resolve(process.cwd(), 'dist/ssr'),
     alias: {
-      '@vueflare': '/vueflare/entry-server',
+      '@vueflare': path.resolve(__dirname, 'entry-server'),
     },
     rollupInputOptions: {
       input,

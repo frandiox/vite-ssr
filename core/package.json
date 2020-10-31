@@ -1,0 +1,23 @@
+{
+  "name": "vueflare-core",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --port 1337 --open",
+    "build": "rimraf dist && node ./vueflare/build.js",
+    "serve:worker": "cd worker-site && yarn serve",
+    "serve:node": "cd node-site && yarn serve"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-rc.1",
+    "vite": "^1.0.0-rc.4"
+  },
+  "dependencies": {
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/server-renderer": "^3.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-replace": "^2.3.3",
+    "rimraf": "^3.0.2"
+  }
+}

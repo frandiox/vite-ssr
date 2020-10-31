@@ -1,4 +1,4 @@
-import handler from '../dist/ssr/src/main'
+import handler from '../example/dist/ssr/src/main'
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
 
 addEventListener('fetch', (event) => {

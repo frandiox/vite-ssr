@@ -1,0 +1,14 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --port 1337 --open",
+    "build": "rimraf dist && node node_modules/@vueflare/build"
+  },
+  "dependencies": {
+    "@vueflare": "../core",
+    "vite": "^1.0.0-rc.4",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-rc.1"
+  }
+}
