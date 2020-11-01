@@ -22,7 +22,7 @@
   "peerDependencies": {
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1",
-    "vite": "^1.0.0-rc.4"
+    "vite": "^1.0.0-rc.8"
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.0.0",

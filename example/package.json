@@ -6,7 +6,7 @@
     "build": "rm -rf dist && node node_modules/vite-ssr/build"
   },
   "dependencies": {
-    "vite": "^1.0.0-rc.4",
+    "vite": "^1.0.0-rc.8",
     "vite-ssr": "../core",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1"
