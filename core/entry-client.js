@@ -11,7 +11,7 @@ export default async function (App, { routes }, hook) {
   app.use(router)
 
   if (hook) {
-    await hook({ app, router, isClient: true })
+    await hook({ app, router, isClient: true, baseUrl: '' })
   }
 
   // this will hydrate the app

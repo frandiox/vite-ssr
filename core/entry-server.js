@@ -3,7 +3,7 @@ import renderer from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 export default function (App, { routes }, hook) {
-  return async function ({ url }) {
+  return async function (request) {
     const router = createRouter({
       history: createMemoryHistory(),
       routes,
@@ -12,19 +12,31 @@ export default function (App, { routes }, hook) {
     const app = createSSRApp(App)
     app.use(router)
 
-    router.push(url)
-
     if (hook) {
-      await hook({ app, router })
+      await hook({
+        app,
+        router,
+        request,
+        isClient: false,
+        baseUrl: new URL(request.url).origin,
+      })
     }
 
+    router.push(request.url)
+
     await router.isReady()
+
+    const initialState = router.currentRoute.value.meta.state || {}
 
     const html = await renderer.renderToString(app)
 
     if (html) {
-      // This string is replaced at build time.
-      return { html: `__VITE_SSR_HTML__` }
+      return {
+        // This string is replaced at build time.
+        html: `__VITE_SSR_HTML__<script>window.__INITIAL_STATE__=${JSON.stringify(
+          initialState
+        )}</script>`,
+      }
     }
 
     return { html: `` }
