@@ -1,7 +1,7 @@
 import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
-export default async function (App, { routes, hook }) {
+export default async function (App, { routes }, hook) {
   const router = createRouter({
     history: createWebHistory(),
     routes,
@@ -11,7 +11,7 @@ export default async function (App, { routes, hook }) {
   app.use(router)
 
   if (hook) {
-    await hook({ app, router })
+    await hook({ app, router, isClient: true })
   }
 
   // this will hydrate the app
