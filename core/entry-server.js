@@ -3,7 +3,7 @@ import renderer from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 export default function (App, { routes }, hook) {
-  return async function (request) {
+  return async function ({ request, ...extra }) {
     const router = createRouter({
       history: createMemoryHistory(),
       routes,
@@ -19,6 +19,7 @@ export default function (App, { routes }, hook) {
         request,
         isClient: false,
         baseUrl: new URL(request.url).origin,
+        ...extra,
       })
     }
 
