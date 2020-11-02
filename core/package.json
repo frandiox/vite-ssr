@@ -1,8 +1,8 @@
 {
   "name": "vite-ssr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Vite for server side rendering in Node or in a Cloudflare Worker",
-  "main": "plugin.js",
+  "main": "./entry-server.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frandiox/vite-ssr.git"

@@ -1,6 +1,6 @@
 # Vite SSR
 
-> Use Vite for server side rendering in Node or in a Cloudflare Worker
+See [Vueflare](https://github.com/frandiox/vueflare) for SSR in Cloudflare Workers.
 
 Note: this is a WIP prototype, use with caution.
 
@@ -32,7 +32,8 @@ Run `yarn setup` in root directory (that will install all the dependencies).
 `yarn dev` starts Vite locally, whereas `yarn build` builds for production.
 
 Test the production build with `yarn serve:node` for a Node server.
-For testing in a Cloudflare worker, install [Wrangler](https://github.com/cloudflare/wrangler) globally, set your Cloudflare account ID in `worker-site/wrangler.toml`, and run `yarn serve:worker`.
+
+~~For testing in a Cloudflare worker, install [Wrangler](https://github.com/cloudflare/wrangler) globally, set your Cloudflare account ID in `worker-site/wrangler.toml`, and run `yarn serve:worker`.~~ Cloudflare workers need more setup due to some restrictions in their environment. See [Vueflare](https://github.com/frandiox/vueflare) for that.
 
 If anything in `core` directory is modified, run `yarn refresh` to make sure that `example` gets the latest version.
 
