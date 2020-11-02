@@ -17,7 +17,7 @@ export default viteSSR(
     let isFirstRoute = true
 
     router.beforeEach(async (to, from, next) => {
-      if (isClient && isFirstRoute) {
+      if (isClient && isFirstRoute && window.__INITIAL_STATE__) {
         // Do not get props for the first route since it is
         // already rendered in the server. Instead, use the inital state.
         isFirstRoute = false
