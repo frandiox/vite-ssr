@@ -7,5 +7,5 @@ zone_id = ""
 webpack_config = "webpack.config.js"
 
 [site]
-bucket = "../example/dist/client"
+bucket = "../dist/client"
 entry-point = "."

@@ -3,12 +3,18 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --port 1337 --open",
-    "build": "rm -rf dist && vite-ssr build"
+    "build": "rm -rf dist && vite-ssr build",
+    "refresh": "rm -rf node_modules && yarn",
+    "serve:node": "node node-server/index"
   },
   "dependencies": {
     "vite": "^1.0.0-rc.8",
     "vite-ssr": "../core",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1"
+  },
+  "devDependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1"
   }
 }

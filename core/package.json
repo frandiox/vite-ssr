@@ -1,7 +1,7 @@
 {
   "name": "vite-ssr",
   "version": "0.0.2",
-  "description": "Vite for server side rendering in Node or in a Cloudflare Worker",
+  "description": "Vite utility for server side rendering",
   "main": "./entry-server.js",
   "repository": {
     "type": "git",
