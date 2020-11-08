@@ -1,13 +1,23 @@
 const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
 const path = require('path')
+const fs = require('fs').promises
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
 const config = require('./plugin')
 
 const [name] = Object.keys(config.alias)
-const input = path.resolve(process.cwd(), 'src/main')
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
+  const viteConfig = require(path.resolve(process.cwd(), 'vite.config.js')) // TODO make it configurable
+  const root = (viteConfig && viteConfig.root) || process.cwd()
+  const indexHtml = await fs.readFile(path.resolve(root, 'index.html'), 'utf-8')
+  const matches = indexHtml
+    .substr(indexHtml.lastIndexOf('script type="module"'))
+    .match(/src="(.*)">/i)
+
+  const entryPoint = matches[1] || 'src/main'
+  const input = path.join(root, entryPoint)
+
   const clientResult = await build(
     mergeOptions(
       {
