@@ -2,6 +2,7 @@
   "name": "example",
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "cp node_modules/vite-ssr/bin/cli.js node_modules/.bin/vite-ssr",
     "dev": "vite --port 1337 --open",
     "build": "rm -rf dist && vite-ssr build",
     "refresh": "rm -rf node_modules && yarn",
