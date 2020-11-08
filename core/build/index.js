@@ -1,22 +1,14 @@
 const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
 const path = require('path')
-const fs = require('fs').promises
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
-const config = require('./plugin')
+const config = require('../plugin')
+const { resolveEntryPoint } = require('./utils')
 
 const [name] = Object.keys(config.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
-  const viteConfig = require(path.resolve(process.cwd(), 'vite.config.js')) // TODO make it configurable
-  const root = (viteConfig && viteConfig.root) || process.cwd()
-  const indexHtml = await fs.readFile(path.resolve(root, 'index.html'), 'utf-8')
-  const matches = indexHtml
-    .substr(indexHtml.lastIndexOf('script type="module"'))
-    .match(/src="(.*)">/i)
-
-  const entryPoint = matches[1] || 'src/main'
-  const input = path.join(root, entryPoint)
+  const input = await resolveEntryPoint()
 
   const clientResult = await build(
     mergeOptions(
@@ -34,7 +26,7 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
       {
         outDir: path.resolve(process.cwd(), 'dist/ssr'),
         alias: {
-          [name]: path.resolve(__dirname, 'entry-server'),
+          [name]: path.resolve(__dirname, '../entry-server'),
         },
         rollupInputOptions: {
           ...config.rollupInputOptions,
