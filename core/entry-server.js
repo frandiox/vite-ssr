@@ -26,16 +26,16 @@ export default function (App, { routes }, hook) {
 
     await router.isReady()
 
-    const initialState = router.currentRoute.value.meta.state || {}
+    const initialState = JSON.stringify(
+      router.currentRoute.value.meta.state || {}
+    )
 
     const html = await renderer.renderToString(app)
 
-    if (html) {
+    if (html && initialState) {
       return {
         // This string is replaced at build time.
-        html: `__VITE_SSR_HTML__<script>window.__INITIAL_STATE__=${JSON.stringify(
-          initialState
-        )}</script>`,
+        html: `__VITE_SSR_HTML__`,
       }
     }
 

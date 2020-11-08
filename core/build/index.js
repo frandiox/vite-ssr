@@ -34,8 +34,8 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
           plugins: [
             replace({
               __VITE_SSR_HTML__: clientResult[0].html.replace(
-                '<div id="app">',
-                '<div id="app" data-server-rendered="true">${html}'
+                '<div id="app"></div>',
+                '<div id="app" data-server-rendered="true">${html}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
               ),
             }),
           ],
