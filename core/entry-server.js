@@ -18,7 +18,6 @@ export default function (App, { routes }, hook) {
         router,
         request,
         isClient: false,
-        baseUrl: new URL(request.url).origin,
         ...extra,
       })
     }

@@ -10,7 +10,7 @@ routes.forEach((route) => {
 export default viteSSR(
   App,
   { routes },
-  ({ app, router, isClient, baseUrl, request }) => {
+  ({ app, router, isClient, request }) => {
     // The 'request' is the original server request
     // and should be used to pass auth/headers to the getProps endpoint
 
@@ -24,6 +24,8 @@ export default viteSSR(
         to.meta.state = window.__INITIAL_STATE__ || {}
         return next()
       }
+
+      const baseUrl = isClient ? '' : new URL(request.url).origin
 
       try {
         const res = await fetch(
