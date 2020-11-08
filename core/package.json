@@ -22,15 +22,16 @@
   "bin": "./bin/cli.js",
   "types": "@types/index.d.ts",
   "peerDependencies": {
+    "vite": "^1.0.0-rc.8",
     "vue": "^3.0.0",
-    "vue-router": "^4.0.0-rc.1",
-    "vite": "^1.0.0-rc.8"
+    "vue-router": "^4.0.0-rc.1"
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/server-renderer": "^3.0.0"
   },
   "devDependencies": {
-    "@rollup/plugin-replace": "^2.3.3"
+    "@rollup/plugin-replace": "^2.3.3",
+    "merge-options": "^3.0.3"
   }
 }
