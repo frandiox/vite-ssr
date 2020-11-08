@@ -6,7 +6,7 @@ const config = require('./plugin')
 const [name] = Object.keys(config.alias)
 const input = path.resolve(process.cwd(), 'src/main')
 
-module.exports = async ({ clientOptions = {}, ssrOptions = {}} = {}) => {
+module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const clientResult = await build({
     outDir: path.resolve(process.cwd(), 'dist/client'),
     rollupInputOptions: { input },

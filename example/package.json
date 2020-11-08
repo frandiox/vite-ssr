@@ -2,7 +2,6 @@
   "name": "example",
   "version": "0.0.0",
   "scripts": {
-    "postinstall": "cp node_modules/vite-ssr/bin/cli.js node_modules/.bin/vite-ssr",
     "dev": "vite --port 1337 --open",
     "build": "rm -rf dist && vite-ssr build",
     "refresh": "rm -rf node_modules && yarn",
@@ -10,7 +9,7 @@
   },
   "dependencies": {
     "vite": "^1.0.0-rc.8",
-    "vite-ssr": "../core",
+    "vite-ssr": "file:../core",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1"
   },

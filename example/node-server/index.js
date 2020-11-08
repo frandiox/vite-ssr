@@ -2,8 +2,7 @@ global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
-// This path is this long due to 'yarn link'
-const { default: handler } = require('../dist/ssr/_assets/example/src/main')
+const { default: handler } = require('../dist/ssr/src/main')
 
 const server = express()
 
