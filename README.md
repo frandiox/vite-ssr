@@ -1,6 +1,8 @@
 # Vite SSR
 
-See [Vueflare](https://github.com/frandiox/vueflare) for SSR in Cloudflare Workers.
+`vite-ssr` creates one build for the server, used on first rendering, and another one for the client that takes over after the first rendering.
+
+See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
 
 Note: this is a WIP prototype, use with caution.
 
@@ -21,9 +23,9 @@ yarn add vite-ssr
 
 Add `vite-ssr/plugin` to your `vite.config.js` (see [`example/vite.config.js`](./example/vite.config.js) for an example)
 
-Use the following as an NPM script for buildling: `"build": "node node_modules/vite-ssr/build"`
-
 See [`example/src/main.js`](./example/src/main.js) for further instructions.
+
+Use the following as an NPM script for buildling: `"build": "vite-ssr build"`
 
 ## Development
 
@@ -33,7 +35,7 @@ Run `yarn setup` in root directory (that will install all the dependencies).
 
 Test the production build with `yarn serve:node` for a Node server.
 
-~~For testing in a Cloudflare worker, install [Wrangler](https://github.com/cloudflare/wrangler) globally, set your Cloudflare account ID in `worker-site/wrangler.toml`, and run `yarn serve:worker`.~~ Cloudflare workers need more setup due to some restrictions in their environment. See [Vueflare](https://github.com/frandiox/vueflare) for that.
+~~For testing in a Cloudflare worker, install [Wrangler](https://github.com/cloudflare/wrangler) globally, set your Cloudflare account ID in `worker-site/wrangler.toml`, and run `yarn serve:worker`.~~ Cloudflare workers need more setup due to some restrictions in their environment. See [Vitedge](https://github.com/frandiox/vitedge) for that.
 
 If anything in `core` directory is modified, run `yarn refresh` to make sure that `example` gets the latest version.
 
