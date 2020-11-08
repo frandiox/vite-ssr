@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./built",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "target": "es5"
+  },
+  "include": ["./core/**/*", "./example/**/*"]
+}
