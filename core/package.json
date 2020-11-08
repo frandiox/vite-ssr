@@ -19,7 +19,7 @@
     "url": "https://github.com/frandiox/vite-ssr/issues"
   },
   "homepage": "https://github.com/frandiox/vite-ssr#readme",
-  "bin": "./cli.js",
+  "bin": "./bin/cli.js",
   "peerDependencies": {
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1",
