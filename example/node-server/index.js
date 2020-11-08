@@ -1,7 +1,6 @@
 global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
-const { request } = require('http')
 
 // This path is this long due to 'yarn link'
 const { default: handler } = require('../dist/ssr/_assets/example/src/main')
@@ -30,7 +29,7 @@ server.get('*', async (req, res) => {
   }
 
   const url = req.protocol + '://' + req.get('host') + req.originalUrl
-  const { html } = await handler({ ...request, url })
+  const { html } = await handler({ request: { ...req, url } })
   res.end(html)
 })
 
