@@ -8,13 +8,10 @@ const { resolveEntryPoint } = require('./utils')
 const [name] = Object.keys(config.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
-  const input = await resolveEntryPoint()
-
   const clientResult = await build(
     mergeOptions(
       {
         outDir: path.resolve(process.cwd(), 'dist/client'),
-        rollupInputOptions: { input },
         alias: config.alias,
       },
       clientOptions
@@ -30,7 +27,7 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
         },
         rollupInputOptions: {
           ...config.rollupInputOptions,
-          input,
+          input: await resolveEntryPoint(),
           plugins: [
             replace({
               __VITE_SSR_HTML__: clientResult[0].html.replace(

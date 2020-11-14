@@ -2,7 +2,7 @@ global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
-const { default: handler } = require('../dist/ssr/src/main')
+const { default: handler } = require('../dist/ssr/_assets/src/main')
 
 const server = express()
 

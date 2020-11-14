@@ -8,7 +8,7 @@
     "serve:node": "node node-server/index"
   },
   "dependencies": {
-    "vite": "^1.0.0-rc.8",
+    "vite": "1.0.0-rc.9",
     "vite-ssr": "file:../core",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-rc.1"

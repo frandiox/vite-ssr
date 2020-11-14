@@ -97,6 +97,14 @@
     is-module "^1.0.0"
     resolve "^1.17.0"
 
+"@rollup/plugin-replace@^2.3.3":
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-replace/-/plugin-replace-2.3.4.tgz#7dd84c17755d62b509577f2db37eb524d7ca88ca"
+  integrity sha512-waBhMzyAtjCL1GwZes2jaE9MjuQ/DQF2BatH3fRivUF3z0JBFrU0U6iBNC/4WR+2rLKhaAhPWDNPYp4mI6RqdQ==
+  dependencies:
+    "@rollup/pluginutils" "^3.1.0"
+    magic-string "^0.25.7"
+
 "@rollup/pluginutils@^3.0.8", "@rollup/pluginutils@^3.0.9", "@rollup/pluginutils@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@rollup/pluginutils/-/pluginutils-3.1.0.tgz#706b4524ee6dc8b103b3c995533e5ad680c02b9b"
@@ -1231,6 +1239,11 @@ is-number@^7.0.0:
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
 
+is-plain-obj@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
+  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
+
 is-reference@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/is-reference/-/is-reference-1.2.1.tgz#8b2dac0b371f4bc994fdeaba9eb542d03002d0b7"
@@ -1462,6 +1475,13 @@ merge-descriptors@1.0.1:
   resolved "https://registry.yarnpkg.com/merge-descriptors/-/merge-descriptors-1.0.1.tgz#b00aaa556dd8b44568150ec9d1b953f3f90cbb61"
   integrity sha1-sAqqVW3YtEVoFQ7J0blT8/kMu2E=
 
+merge-options@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/merge-options/-/merge-options-3.0.3.tgz#802b401f0de8dfae00d2a1e2dab9759b3dd98fe4"
+  integrity sha512-jytfjQxL5mVrtD9O24zOXU4neV3uVbQdn1F0o1pzSa1yH9LTEUOtfwpWSsyAxrrrXqAFTxaU4ynqkmekHLvYew==
+  dependencies:
+    is-plain-obj "^2.1.0"
+
 merge-source-map@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/merge-source-map/-/merge-source-map-1.1.0.tgz#2fdde7e6020939f70906a68f2d7ae685e4c8c646"
@@ -1620,6 +1640,11 @@ ora@^5.1.0:
     mute-stream "0.0.8"
     strip-ansi "^6.0.0"
     wcwidth "^1.0.1"
+
+p-map-series@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/p-map-series/-/p-map-series-2.1.0.tgz#7560d4c452d9da0c07e692fdbfe6e2c81a2a91f2"
+  integrity sha512-RpYIIK1zXSNEOdwxcfe7FdvGcs7+y5n8rifMhMNWvaxRNMPINJHF5GDeuVxWqnfrcHPSCnp7Oo5yNXHId9Av2Q==
 
 parent-module@^1.0.0:
   version "1.0.1"
@@ -2185,15 +2210,17 @@ vary@^1.1.2, vary@~1.1.2:
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
 "vite-ssr@file:../core":
-  version "0.0.2"
+  version "0.0.4"
   dependencies:
+    "@rollup/plugin-replace" "^2.3.3"
     "@vue/compiler-sfc" "^3.0.0"
     "@vue/server-renderer" "^3.0.0"
+    merge-options "^3.0.3"
 
-vite@^1.0.0-rc.8:
-  version "1.0.0-rc.8"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-1.0.0-rc.8.tgz#26ebe3d6cb7c36f0bceb04398eef0d5d2d7c10df"
-  integrity sha512-HLRVbtsRYr7zIcq2IbKGq13URP2bOw/hrJ3Ufjp+TRM8PM6Ncquvqrr0WswIJOT6a+z3NGDJPi61Z97A0mdVvA==
+vite@1.0.0-rc.9:
+  version "1.0.0-rc.9"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-1.0.0-rc.9.tgz#63621a39cf36fe9a6dccafdb11360a5ebbdb2663"
+  integrity sha512-u0PT2sKMes2RtE5rZsLY0nFm6kEmce7IhVRWKFXmrsjn0MBOCNEi+S6iNnJDmsj1nzvU2dMZ5MHhFyXIqTgjzA==
   dependencies:
     "@babel/parser" "^7.12.3"
     "@koa/cors" "^3.1.0"
@@ -2233,6 +2260,7 @@ vite@^1.0.0-rc.8:
     minimist "^1.2.5"
     open "^7.2.1"
     ora "^5.1.0"
+    p-map-series "^2.1.0"
     postcss-discard-comments "^4.0.2"
     postcss-import "^12.0.1"
     postcss-load-config "^3.0.0"
