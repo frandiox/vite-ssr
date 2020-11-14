@@ -1,19 +1,8 @@
 const fs = require('fs').promises
 const path = require('path')
 
-function resolveViteConfig() {
-  // TODO make it configurable
-  try {
-    return require(path.resolve(process.cwd(), 'vite.config.js'))
-  } catch (error) {
-    console.warn('vite.config.js not found')
-    return null
-  }
-}
-
 function resolveRoot() {
-  const viteConfig = resolveViteConfig()
-  return (viteConfig && viteConfig.root) || process.cwd()
+  return process.cwd()
 }
 
 async function resolveEntryPoint() {
@@ -29,6 +18,5 @@ async function resolveEntryPoint() {
 }
 
 module.exports = {
-  resolveViteConfig,
   resolveEntryPoint,
 }
