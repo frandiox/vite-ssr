@@ -24,7 +24,13 @@ export default async function (App, { routes }, hook) {
   })
 
   if (hook) {
-    await hook({ app, router, isClient: true, baseUrl: '' })
+    await hook({
+      app,
+      router,
+      isClient: true,
+      baseUrl: '',
+      initialState: window.__INITIAL_STATE__ || {},
+    })
   }
 
   // this will hydrate the app
