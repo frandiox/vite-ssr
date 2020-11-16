@@ -17,6 +17,4 @@ async function resolveEntryPoint() {
   return path.join(root, entryFile)
 }
 
-module.exports = {
-  resolveEntryPoint,
-}
+export default resolveEntryPoint;

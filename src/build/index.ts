@@ -1,13 +1,20 @@
-const { ssrBuild, build } = require('vite')
-const replace = require('@rollup/plugin-replace')
-const path = require('path')
-const mergeOptions = require('merge-options').bind({ concatArrays: true })
-const config = require('../plugin')
-const { resolveEntryPoint } = require('./utils')
+import { ssrBuild, build } from 'vite';
+import replace from '@rollup/plugin-replace';
+import path from 'path';
+import mergeOptions from 'merge-options'
+import { BuildConfig } from 'vite'
+import config from '../plugin'
+import resolveEntryPoint from './utils'
 
+mergeOptions.bind({ concatArrays: true })
 const [name] = Object.keys(config.alias)
 
-module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
+type Options = {
+  clientOptions?: BuildConfig | {};
+  ssrOptions?: BuildConfig | {};
+}
+
+export default async ({ clientOptions = {}, ssrOptions = {} }: Options = {}) => {
   const clientResult = await build(
     mergeOptions(
       {

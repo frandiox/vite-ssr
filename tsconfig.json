@@ -1,9 +1,21 @@
 {
   "compilerOptions": {
-    "outDir": "./built",
+    "module": "commonjs",
+    "target": "es2019",
+    "strict": true,
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "declaration": true,
+    "noEmitOnError": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": false,
+    "removeComments": false,
+    "sourceMap": false,
     "allowJs": true,
-    "esModuleInterop": true,
-    "target": "es5"
+    "lib": ["esnext", "dom"]
   },
-  "include": ["./core/**/*", "./example/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

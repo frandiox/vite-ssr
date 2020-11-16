@@ -7,6 +7,11 @@
     "type": "git",
     "url": "git+https://github.com/frandiox/vite-ssr.git"
   },
+  "scripts": {
+    "dev": "tsc -w -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json && cat ./package.json | grep -v '\"private\":' > dist/package.json"
+  },
+  "private": true,
   "keywords": [
     "vite",
     "ssr",
@@ -20,7 +25,6 @@
   },
   "homepage": "https://github.com/frandiox/vite-ssr#readme",
   "bin": "./bin/cli.js",
-  "types": "@types/index.d.ts",
   "peerDependencies": {
     "vite": "^1.0.0-rc.9",
     "vue": "^3.0.0",
@@ -31,5 +35,11 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/server-renderer": "^3.0.0",
     "merge-options": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.7",
+    "vite": "^1.0.0-rc.9",
+    "vue": "^3.0.2",
+    "vue-router": "^4.0.0-rc.3"
   }
 }

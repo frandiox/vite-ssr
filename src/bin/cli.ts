@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 const build = require('vite-ssr/build')
 
 const [, , ...args] = process.argv

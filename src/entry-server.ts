@@ -1,9 +1,9 @@
 import { createSSRApp } from 'vue'
-import renderer from '@vue/server-renderer'
+import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-export default function (App, { routes }, hook) {
-  return async function ({ request, ...extra }) {
+export default function (App: any, { routes }: ViteSSROptions, hook: Hook) {
+  return async function ({ request, ...extra }: { request: Request }) {
     const router = createRouter({
       history: createMemoryHistory(),
       routes,
@@ -30,7 +30,7 @@ export default function (App, { routes }, hook) {
       router.currentRoute.value.meta.state || {}
     )
 
-    const html = await renderer.renderToString(app)
+    const html = await renderToString(app)
 
     if (html && initialState) {
       return {
