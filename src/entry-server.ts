@@ -2,7 +2,14 @@ import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-export default function (App: any, { routes }: ViteSSROptions, hook: Hook) {
+type ServerHook = (params: {
+  app: any;
+  router: any;
+  request: Request;
+  isClient: false;
+}) => Promise<void>;
+
+export default function (App: any, { routes }: ViteSSROptions, hook: ServerHook) {
   return async function ({ request, ...extra }: { request: Request }) {
     const router = createRouter({
       history: createMemoryHistory(),

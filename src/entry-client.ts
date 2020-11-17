@@ -1,7 +1,15 @@
 import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
-export default async function (App: any, { routes }: ViteSSROptions, hook: Hook): Promise<void> {
+type ClientHook = (params: {
+  app: any;
+  router: any;
+  baseUrl: string;
+  isClient: true;
+  initialState: Record<string, any>;
+}) => Promise<void>;
+
+export default async function (App: any, { routes }: ViteSSROptions, hook: ClientHook): Promise<void> {
   const router = createRouter({
     history: createWebHistory(),
     routes,
