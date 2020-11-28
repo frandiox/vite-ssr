@@ -37,9 +37,6 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
             }),
           ],
         },
-        rollupOutputOptions: {
-          preserveModules: true,
-        },
       },
       ssrOptions
     )
