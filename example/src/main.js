@@ -18,7 +18,7 @@ export default viteSSR(
     // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.
 
     router.beforeEach(async (to, from, next) => {
-      if (to.meta.state) {
+      if (process.env.NODE_ENV !== 'development' && to.meta.state) {
         // This route has state already (from server) so it can be reused.
         return next()
       }
