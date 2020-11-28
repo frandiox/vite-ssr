@@ -3,7 +3,7 @@ const replace = require('@rollup/plugin-replace')
 const path = require('path')
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
 const config = require('./plugin')
-const { resolveEntryPoint } = require('./build/utils')
+const { getEntryPoint } = require('./config')
 
 const [name] = Object.keys(config.alias)
 
@@ -27,7 +27,7 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
         },
         rollupInputOptions: {
           ...config.rollupInputOptions,
-          input: await resolveEntryPoint(),
+          input: await getEntryPoint(),
           plugins: [
             replace({
               __VITE_SSR_HTML__: clientResult[0].html.replace(
