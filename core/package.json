@@ -19,7 +19,7 @@
     "url": "https://github.com/frandiox/vite-ssr/issues"
   },
   "homepage": "https://github.com/frandiox/vite-ssr#readme",
-  "bin": "./bin/cli.js",
+  "bin": "./cli.js",
   "types": "@types/index.d.ts",
   "peerDependencies": {
     "vite": "^1.0.0-rc.9",
