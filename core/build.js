@@ -2,17 +2,17 @@ const { ssrBuild, build } = require('vite')
 const replace = require('@rollup/plugin-replace')
 const path = require('path')
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
-const config = require('./plugin')
+const plugin = require('./plugin')
 const { getEntryPoint } = require('./config')
 
-const [name] = Object.keys(config.alias)
+const [name] = Object.keys(plugin.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const clientResult = await build(
     mergeOptions(
       {
         outDir: path.resolve(process.cwd(), 'dist/client'),
-        alias: config.alias,
+        alias: plugin.alias,
       },
       clientOptions
     )
@@ -23,10 +23,10 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
       {
         outDir: path.resolve(process.cwd(), 'dist/ssr'),
         alias: {
-          [name]: path.resolve(__dirname, './entry-server'),
+          [name]: plugin.alias[name].replace('entry-client', 'entry-server'),
         },
         rollupInputOptions: {
-          ...config.rollupInputOptions,
+          preserveEntrySignatures: 'strict',
           input: await getEntryPoint(),
           plugins: [
             replace({
@@ -37,7 +37,9 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
             }),
           ],
         },
-        rollupOutputOptions: config.rollupOutputOptions,
+        rollupOutputOptions: {
+          preserveModules: true,
+        },
       },
       ssrOptions
     )
