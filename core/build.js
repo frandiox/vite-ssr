@@ -9,6 +9,7 @@ const { getEntryPoint } = require('./config')
 const [name] = Object.keys(plugin.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
+  // -- Client build
   const clientResult = await build(
     mergeOptions(
       {
@@ -19,6 +20,7 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
     )
   )
 
+  // -- SSR build
   const ssrOutDirPath = path.resolve(process.cwd(), 'dist/ssr')
   const entryPoint = await getEntryPoint()
 
@@ -47,13 +49,20 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
     )
   )
 
+  // --- Generate package.json
   const type =
     (ssrOptions.rollupOutputOptions || {}).format === 'es'
       ? 'module'
       : 'commonjs'
 
+  const packageJson = {
+    type,
+    main: path.parse(entryPoint).name + '.js',
+    ...(ssrOptions.packageJson || {}),
+  }
+
   await fs.writeFile(
     path.join(ssrOutDirPath, 'package.json'),
-    `{ "type": "${type}", "main": "${path.parse(entryPoint).name + '.js'}" }`
+    JSON.stringify(packageJson, null, 2)
   )
 }
