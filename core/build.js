@@ -3,17 +3,19 @@ const replace = require('@rollup/plugin-replace')
 const path = require('path')
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
 const plugin = require('./plugin')
-const { getEntryPoint } = require('./config')
+const { resolveViteConfig, getEntryPoint } = require('./config')
 
 const [name] = Object.keys(plugin.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
+  const viteConfig = await resolveViteConfig()
   const clientResult = await build(
     mergeOptions(
       {
         outDir: path.resolve(process.cwd(), 'dist/client'),
         alias: plugin.alias,
       },
+      viteConfig,
       clientOptions
     )
   )

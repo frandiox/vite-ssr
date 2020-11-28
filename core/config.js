@@ -1,5 +1,6 @@
 const fs = require('fs').promises
 const path = require('path')
+const { resolveConfig } = require('vite')
 
 const viteConfigJS = 'vite.config.js'
 const viteConfigTS = 'vite.config.ts'
@@ -57,4 +58,12 @@ exports.getEntryPoint = async function () {
   const entryFile = matches[1] || 'src/main'
 
   return path.join(rootDir, entryFile)
+}
+
+exports.resolveViteConfig = async function (mode) {
+  const { rootDir, configFileName } = await await exports.getProjectInfo()
+  return resolveConfig(
+    mode || process.env.MODE || process.env.NODE_ENV,
+    path.join(rootDir, configFileName)
+  )
 }
