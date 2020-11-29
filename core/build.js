@@ -12,11 +12,11 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const viteConfig = await resolveViteConfig()
   const clientResult = await build(
     mergeOptions(
+      viteConfig,
       {
         outDir: path.resolve(process.cwd(), 'dist/client'),
         alias: plugin.alias,
       },
-      viteConfig,
       clientOptions
     )
   )
@@ -27,6 +27,7 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
 
   await ssrBuild(
     mergeOptions(
+      viteConfig,
       {
         outDir: ssrOutDirPath,
         assetsDir: '',
