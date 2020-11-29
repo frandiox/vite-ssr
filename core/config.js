@@ -61,7 +61,7 @@ exports.getEntryPoint = async function () {
 }
 
 exports.resolveViteConfig = async function (mode) {
-  const { rootDir, configFileName } = await await exports.getProjectInfo()
+  const { rootDir, configFileName } = exports.getProjectInfo()
   return resolveConfig(
     mode || process.env.MODE || process.env.NODE_ENV,
     path.join(rootDir, configFileName)
