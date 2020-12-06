@@ -22,7 +22,8 @@ export default function (App, { routes }, hook) {
       })
     }
 
-    router.push(request.url)
+    const { href } = new URL(request.url)
+    router.push(href)
 
     await router.isReady()
 
