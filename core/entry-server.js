@@ -22,8 +22,10 @@ export default function (App, { routes }, hook) {
       })
     }
 
-    const { href } = new URL(request.url)
-    router.push(href)
+    const url = new URL(
+      (request.url.includes('://') ? '' : 'http://e.c') + request.url
+    )
+    router.push(url.href.replace(url.origin, ''))
 
     await router.isReady()
 
