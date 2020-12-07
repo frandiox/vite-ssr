@@ -2,19 +2,17 @@ global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
+const { ssr } = require('../dist/ssr/package.json')
 const { default: handler } = require('../dist/ssr')
 
 const server = express()
 
-server.use(
-  '/_assets',
-  express.static(path.join(__dirname, '../dist/client/_assets'))
-)
-
-server.use(
-  '/favicon.ico',
-  express.static(path.join(__dirname, '../dist/client/favicon.ico'))
-)
+for (const asset of ssr.assets || []) {
+  server.use(
+    '/' + asset,
+    express.static(path.join(__dirname, '../dist/client/' + asset))
+  )
+}
 
 server.get('*', async (req, res) => {
   if (req.path === '/api/getProps') {

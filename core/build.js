@@ -10,11 +10,13 @@ const [name] = Object.keys(plugin.alias)
 
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const viteConfig = await resolveViteConfig()
+
+  const clientOutDirPath = path.resolve(process.cwd(), 'dist/client')
   const clientResult = await build(
     mergeOptions(
       viteConfig,
       {
-        outDir: path.resolve(process.cwd(), 'dist/client'),
+        outDir: clientOutDirPath,
         alias: plugin.alias,
       },
       clientOptions
@@ -60,6 +62,9 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const packageJson = {
     type,
     main: path.parse(entryPoint).name + '.js',
+    ssr: {
+      assets: await fs.readdir(clientOutDirPath),
+    },
     ...(ssrOptions.packageJson || {}),
   }
 
