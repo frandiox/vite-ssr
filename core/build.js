@@ -11,65 +11,61 @@ const [name] = Object.keys(plugin.alias)
 module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   const viteConfig = await resolveViteConfig()
 
-  const clientOutDirPath = path.resolve(process.cwd(), 'dist/client')
-  const clientResult = await build(
-    mergeOptions(
-      viteConfig,
-      {
-        outDir: clientOutDirPath,
-        alias: plugin.alias,
-      },
-      clientOptions
-    )
+  const clientBuildOptions = mergeOptions(
+    viteConfig,
+    {
+      outDir: path.resolve(process.cwd(), 'dist/client'),
+      alias: plugin.alias,
+    },
+    clientOptions
   )
+
+  const clientResult = await build(clientBuildOptions)
 
   // -- SSR build
-  const ssrOutDirPath = path.resolve(process.cwd(), 'dist/ssr')
-  const entryPoint = await getEntryPoint()
-
-  await ssrBuild(
-    mergeOptions(
-      viteConfig,
-      {
-        outDir: ssrOutDirPath,
-        assetsDir: '',
-        alias: {
-          [name]: plugin.alias[name].replace('entry-client', 'entry-server'),
-        },
-        rollupInputOptions: {
-          preserveEntrySignatures: 'strict',
-          input: entryPoint,
-          plugins: [
-            replace({
-              __VITE_SSR_HTML__: clientResult[0].html.replace(
-                '<div id="app"></div>',
-                '<div id="app" data-server-rendered="true">${html}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
-              ),
-            }),
-          ],
-        },
+  const ssrBuildOptions = mergeOptions(
+    viteConfig,
+    {
+      outDir: path.resolve(process.cwd(), 'dist/ssr'),
+      assetsDir: '',
+      alias: {
+        [name]: plugin.alias[name].replace('entry-client', 'entry-server'),
       },
-      ssrOptions
-    )
+      rollupInputOptions: {
+        preserveEntrySignatures: 'strict',
+        input: await getEntryPoint(),
+        plugins: [
+          replace({
+            __VITE_SSR_HTML__: clientResult[0].html.replace(
+              '<div id="app"></div>',
+              '<div id="app" data-server-rendered="true">${html}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
+            ),
+          }),
+        ],
+      },
+    },
+    ssrOptions
   )
+
+  await ssrBuild(ssrBuildOptions)
 
   // --- Generate package.json
   const type =
-    (ssrOptions.rollupOutputOptions || {}).format === 'es'
+    (ssrBuildOptions.rollupOutputOptions || {}).format === 'es'
       ? 'module'
       : 'commonjs'
 
   const packageJson = {
     type,
-    main: path.parse(entryPoint).name + '.js',
+    main: path.parse(ssrBuildOptions.rollupInputOptions.input).name + '.js',
     ssr: {
-      assets: await fs.readdir(clientOutDirPath),
+      assets: await fs.readdir(clientBuildOptions.outDir),
     },
-    ...(ssrOptions.packageJson || {}),
+    ...(ssrBuildOptions.packageJson || {}),
   }
 
   await fs.writeFile(
-    path.join(ssrOutDirPath, 'package.json'),
+    path.join(ssrBuildOptions.outDir, 'package.json'),
     JSON.stringify(packageJson, null, 2)
   )
 }
