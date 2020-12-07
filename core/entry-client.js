@@ -1,9 +1,9 @@
 import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
-export default async function (App, { routes }, hook) {
+export default async function (App, { routes, base }, hook) {
   const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(base),
     routes,
   })
 

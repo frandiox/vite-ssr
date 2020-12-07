@@ -2,10 +2,10 @@ import { createSSRApp } from 'vue'
 import renderer from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 
-export default function (App, { routes }, hook) {
+export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
     const router = createRouter({
-      history: createMemoryHistory(),
+      history: createMemoryHistory(base),
       routes,
     })
 
