@@ -59,7 +59,10 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
     type,
     main: path.parse(ssrBuildOptions.rollupInputOptions.input).name + '.js',
     ssr: {
-      assets: await fs.readdir(clientBuildOptions.outDir),
+      // This can be used later to serve static assets
+      assets: (await fs.readdir(clientBuildOptions.outDir)).filter(
+        (file) => file !== 'index.html'
+      ),
     },
     ...(ssrBuildOptions.packageJson || {}),
   }
