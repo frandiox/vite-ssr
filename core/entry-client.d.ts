@@ -1,6 +1,6 @@
 declare module 'vite-ssr/entry-client' {
   import Vue, { App } from 'vue'
-  import { RouteLocationRaw, Router } from 'vue-router'
+  import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
 
   const handlerClient: (
     App: typeof Vue,
@@ -9,6 +9,7 @@ declare module 'vite-ssr/entry-client' {
       app: App
       router: Router
       isClient: true
+      initialRoute: RouteLocationNormalized
     }) => Promise<void>
   ) => Promise<void>
 

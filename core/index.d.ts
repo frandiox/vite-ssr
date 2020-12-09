@@ -1,6 +1,6 @@
 declare module 'vite-ssr' {
   import Vue, { App } from 'vue'
-  import { RouteLocationRaw, Router } from 'vue-router'
+  import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
 
   const handler: (
     App: typeof Vue,
@@ -10,6 +10,8 @@ declare module 'vite-ssr' {
       router: Router
       request?: Request
       isClient: boolean
+      initialRoute: RouteLocationNormalized
+      [key: string]: any
     }) => Promise<void>
   ) => Promise<() => Promise<{ html: string }>>
 

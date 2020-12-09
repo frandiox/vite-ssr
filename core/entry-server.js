@@ -12,20 +12,23 @@ export default function (App, { routes, base }, hook) {
     const app = createSSRApp(App)
     app.use(router)
 
+    const url = new URL(
+      (request.url.includes('://') ? '' : 'http://e.c') + request.url
+    )
+    const fullPath = url.href.replace(url.origin, '')
+
     if (hook) {
       await hook({
         app,
         router,
         request,
         isClient: false,
+        initialRoute: router.resolve(fullPath),
         ...extra,
       })
     }
 
-    const url = new URL(
-      (request.url.includes('://') ? '' : 'http://e.c') + request.url
-    )
-    router.push(url.href.replace(url.origin, ''))
+    router.push(fullPath)
 
     await router.isReady()
 

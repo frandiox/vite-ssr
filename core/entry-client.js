@@ -30,6 +30,9 @@ export default async function (App, { routes, base }, hook) {
       isClient: true,
       baseUrl: '',
       initialState: window.__INITIAL_STATE__ || {},
+      initialRoute: router.resolve(
+        window.location.href.replace(window.location.origin, '')
+      ),
     })
   }
 

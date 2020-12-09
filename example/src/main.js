@@ -12,7 +12,7 @@ routes.forEach((route) => {
 export default viteSSR(
   App,
   { routes },
-  ({ app, router, isClient, request, initialState }) => {
+  ({ app, router, isClient, request, initialState, initialRoute }) => {
     // The 'request' is the original server request (undefined in browser).
     // The 'initialState' is only available in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.
