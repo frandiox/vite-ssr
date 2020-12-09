@@ -4,17 +4,17 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 
 export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
+    const url = new URL(
+      (request.url.includes('://') ? '' : 'http://e.c') + request.url
+    )
+
     const router = createRouter({
-      history: createMemoryHistory(base),
+      history: createMemoryHistory(base && base({ url })),
       routes,
     })
 
     const app = createSSRApp(App)
     app.use(router)
-
-    const url = new URL(
-      (request.url.includes('://') ? '' : 'http://e.c') + request.url
-    )
     const fullPath = url.href.replace(url.origin, '')
 
     if (hook) {

@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 export default async function (App, { routes, base }, hook) {
   const router = createRouter({
-    history: createWebHistory(base),
+    history: createWebHistory(base && base({ url: window.location })),
     routes,
   })
 

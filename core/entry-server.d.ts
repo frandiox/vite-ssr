@@ -4,7 +4,7 @@ declare module 'vite-ssr/entry-server' {
 
   const handlerSSR: (
     App: typeof Vue,
-    options: { routes: RouteLocationRaw[]; base?: string },
+    options: { routes: RouteLocationRaw[]; base?: ({ url: URL }) => string },
     hook: (params: {
       app: App
       router: Router
