@@ -1,12 +1,11 @@
 import { createSSRApp } from 'vue'
 import renderer from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
+import { createUrl, getFullPath } from './utils'
 
 export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
-    const url = new URL(
-      (request.url.includes('://') ? '' : 'http://e.g') + request.url
-    )
+    const url = createUrl(request.url)
 
     const routeBase = base && base({ url })
     const router = createRouter({
@@ -16,12 +15,8 @@ export default function (App, { routes, base }, hook) {
 
     const app = createSSRApp(App)
     app.use(router)
-    const fullPath = url.href.replace(url.origin, '')
 
-    let initialRoutePath = fullPath
-    if (routeBase && initialRoutePath.startsWith(routeBase)) {
-      initialRoutePath = initialRoutePath.replace(routeBase.slice(1), '')
-    }
+    const fullPath = getFullPath(url, routeBase)
 
     if (hook) {
       await hook({
@@ -29,7 +24,7 @@ export default function (App, { routes, base }, hook) {
         router,
         request,
         isClient: false,
-        initialRoute: router.resolve(initialRoutePath),
+        initialRoute: router.resolve(fullPath),
         ...extra,
       })
     }
