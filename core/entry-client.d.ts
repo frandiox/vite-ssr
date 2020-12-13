@@ -4,7 +4,10 @@ declare module 'vite-ssr/entry-client' {
 
   const handlerClient: (
     App: typeof Vue,
-    options: { routes: RouteLocationRaw[]; base?: ({ url: URL }) => string },
+    options: {
+      routes: RouteLocationRaw[]
+      base?: (params: { url: URL }) => string
+    },
     hook: (params: {
       app: App
       router: Router

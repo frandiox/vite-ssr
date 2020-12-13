@@ -5,11 +5,12 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
     const url = new URL(
-      (request.url.includes('://') ? '' : 'http://e.c') + request.url
+      (request.url.includes('://') ? '' : 'http://e.g') + request.url
     )
 
+    const routeBase = base && base({ url })
     const router = createRouter({
-      history: createMemoryHistory(base && base({ url })),
+      history: createMemoryHistory(routeBase),
       routes,
     })
 
@@ -17,13 +18,18 @@ export default function (App, { routes, base }, hook) {
     app.use(router)
     const fullPath = url.href.replace(url.origin, '')
 
+    let initialRoutePath = fullPath
+    if (routeBase && initialRoutePath.startsWith(routeBase)) {
+      initialRoutePath = initialRoutePath.replace(routeBase.slice(1), '')
+    }
+
     if (hook) {
       await hook({
         app,
         router,
         request,
         isClient: false,
-        initialRoute: router.resolve(fullPath),
+        initialRoute: router.resolve(initialRoutePath),
         ...extra,
       })
     }

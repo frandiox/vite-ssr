@@ -2,8 +2,9 @@ import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 export default async function (App, { routes, base }, hook) {
+  const routeBase = base && base({ url: window.location })
   const router = createRouter({
-    history: createWebHistory(base && base({ url: window.location })),
+    history: createWebHistory(routeBase),
     routes,
   })
 
@@ -23,6 +24,15 @@ export default async function (App, { routes, base }, hook) {
     next()
   })
 
+  let initialRoutePath = window.location.href.replace(
+    window.location.origin,
+    ''
+  )
+
+  if (routeBase && initialRoutePath.startsWith(routeBase)) {
+    initialRoutePath = initialRoutePath.replace(routeBase.slice(1), '')
+  }
+
   if (hook) {
     await hook({
       app,
@@ -30,9 +40,7 @@ export default async function (App, { routes, base }, hook) {
       isClient: true,
       baseUrl: '',
       initialState: window.__INITIAL_STATE__ || {},
-      initialRoute: router.resolve(
-        window.location.href.replace(window.location.origin, '')
-      ),
+      initialRoute: router.resolve(initialRoutePath),
     })
   }
 
