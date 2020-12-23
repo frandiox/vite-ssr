@@ -1,13 +1,13 @@
 import { createSSRApp } from 'vue'
 import renderer from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import { createUrl, getFullPath } from './utils'
+import { createUrl, getFullPath, withoutSuffix } from './utils'
 
 export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
     const url = createUrl(request.url)
 
-    const routeBase = base && base({ url })
+    const routeBase = base && withoutSuffix(base({ url }), '/')
     const router = createRouter({
       history: createMemoryHistory(routeBase),
       routes,

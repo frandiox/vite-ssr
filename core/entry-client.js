@@ -1,10 +1,10 @@
 import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { getFullPath } from './utils'
+import { getFullPath, withoutSuffix } from './utils'
 
 export default async function (App, { routes, base }, hook) {
   const url = window.location
-  const routeBase = base && base({ url })
+  const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
     history: createWebHistory(routeBase),
     routes,
