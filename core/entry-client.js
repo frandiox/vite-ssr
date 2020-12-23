@@ -2,7 +2,7 @@ import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from './utils'
 
-export default async function (App, { routes, base }, hook) {
+export default async function (App, { routes, base, debug = {} }, hook) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
@@ -37,9 +37,11 @@ export default async function (App, { routes, base }, hook) {
     })
   }
 
-  // this will hydrate the app
-  await router.isReady()
-  app.mount('#app', true)
+  if (debug.mount !== false) {
+    // this will hydrate the app
+    await router.isReady()
+    app.mount('#app', true)
+  }
 }
 
 // it is possible to debug differences of SSR / Hydrated app state

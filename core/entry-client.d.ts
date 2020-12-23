@@ -7,6 +7,7 @@ declare module 'vite-ssr/entry-client' {
     options: {
       routes: RouteLocationRaw[]
       base?: (params: { url: URL }) => string
+      debug?: { mount?: boolean }
     },
     hook: (params: {
       app: App
