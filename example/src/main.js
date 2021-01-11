@@ -2,6 +2,7 @@ import './index.css'
 import App from './App.vue'
 import routes from './routes'
 import viteSSR from 'vite-ssr'
+import { Helmet } from 'vite-ssr/components'
 
 // This piece will move route.meta.state to Page props.
 // This can be ignored if you prefer Vuex instead of Page props.
@@ -13,6 +14,8 @@ export default viteSSR(
   App,
   { routes },
   ({ app, router, isClient, request, initialState, initialRoute }) => {
+    app.component(Helmet.name, Helmet)
+
     // The 'request' is the original server request (undefined in browser).
     // The 'initialState' is only available in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.

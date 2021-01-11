@@ -1,4 +1,5 @@
 <template>
+  <Helmet :html-attrs="{ lang: 'ja' }" />
   <h1>Page B - Message from server: {{ msg }}</h1>
 </template>
 
