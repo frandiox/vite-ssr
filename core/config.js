@@ -3,6 +3,7 @@ const path = require('path')
 const { resolveConfig } = require('vite')
 
 const viteConfigJS = 'vite.config.js'
+const viteConfigMJS = 'vite.config.mjs'
 const viteConfigTS = 'vite.config.ts'
 const systemRoot = path.parse(process.cwd()).root
 const fileExists = (dir, file) => {
@@ -15,7 +16,9 @@ const fileExists = (dir, file) => {
 }
 
 let rootDir
+let configFileName
 let isTS = false
+let isMJS = false
 
 exports.getProjectInfo = function () {
   if (!rootDir) {
@@ -23,9 +26,15 @@ exports.getProjectInfo = function () {
     while (!rootDir && currentDir !== systemRoot) {
       if (fileExists(currentDir, viteConfigJS)) {
         rootDir = currentDir
+        configFileName = viteConfigJS
+      } else if (fileExists(currentDir, viteConfigMJS)) {
+        isMJS = true
+        rootDir = currentDir
+        configFileName = viteConfigMJS
       } else if (fileExists(currentDir, viteConfigTS)) {
         isTS = true
         rootDir = currentDir
+        configFileName = viteConfigTS
       } else {
         currentDir = path.resolve(currentDir, '..')
       }
@@ -38,8 +47,9 @@ exports.getProjectInfo = function () {
 
   return {
     isTS,
+    isMJS,
     rootDir,
-    configFileName: isTS ? viteConfigTS : viteConfigJS,
+    configFileName,
   }
 }
 
