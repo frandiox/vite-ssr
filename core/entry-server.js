@@ -1,7 +1,8 @@
 import { createSSRApp } from 'vue'
-import renderer from '@vue/server-renderer'
+import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from './utils'
+
 export default function (App, { routes, base }, hook) {
   return async function ({ request, ...extra }) {
     const url = createUrl(request.url)
@@ -36,7 +37,7 @@ export default function (App, { routes, base }, hook) {
       router.currentRoute.value.meta.state || {}
     )
 
-    let html = await renderer.renderToString(app)
+    let html = await renderToString(app)
 
     const [helmet = ''] = html.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
     let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []

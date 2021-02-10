@@ -8,6 +8,7 @@ export default {
   name: 'PageB',
   props: {
     msg: String,
+    server: Boolean,
   },
 }
 </script>
