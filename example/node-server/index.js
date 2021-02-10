@@ -2,8 +2,8 @@ global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
-const { ssr } = require('../dist/ssr/package.json')
-const { default: handler } = require('../dist/ssr')
+const { ssr } = require('../dist/server/package.json')
+const { default: handler } = require('../dist/server')
 
 const server = express()
 

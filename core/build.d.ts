@@ -3,7 +3,7 @@ declare module 'vite-ssr/build' {
 
   const builder: (options: {
     clientOptions: InlineConfig
-    ssrOptions: InlineConfig & { packageJson: Record<string, unknown> }
+    serverOptions: InlineConfig & { packageJson: Record<string, unknown> }
   }) => Promise<void>
 
   export default builder

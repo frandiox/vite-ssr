@@ -5,7 +5,7 @@ const path = require('path')
 const mergeOptions = require('merge-options').bind({ concatArrays: true })
 const { getEntryPoint } = require('./config')
 
-module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
+module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
   const clientBuildOptions = mergeOptions(
     {
       build: {
@@ -24,10 +24,10 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
   )
 
   // -- SSR build
-  const ssrBuildOptions = mergeOptions(
+  const serverBuildOptions = mergeOptions(
     {
       build: {
-        outDir: path.resolve(process.cwd(), 'dist/ssr'),
+        outDir: path.resolve(process.cwd(), 'dist/server'),
         // The plugin is already changing the vite-ssr alias to point to the server-entry.
         // Therefore, here we can just use the same entry point as in the index.html
         ssr: await getEntryPoint(),
@@ -47,10 +47,10 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
         },
       },
     },
-    ssrOptions
+    serverOptions
   )
 
-  await build(ssrBuildOptions)
+  await build(serverBuildOptions)
 
   // --- Generate package.json
   // const type =
@@ -60,18 +60,18 @@ module.exports = async ({ clientOptions = {}, ssrOptions = {} } = {}) => {
 
   const packageJson = {
     // type,
-    main: path.parse(ssrBuildOptions.build.ssr).name + '.js',
+    main: path.parse(serverBuildOptions.build.ssr).name + '.js',
     ssr: {
       // This can be used later to serve static assets
       assets: (await fs.readdir(clientBuildOptions.build.outDir)).filter(
         (file) => !/(index\.html|manifest\.json)$/i.test(file)
       ),
     },
-    ...(ssrBuildOptions.packageJson || {}),
+    ...(serverBuildOptions.packageJson || {}),
   }
 
   await fs.writeFile(
-    path.join(ssrBuildOptions.build.outDir, 'package.json'),
+    path.join(serverBuildOptions.build.outDir, 'package.json'),
     JSON.stringify(packageJson, null, 2)
   )
 }
