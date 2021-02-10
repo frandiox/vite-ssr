@@ -1,9 +1,9 @@
 declare module 'vite-ssr/build' {
-  import { BuildConfig } from 'vite'
+  import { InlineConfig } from 'vite'
 
   const builder: (options: {
-    clientOptions: BuildConfig
-    ssrOptions: BuildConfig
+    clientOptions: InlineConfig
+    ssrOptions: InlineConfig & { packageJson: Record<string, unknown> }
   }) => Promise<void>
 
   export default builder

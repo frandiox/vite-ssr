@@ -8,10 +8,12 @@
     "serve:node": "node node-server/index"
   },
   "dependencies": {
-    "vite": "1.0.0-rc.13",
+    "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/compiler-sfc": "^3.0.5",
+    "vite": "2.0.0-beta.67",
     "vite-ssr": "file:../core",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-rc.1"
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.0"
   },
   "devDependencies": {
     "express": "^4.17.1",
