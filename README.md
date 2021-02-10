@@ -2,6 +2,8 @@
 
 `vite-ssr` creates one build for the server, used on first rendering, and another one for the client that takes over after the first rendering.
 
+Supports Vite 2.
+
 See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
 
 References:
@@ -33,10 +35,10 @@ Run `yarn refresh` for moving latest version of `core` to `example/node_modules`
 
 ## Todos
 
-- ~~TypeScript~~
-- Export a build plugin so a project can be built using `vite build` (not sure if it's possible)
-- ~~Make `src/main.js` file name configurable~~
+- [x] TypeScript
+- ~~Export a build plugin so a project can be built using `vite build` (not sure if it's possible)~~
+- [x] Make `src/main.js` file name configurable
+- [ ] Support build options in CLI (currently only configurable via JS API)
 - Rethink router requirement (currently it relies on `vue-router`)
 - Support React? (PRs welcome)
 - Better docs
-- Check if bundled files are correct or need more tree shaking
