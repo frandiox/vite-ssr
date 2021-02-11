@@ -93,11 +93,6 @@ estree-walker@^2.0.1:
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-2.0.1.tgz#f8e030fb21cefa183b44b7ad516b747434e7a3e0"
   integrity sha512-tF0hv+Yi2Ot1cwj9eYHtxC0jB9bmjacjQs6ZBTj82H8JwUywFuc+7E83NWfNMwHXZc11mjfFcVXPe9gEP4B8dg==
 
-is-plain-obj@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-2.1.0.tgz#45e42e37fccf1f40da8e5f76ee21515840c09287"
-  integrity sha512-YWnfyRwxL/+SsrWYfOpUtz5b3YD+nyfkHvjbcanzk8zgyO4ASD67uVMRt8k5bM4lLMDnXfriRhOpemw+NfT1eA==
-
 lodash@^4.17.19:
   version "4.17.20"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
@@ -109,13 +104,6 @@ magic-string@^0.25.7:
   integrity sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==
   dependencies:
     sourcemap-codec "^1.4.4"
-
-merge-options@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/merge-options/-/merge-options-3.0.3.tgz#802b401f0de8dfae00d2a1e2dab9759b3dd98fe4"
-  integrity sha512-jytfjQxL5mVrtD9O24zOXU4neV3uVbQdn1F0o1pzSa1yH9LTEUOtfwpWSsyAxrrrXqAFTxaU4ynqkmekHLvYew==
-  dependencies:
-    is-plain-obj "^2.1.0"
 
 picomatch@^2.2.2:
   version "2.2.2"

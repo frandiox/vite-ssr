@@ -1,12 +1,11 @@
-const { build } = require('vite')
+const { build, mergeConfig } = require('vite')
 const replace = require('@rollup/plugin-replace')
 const fs = require('fs').promises
 const path = require('path')
-const mergeOptions = require('merge-options').bind({ concatArrays: true })
 const { getEntryPoint } = require('./config')
 
 module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
-  const clientBuildOptions = mergeOptions(
+  const clientBuildOptions = mergeConfig(
     {
       build: {
         outDir: path.resolve(process.cwd(), 'dist/client'),
@@ -24,7 +23,7 @@ module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
   )
 
   // -- SSR build
-  const serverBuildOptions = mergeOptions(
+  const serverBuildOptions = mergeConfig(
     {
       build: {
         outDir: path.resolve(process.cwd(), 'dist/server'),
