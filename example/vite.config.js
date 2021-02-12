@@ -9,8 +9,8 @@ module.exports = defineConfig({
     vue(),
     {
       // Mock API during development
-      configureServer({ app }) {
-        api.forEach(({ route, handler }) => app.use(route, handler))
+      configureServer({ middlewares }) {
+        api.forEach(({ route, handler }) => middlewares.use(route, handler))
       },
     },
   ],
