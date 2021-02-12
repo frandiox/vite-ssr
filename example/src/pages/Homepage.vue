@@ -10,7 +10,7 @@
   </Helmet>
 
   <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
-  <p>Message from server: {{ msg }}</p>
+  <p class="test">Message from server: {{ msg }}</p>
 </template>
 
 <script>
@@ -33,3 +33,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.test {
+  color: #333;
+}
+</style>
+>

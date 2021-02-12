@@ -3,6 +3,7 @@ const path = require('path')
 const express = require('express')
 
 const { ssr } = require('../dist/server/package.json')
+const manifest = require('../dist/client/ssr-manifest.json')
 const { default: handler } = require('../dist/server')
 
 const server = express()
@@ -26,7 +27,11 @@ server.get('*', async (req, res) => {
   }
 
   const url = req.protocol + '://' + req.get('host') + req.originalUrl
-  const { html } = await handler({ request: { ...req, url } })
+  const { html } = await handler({
+    request: { ...req, url },
+    manifest,
+    preload: true,
+  })
   res.end(html)
 })
 

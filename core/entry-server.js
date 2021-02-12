@@ -1,10 +1,16 @@
 import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import { createUrl, getFullPath, withoutSuffix } from './utils'
+import {
+  createUrl,
+  getFullPath,
+  withoutSuffix,
+  findDependencies,
+  renderPreloadLinks,
+} from './utils'
 
 export default function (App, { routes, base }, hook) {
-  return async function ({ request, ...extra }) {
+  return async function ({ request, manifest, preload = false, ...extra }) {
     const url = createUrl(request.url)
 
     const routeBase = base && withoutSuffix(base({ url }), '/')
@@ -37,7 +43,8 @@ export default function (App, { routes, base }, hook) {
       router.currentRoute.value.meta.state || {}
     )
 
-    let html = await renderToString(app)
+    const ctx = {}
+    let html = await renderToString(app, ctx)
 
     const [helmet = ''] = html.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
     let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
@@ -52,13 +59,16 @@ export default function (App, { routes, base }, hook) {
       html = html.replace(helmet, '<!---->')
     }
 
-    if (html && initialState) {
-      return {
-        // This string is replaced at build time.
-        html: `__VITE_SSR_HTML__`,
-      }
+    const dependencies = manifest ? findDependencies(ctx.modules, manifest) : []
+    if (preload && dependencies.length > 0) {
+      head += renderPreloadLinks(dependencies)
     }
 
-    return { html: `` }
+    return {
+      // This string is replaced at build time
+      // and injects all the previous variables.
+      html: `__VITE_SSR_HTML__`,
+      dependencies,
+    }
   }
 }
