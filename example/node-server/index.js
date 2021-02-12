@@ -1,13 +1,23 @@
+// This is a simple Node server that uses the built project.
+
 global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
+// This contains a list of static routes (assets)
 const { ssr } = require('../dist/server/package.json')
+
+// The manifest is required for preloading assets
 const manifest = require('../dist/client/ssr-manifest.json')
-const { default: handler } = require('../dist/server')
+
+// This is the server renderer we just built
+const { default: renderPage } = require('../dist/server')
+
+const api = require('./api')
 
 const server = express()
 
+// Serve every static asset route
 for (const asset of ssr.assets || []) {
   server.use(
     '/' + asset,
@@ -15,23 +25,20 @@ for (const asset of ssr.assets || []) {
   )
 }
 
-server.get('*', async (req, res) => {
-  if (req.path === '/api/getProps') {
-    console.log('getProps', req.query)
-    return res.end(
-      JSON.stringify({
-        server: true,
-        msg: 'This is page ' + (req.query.name || '').toUpperCase(),
-      })
-    )
-  }
+// Custom API to get data for each page
+// See src/main.js to see how this is called
+api.forEach(({ route, handler }) => server.get(route, handler))
 
+// Everything else is treated as a "rendering request"
+server.get('*', async (req, res) => {
   const url = req.protocol + '://' + req.get('host') + req.originalUrl
-  const { html } = await handler({
+
+  const { html } = await renderPage({
     request: { ...req, url },
     manifest,
     preload: true,
   })
+
   res.end(html)
 })
 

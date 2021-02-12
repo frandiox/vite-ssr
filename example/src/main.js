@@ -20,6 +20,7 @@ export default viteSSR(
     // The 'initialState' is only available in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.
 
+    // Before each route navigation we request the data needed for showing the page.
     router.beforeEach(async (to, from, next) => {
       if (process.env.NODE_ENV !== 'development' && to.meta.state) {
         // This route has state already (from server) so it can be reused.
@@ -27,6 +28,15 @@ export default viteSSR(
       }
 
       const baseUrl = isClient ? '' : new URL(request.url).origin
+
+      // Explanation:
+      // The first rendering happens in the server. Therefore, when this code runs,
+      // the server makes a request to itself (running the code below) in order to
+      // get the current page props and use that response to render the HTML.
+      // The browser shows this HTML and rehydrates the application, turning it into
+      // an normal SPA. After that, subsequent route navigation runs this code below
+      // from the browser and get the new page props, which is this time rendered
+      // directly in the browser, as opposed to the first page rendering.
 
       try {
         // Get our page props from our custom API:
