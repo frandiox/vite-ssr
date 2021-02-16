@@ -27,6 +27,9 @@ export default viteSSR(
         return next()
       }
 
+      // `isClient` here is a handy way to determine if it's SSR or not.
+      // However, it is a run-time variable so it won't be tree-shaked.
+      // Use Vite's `import.meta.env.SSR` instead for tree-shaking.
       const baseUrl = isClient ? '' : new URL(request.url).origin
 
       // Explanation:
