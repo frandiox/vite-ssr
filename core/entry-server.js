@@ -39,12 +39,14 @@ export default function (App, { routes, base }, hook) {
 
     await router.isReady()
 
-    const initialState = JSON.stringify(
-      router.currentRoute.value.meta.state || {}
-    )
+    // This can be injected with useSSRContext() in setup functions
+    const context = {
+      request,
+      ...extra,
+      initialState: router.currentRoute.value.meta.state || {},
+    }
 
-    const ctx = {}
-    let html = await renderToString(app, ctx)
+    let html = await renderToString(app, context)
 
     const [helmet = ''] = html.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
     let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
@@ -59,10 +61,14 @@ export default function (App, { routes, base }, hook) {
       html = html.replace(helmet, '<!---->')
     }
 
-    const dependencies = manifest ? findDependencies(ctx.modules, manifest) : []
+    const dependencies = manifest
+      ? findDependencies(context.modules, manifest)
+      : []
     if (preload && dependencies.length > 0) {
       head += renderPreloadLinks(dependencies)
     }
+
+    const initialState = JSON.stringify(context.initialState || {})
 
     return {
       // This string is replaced at build time

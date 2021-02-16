@@ -14,7 +14,9 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'Homepage',
   props: {
     server: {
@@ -27,11 +29,19 @@ export default {
     },
   },
   setup() {
+    // This will be removed from the client build
+    if (import.meta.env.SSR) {
+      // Vite/plugin-vue is injecting this function in the setup scope
+      const { initialState } = useSSRContext()
+      // Initial state is mutable and will be hydrated in the client
+      initialState.perkele = true
+    }
+
     return {
       json: JSON.stringify({ something: true }),
     }
   },
-}
+})
 </script>
 
 <style scoped>
