@@ -7,6 +7,8 @@ export default {
   name: 'PageA',
   props: {
     msg: String,
+    server: Boolean,
+    name: String,
   },
   mounted() {
     this.randomNumber = Math.random()

@@ -27,6 +27,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    name: {
+      type: String,
+      default: '',
+    },
   },
   setup() {
     // This will be removed from the client build

@@ -9,6 +9,7 @@ export default {
   props: {
     msg: String,
     server: Boolean,
+    name: String,
   },
 }
 </script>
