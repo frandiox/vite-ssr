@@ -12,9 +12,12 @@ function PropsProvider({ route, context }) {
   console.log('Rendering ', route.name, context.initialState)
 
   // Prevent rerrendering
-  route.props = isFirstRoute
-    ? context.initialState
-    : route.props || getPageProps({ ...route, ...context })
+  route.props =
+    isFirstRoute && !import.meta.env.DEV
+      ? context.initialState
+      : route.props || getPageProps({ ...route, ...context })
+
+  isFirstRoute = false
 
   return route.props ? (
     <route.component {...route.props} />
