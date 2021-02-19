@@ -3,6 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import {
   createUrl,
+  parseHTML,
   getFullPath,
   withoutSuffix,
   findDependencies,
@@ -46,24 +47,14 @@ export default function (App, { routes, base }, hook) {
       initialState: router.currentRoute.value.meta.state || {},
     }
 
-    let html = await renderToString(app, context)
+    const unparsedHtml = await renderToString(app, context)
 
-    const [helmet = ''] = html.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
-    let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
-    let [, bodyAttrs = ''] = helmet.match(/<body([^>]*?)>/im) || []
-    let [, htmlAttrs = ''] = helmet.match(/<html([^>]*?)>/im) || []
-
-    if (helmet) {
-      const viteDataAttribute = /\sdata-v-[\d\w]+/gm
-      head = head.replace(viteDataAttribute, '')
-      bodyAttrs = bodyAttrs.replace(viteDataAttribute, '')
-      htmlAttrs = htmlAttrs.replace(viteDataAttribute, '')
-      html = html.replace(helmet, '<!---->')
-    }
+    let { html, htmlAttrs, head, bodyAttrs } = parseHTML(unparsedHtml)
 
     const dependencies = manifest
       ? findDependencies(context.modules, manifest)
       : []
+
     if (preload && dependencies.length > 0) {
       head += renderPreloadLinks(dependencies)
     }
