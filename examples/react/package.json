@@ -1,0 +1,21 @@
+{
+  "name": "react-example",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --port 1337 --open --force",
+    "build": "rm -rf dist && vite-ssr build",
+    "refresh": "rm -rf node_modules/vite-ssr && cp -r ../../core node_modules/vite-ssr && cp ../../core/cli.js node_modules/.bin/vite-ssr",
+    "serve:node": "node ../node-server/index react"
+  },
+  "dependencies": {
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0",
+    "react-router-config": "^5.1.1",
+    "react-router-dom": "^5.2.0",
+    "vite-ssr": "file:../../core"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react-refresh": "^1.1.0",
+    "vite": "^2.0.0"
+  }
+}

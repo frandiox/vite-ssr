@@ -1,11 +1,20 @@
+const name = 'vite-ssr'
+
 module.exports = () => ({
-  name: 'vite-ssr',
+  name,
   configResolved: (config) => {
+    let path = name
+
+    if (
+      config.plugins.findIndex((plugin) => plugin.name === 'react-refresh') >= 0
+    ) {
+      path += '/react'
+    }
+
     ;(config.resolve.alias || config.alias).push({
       find: /^vite-ssr$/,
-      replacement: config.build.ssr
-        ? 'vite-ssr/entry-server'
-        : 'vite-ssr/entry-client',
+      replacement:
+        path + (config.build.ssr ? `/entry-server` : `/entry-client`),
     })
   },
 })
