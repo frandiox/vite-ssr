@@ -4,14 +4,22 @@ global.fetch = require('node-fetch')
 const path = require('path')
 const express = require('express')
 
+const example = process.argv[2]
+
+if (!example) {
+  throw new Error('Specify example name in the first argument')
+}
+
+const dist = `../${example}/dist`
+
 // This contains a list of static routes (assets)
-const { ssr } = require('../dist/server/package.json')
+const { ssr } = require(`${dist}/server/package.json`)
 
 // The manifest is required for preloading assets
-const manifest = require('../dist/client/ssr-manifest.json')
+const manifest = require(`${dist}/client/ssr-manifest.json`)
 
 // This is the server renderer we just built
-const { default: renderPage } = require('../dist/server')
+const { default: renderPage } = require(`${dist}/server`)
 
 const api = require('./api')
 
@@ -21,7 +29,7 @@ const server = express()
 for (const asset of ssr.assets || []) {
   server.use(
     '/' + asset,
-    express.static(path.join(__dirname, '../dist/client/' + asset))
+    express.static(path.join(__dirname, `${dist}/client/` + asset))
   )
 }
 
