@@ -2,7 +2,7 @@ import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from './utils'
 
-export default async function (App, { routes, base, debug = {} }, hook) {
+export default async function (App, { routes, base, debug = {} } = {}, hook) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
