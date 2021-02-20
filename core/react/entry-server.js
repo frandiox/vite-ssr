@@ -26,9 +26,9 @@ export default function (App, { base } = {}, hook) {
       React.createElement(App, context)
     )
 
-    const unparsedHtml = await ReactDOMServer.renderToString(router)
+    const rawAppHtml = await ReactDOMServer.renderToString(router)
 
-    const { html, htmlAttrs, head, bodyAttrs } = parseHTML(unparsedHtml)
+    const { body, htmlAttrs, head, bodyAttrs } = parseHTML(rawAppHtml)
 
     const initialState = JSON.stringify(context.initialState || {})
 
@@ -36,6 +36,11 @@ export default function (App, { base } = {}, hook) {
       // This string is replaced at build time
       // and injects all the previous variables.
       html: `__VITE_SSR_HTML__`,
+      htmlAttrs,
+      head,
+      body,
+      bodyAttrs,
+      initialState,
       dependencies: [], // React does not populate the manifest context :(
     }
   }

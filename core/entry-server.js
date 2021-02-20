@@ -47,9 +47,9 @@ export default function (App, { routes, base }, hook) {
       initialState: router.currentRoute.value.meta.state || {},
     }
 
-    const unparsedHtml = await renderToString(app, context)
+    const rawAppHtml = await renderToString(app, context)
 
-    let { html, htmlAttrs, head, bodyAttrs } = parseHTML(unparsedHtml)
+    let { body, htmlAttrs, head, bodyAttrs } = parseHTML(rawAppHtml)
 
     const dependencies = manifest
       ? findDependencies(context.modules, manifest)
@@ -65,6 +65,11 @@ export default function (App, { routes, base }, hook) {
       // This string is replaced at build time
       // and injects all the previous variables.
       html: `__VITE_SSR_HTML__`,
+      htmlAttrs,
+      head,
+      body,
+      bodyAttrs,
+      initialState,
       dependencies,
     }
   }

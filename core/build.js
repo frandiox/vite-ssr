@@ -39,7 +39,7 @@ module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
                 .replace('</head>', '${head}\n</head>')
                 .replace(
                   '<div id="app"></div>',
-                  '<div id="app" data-server-rendered="true">${html}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
+                  '<div id="app" data-server-rendered="true">${body}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
                 ),
             }),
           ],

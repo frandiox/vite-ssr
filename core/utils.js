@@ -71,8 +71,8 @@ export function renderPreloadLinks(files) {
   return link
 }
 
-export function parseHTML(html = '') {
-  const [helmet = ''] = html.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
+export function parseHTML(body = '') {
+  const [helmet = ''] = body.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
   let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
   let [, bodyAttrs = ''] = helmet.match(/<body([^>]*?)>/im) || []
   let [, htmlAttrs = ''] = helmet.match(/<html([^>]*?)>/im) || []
@@ -82,8 +82,8 @@ export function parseHTML(html = '') {
     head = head.replace(viteDataAttribute, '')
     bodyAttrs = bodyAttrs.replace(viteDataAttribute, '')
     htmlAttrs = htmlAttrs.replace(viteDataAttribute, '')
-    html = html.replace(helmet, '<!---->')
+    body = body.replace(helmet, '<!---->')
   }
 
-  return { html, head, bodyAttrs, htmlAttrs }
+  return { body, head, bodyAttrs, htmlAttrs }
 }
