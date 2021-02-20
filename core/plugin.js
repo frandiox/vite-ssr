@@ -3,18 +3,20 @@ const name = 'vite-ssr'
 module.exports = () => ({
   name,
   configResolved: (config) => {
-    let path = name
+    let lib = '' // default is Vue
 
     if (
       config.plugins.findIndex((plugin) => plugin.name === 'react-refresh') >= 0
     ) {
-      path += '/react'
+      lib = '/react'
     }
 
+    const file = config.build.ssr ? '/entry-server' : '/entry-client'
+
+    // config.alias is pre-beta.69
     ;(config.resolve.alias || config.alias).push({
       find: /^vite-ssr$/,
-      replacement:
-        path + (config.build.ssr ? `/entry-server` : `/entry-client`),
+      replacement: name + lib + file,
     })
   },
 })
