@@ -7,14 +7,14 @@ declare module 'vite-ssr' {
       debug?: { mount?: boolean }
     },
     hook?: (params: {
+      url: URL
       app: any
       router: any
-      request?: Request
       isClient: boolean
       initialRoute: any
       [key: string]: any
     }) => Promise<void>
-  ) => Promise<() => Promise<{ html: string }>>
+  ) => Promise<(url: string | URL) => Promise<{ html: string }>>
 
   export default handler
 }

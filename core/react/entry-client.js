@@ -8,6 +8,7 @@ export default async function (App, { base, debug = {} } = {}, hook) {
   const routeBase = base && withoutSuffix(base({ url }), '/')
 
   const context = {
+    url,
     initialState: window.__INITIAL_STATE__ || {},
     isClient: true,
   }

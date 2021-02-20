@@ -5,20 +5,16 @@ import { parseHTML } from '../utils'
 import { createUrl, getFullPath, withoutSuffix } from '../utils'
 
 export default function (App, { base } = {}, hook) {
-  return async function ({ request, manifest, preload = false, ...extra }) {
-    const url = createUrl(request.url)
+  return async function (url, { manifest, preload = false, ...extra } = {}) {
+    url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
-    const context = { request, ...extra, initialState: {}, isClient: false }
+    const context = { ...extra, url, initialState: {}, isClient: false }
 
     if (hook) {
       context.initialState =
-        (await hook({
-          request,
-          ...context,
-          ...extra,
-        })) || context.initialState
+        (await hook({ ...context })) || context.initialState
     }
 
     const router = React.createElement(

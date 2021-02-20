@@ -41,8 +41,7 @@ api.forEach(({ route, handler }) => server.get(route, handler))
 server.get('*', async (req, res) => {
   const url = req.protocol + '://' + req.get('host') + req.originalUrl
 
-  const { html } = await renderPage({
-    request: { ...req, url },
+  const { html } = await renderPage(url, {
     manifest,
     preload: true,
   })

@@ -13,10 +13,9 @@ routes.forEach((route) => {
 export default viteSSR(
   App,
   { routes },
-  ({ app, router, isClient, request, initialState, initialRoute }) => {
+  ({ app, router, isClient, url, initialState, initialRoute }) => {
     app.component(Helmet.name, Helmet)
 
-    // The 'request' is the original server request (undefined in browser).
     // The 'initialState' is only available in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.
 
@@ -30,7 +29,7 @@ export default viteSSR(
       // `isClient` here is a handy way to determine if it's SSR or not.
       // However, it is a run-time variable so it won't be tree-shaked.
       // Use Vite's `import.meta.env.SSR` instead for tree-shaking.
-      const baseUrl = isClient ? '' : new URL(request.url).origin
+      const baseUrl = isClient ? '' : url.origin
 
       // Explanation:
       // The first rendering happens in the server. Therefore, when this code runs,

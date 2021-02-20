@@ -1,17 +1,11 @@
 import { useState } from 'react'
 
-export function getPageProps({
-  name,
-  path,
-  initialState,
-  isClient,
-  request,
-} = {}) {
+export function getPageProps({ url, name, path, initialState, isClient } = {}) {
   if (initialState.name === name) {
     return initialState
   }
 
-  const baseUrl = isClient ? '' : new URL(request.url).origin
+  const baseUrl = isClient ? '' : url.origin
 
   // Get our page props from our custom API:
   const promise = fetch(

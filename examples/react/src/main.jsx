@@ -4,7 +4,7 @@ import { routes } from './routes'
 import viteSSR from 'vite-ssr'
 import { getPageProps } from './api'
 
-export default viteSSR(App, { routes }, ({ request, ...context }) => {
+export default viteSSR(App, { routes }, ({ url, ...context }) => {
   // Unlike Vue, React doesn't have any native feature to await for
   // data fetching during server-side rendering. This hook is a simple
   // utility to workaround that. Initial state will be set to the
@@ -12,7 +12,7 @@ export default viteSSR(App, { routes }, ({ request, ...context }) => {
   // Maybe it will be simpler with Suspense or Server Components.
 
   if (import.meta.env.SSR) {
-    const [{ route } = {}] = matchRoutes(routes, new URL(request.url).pathname)
-    return getPageProps({ ...route, ...context, request })
+    const [{ route } = {}] = matchRoutes(routes, url.pathname)
+    return getPageProps({ ...route, ...context, url })
   }
 })

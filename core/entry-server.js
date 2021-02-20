@@ -11,8 +11,8 @@ import {
 } from './utils'
 
 export default function (App, { routes, base }, hook) {
-  return async function ({ request, manifest, preload = false, ...extra }) {
-    const url = createUrl(request.url)
+  return async function (url, { manifest, preload = false, ...extra } = {}) {
+    url = createUrl(url)
 
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const router = createRouter({
@@ -27,9 +27,9 @@ export default function (App, { routes, base }, hook) {
 
     if (hook) {
       await hook({
+        url,
         app,
         router,
-        request,
         isClient: false,
         initialRoute: router.resolve(fullPath),
         ...extra,
@@ -42,7 +42,7 @@ export default function (App, { routes, base }, hook) {
 
     // This can be injected with useSSRContext() in setup functions
     const context = {
-      request,
+      url,
       ...extra,
       initialState: router.currentRoute.value.meta.state || {},
     }

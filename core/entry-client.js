@@ -28,10 +28,10 @@ export default async function (App, { routes, base, debug = {} } = {}, hook) {
 
   if (hook) {
     await hook({
+      url,
       app,
       router,
       isClient: true,
-      baseUrl: '',
       initialState: window.__INITIAL_STATE__ || {},
       initialRoute: router.resolve(getFullPath(url, routeBase)),
     })
