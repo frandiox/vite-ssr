@@ -62,7 +62,7 @@ export default viteSSR(App, { routes }, (context) => {
 
 Vite SSR will automatically return the client or the server version of the wrapper according to the running enviornment. Use Vite's `import.meta.env.SSR` to add conditional code.
 
-If you are building a library on top of Vite SSR, you may want to import from `vite-ssr/entry-client` or `vite-ssr/entry-server` directly instead (for Vue, or `vite/react/*` for React).
+If you are building a library on top of Vite SSR, you may want to import from `vite-ssr/entry-client` or `vite-ssr/entry-server` directly instead (for Vue, or `vite-ssr/react/*` for React).
 
 ### SSR initial state
 
@@ -74,7 +74,7 @@ Vue has multiple ways to provide the initial state to Vite SSR:
 
 - Call your API before entering a route (Router's `beforeEach` or `beforeEnter`) and populate `route.meta.state`. Vite SSR will get the first route's state and use it as the SSR initial state. See an example [here](./examples/vue/src/main.js).
 
-- Use Vue's `serverPrefetch` to call your API from any component and save the result in the SSR initial state. See an example [here](./examples/vue/src/pages/Homepage.js).
+- Use Vue's `serverPrefetch` to call your API from any component and save the result in the SSR initial state. See an example [here](./examples/vue/src/pages/Homepage.vue).
 
 #### Initial state in React
 
