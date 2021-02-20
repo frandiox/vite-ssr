@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="200" src="./logo.png">
+  <img width="180" src="./logo.svg" alt="Vite SSR logo">
 </p>
 
 # Vite SSR
