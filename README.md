@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="200" src="./logo.png">
+</p>
+
 # Vite SSR
 
 Vite SSR creates one build for the server, used on first rendering, and another one for the client that takes over after the first rendering. It abstracts most of the SSR complexity from the user application.
