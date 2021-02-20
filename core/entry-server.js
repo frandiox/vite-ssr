@@ -25,14 +25,20 @@ export default function (App, { routes, base }, hook) {
 
     const fullPath = getFullPath(url, routeBase)
 
+    // This can be injected with useSSRContext() in setup functions
+    const context = {
+      url,
+      ...extra,
+      initialState: {},
+    }
+
     if (hook) {
       await hook({
-        url,
         app,
         router,
         isClient: false,
         initialRoute: router.resolve(fullPath),
-        ...extra,
+        ...context,
       })
     }
 
@@ -40,12 +46,10 @@ export default function (App, { routes, base }, hook) {
 
     await router.isReady()
 
-    // This can be injected with useSSRContext() in setup functions
-    const context = {
-      url,
-      ...extra,
-      initialState: router.currentRoute.value.meta.state || {},
-    }
+    Object.assign(
+      context.initialState || {},
+      router.currentRoute.value.meta.state || {}
+    )
 
     const rawAppHtml = await renderToString(app, context)
 

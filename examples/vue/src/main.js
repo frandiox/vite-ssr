@@ -16,18 +16,22 @@ export default viteSSR(
   ({ app, router, isClient, url, initialState, initialRoute }) => {
     app.component(Helmet.name, Helmet)
 
-    // The 'initialState' is only available in the browser and can be used to
-    // pass it to Vuex, for example, if you prefer to rely on stores rather than Page props.
+    // The 'initialState' is hydrated in the browser and can be used to
+    // pass it to Vuex, for example, if you prefer to rely on stores rather than page props.
+    // In the server, 'initialState' is an empty object that can be mutated. It can be
+    // passed to Vuex, or provide it to child components (see Homepage for an example).
+    app.provide('initialState', initialState)
 
     // Before each route navigation we request the data needed for showing the page.
     router.beforeEach(async (to, from, next) => {
-      if (to.meta.state) {
+      if (!!to.meta.state && (!import.meta.env.DEV || import.meta.env.SSR)) {
         // This route has state already (from server) so it can be reused.
+        // State is always empty in SPA development, but present in SSR development.
         return next()
       }
 
       // `isClient` here is a handy way to determine if it's SSR or not.
-      // However, it is a run-time variable so it won't be tree-shaked.
+      // However, it is a runtime variable so it won't be tree-shaked.
       // Use Vite's `import.meta.env.SSR` instead for tree-shaking.
       const baseUrl = isClient ? '' : url.origin
 
@@ -36,7 +40,7 @@ export default viteSSR(
       // the server makes a request to itself (running the code below) in order to
       // get the current page props and use that response to render the HTML.
       // The browser shows this HTML and rehydrates the application, turning it into
-      // an normal SPA. After that, subsequent route navigation runs this code below
+      // a normal SPA. After that, subsequent route navigation runs this code below
       // from the browser and get the new page props, which is this time rendered
       // directly in the browser, as opposed to the first page rendering.
 

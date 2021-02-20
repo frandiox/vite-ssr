@@ -11,10 +11,12 @@
 
   <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
   <p class="test">Message from server: {{ msg }}</p>
+
+  <p>{{ homeLocalState }}</p>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, inject, onBeforeMount, ref } from 'vue'
 
 export default defineComponent({
   name: 'Homepage',
@@ -32,16 +34,35 @@ export default defineComponent({
       default: '',
     },
   },
+  serverPrefetch() {
+    return this.fetchMyLocalState()
+  },
   setup() {
-    // This will be removed from the client build
-    if (import.meta.env.SSR) {
-      // Vite/plugin-vue is injecting this function in the setup scope
-      const { initialState } = useSSRContext()
-      // Initial state is mutable and will be hydrated in the client
-      initialState.perkele = true
+    // This is provided in main.js
+    const initialState = inject('initialState')
+
+    // Hydrate from initialState, if there's anything
+    const homeLocalState = ref(initialState.homeLocalState || null)
+
+    const fetchMyLocalState = async () => {
+      if (!homeLocalState.value) {
+        // No data, get it fresh from any API
+        homeLocalState.value = await Promise.resolve(
+          'This is local component state using serverPrefetch'
+        )
+
+        if (import.meta.env.SSR) {
+          // Save this data in SSR initial state for hydration later
+          initialState.homeLocalState = homeLocalState.value
+        }
+      }
     }
 
+    onBeforeMount(fetchMyLocalState)
+
     return {
+      fetchMyLocalState,
+      homeLocalState,
       json: JSON.stringify({ something: true }),
     }
   },

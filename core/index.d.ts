@@ -11,6 +11,7 @@ declare module 'vite-ssr' {
       app: any
       router: any
       isClient: boolean
+      initialState: any
       initialRoute: any
       [key: string]: any
     }) => Promise<void>

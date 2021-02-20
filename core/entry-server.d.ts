@@ -21,6 +21,7 @@ declare module 'vite-ssr/entry-server' {
       app: App
       router: Router
       isClient: false
+      initialState: any
       initialRoute: RouteLocationNormalized
       [key: string]: any
     }) => Promise<void>
