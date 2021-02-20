@@ -53,13 +53,15 @@ exports.getProjectInfo = function () {
   }
 }
 
-exports.getEntryPoint = async function () {
-  const { rootDir } = exports.getProjectInfo()
+exports.getEntryPoint = async function (root, indexHtml) {
+  if (!root || !indexHtml) {
+    root = exports.getProjectInfo().rootDir
 
-  const indexHtml = await fs.promises.readFile(
-    path.resolve(rootDir, 'index.html'),
-    'utf-8'
-  )
+    indexHtml = await fs.promises.readFile(
+      path.resolve(rootDir, 'index.html'),
+      'utf-8'
+    )
+  }
 
   const matches = indexHtml
     .substr(indexHtml.lastIndexOf('script type="module"'))

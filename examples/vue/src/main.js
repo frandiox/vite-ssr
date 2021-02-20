@@ -21,7 +21,7 @@ export default viteSSR(
 
     // Before each route navigation we request the data needed for showing the page.
     router.beforeEach(async (to, from, next) => {
-      if (process.env.NODE_ENV !== 'development' && to.meta.state) {
+      if (to.meta.state) {
         // This route has state already (from server) so it can be reused.
         return next()
       }
