@@ -54,11 +54,13 @@ exports.getProjectInfo = function () {
 }
 
 exports.getEntryPoint = async function (root, indexHtml) {
-  if (!root || !indexHtml) {
+  if (!root) {
     root = exports.getProjectInfo().rootDir
+  }
 
+  if (!indexHtml) {
     indexHtml = await fs.promises.readFile(
-      path.resolve(rootDir, 'index.html'),
+      path.resolve(root, 'index.html'),
       'utf-8'
     )
   }
@@ -69,7 +71,7 @@ exports.getEntryPoint = async function (root, indexHtml) {
 
   const entryFile = matches[1] || 'src/main'
 
-  return path.join(rootDir, entryFile)
+  return path.join(root, entryFile)
 }
 
 exports.resolveViteConfig = async function (mode) {
