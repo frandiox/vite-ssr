@@ -19,7 +19,7 @@ if (command === 'build') {
   const build = require('./build')
 
   ;(async () => {
-    await build()
+    await build({ serverOptions: { build: { ssr: options.ssr } } })
     process.exit()
   })()
 } else if (

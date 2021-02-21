@@ -87,7 +87,8 @@ async function createSsrServer(options = {}) {
 
     try {
       const template = await getIndexTemplate(request.url)
-      const entryPoint = await getEntryPoint(vite.config.root, template)
+      const entryPoint =
+        options.ssr || (await getEntryPoint(vite.config.root, template))
 
       let resolvedEntryPoint = await vite.ssrLoadModule(resolve(entryPoint))
       resolvedEntryPoint = resolvedEntryPoint.default || resolvedEntryPoint
