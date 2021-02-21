@@ -17,8 +17,12 @@ export function withoutSuffix(string, suffix) {
     : string + suffix
 }
 
-export function createUrl(urlLike = '') {
-  if (!urlLike.includes('://')) {
+export function createUrl(urlLike) {
+  if (urlLike instanceof URL) {
+    return urlLike
+  }
+
+  if (!(urlLike || '').includes('://')) {
     urlLike = 'http://e.g' + withPrefix(urlLike, S)
   }
 

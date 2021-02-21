@@ -28,15 +28,15 @@ export default function (App, { routes, base }, hook) {
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
-      ...extra,
+      isClient: false,
       initialState: {},
+      ...extra,
     }
 
     if (hook) {
       await hook({
         app,
         router,
-        isClient: false,
         initialRoute: router.resolve(fullPath),
         ...context,
       })

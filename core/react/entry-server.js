@@ -10,7 +10,7 @@ export default function (App, { base } = {}, hook) {
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
-    const context = { ...extra, url, initialState: {}, isClient: false }
+    const context = { url, isClient: false, initialState: {}, ...extra }
 
     if (hook) {
       context.initialState =
