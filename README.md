@@ -4,9 +4,11 @@
 
 # Vite SSR
 
-Vite SSR creates one build for the server, used on first rendering, and another one for the client that takes over after the first rendering. It abstracts most of the SSR complexity from the user application.
+Server Side Rendering for Vite 2 in Node.js. Supports Vue and React (Svelte WIP).
 
-Supports Vite 2+, Vue and React.
+- ⚡ Lightning Fast HMR (powered by Vite, even in SSR mode).
+- 💁‍♂️ Consistent DX experience abstracting most of the SSR complexity.
+- 🔍 Small library, unopinionated about your API logic and page routing.
 
 See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
 
@@ -60,9 +62,10 @@ export default viteSSR(App, { routes }, (context) => {
 })
 ```
 
-Vite SSR will automatically return the client or the server version of the wrapper according to the running enviornment. Use Vite's `import.meta.env.SSR` to add conditional code.
+That's right, in Vite SSR **there's only 1 single entry file** by default. The plugin will take care of providing your code with the right environment.
+If you need conditional logic that should only run in either client or server, use Vite's `import.meta.env.SSR` boolean variable and the tree-shaking will do the rest.
 
-If you are building a library on top of Vite SSR, you may want to import from `vite-ssr/entry-client` or `vite-ssr/entry-server` directly instead (for Vue, or `vite-ssr/react/*` for React).
+If you are building a library on top of Vite SSR or for whatever reason you need to separate the entry files, provide the client entry file in `index.html` (as in a normal Vite app) and pass the server entry file as a CLI flag: `vite-ssr [build|dev] --ssr ./src/entry-server.js`. Then, import the main Vite SSR handler from `vite-ssr/vue/entry-client` or `vite-ssr/vue/entry-server` directly (or `vite-ssr/react/*`).
 
 ### SSR initial state
 
@@ -86,14 +89,16 @@ Therefore, the only way to add initial state is returning it from the main Vite 
 
 There are 2 ways to run the app locally for development:
 
-- SSR mode: `vite-ssr dev` command spins up a local SSR server (with SPA takeover).
 - SPA mode: `vite dev` command runs Vite directly without any SSR.
+- SSR mode: `vite-ssr dev` command spins up a local SSR server. It supports similar attributes to Vite CLI, e.g. `vite-ssr --port 1337 --open`.
 
 SPA mode will be faster but the SSR one will have closer behavior to a production environment.
 
 ## Production
 
 Run `vite-ssr build` for buildling your app. This will create 2 builds (client and server) that you can import and use from your Node backend. See an Express.js example server [here](./examples/node-server/index.js).
+
+Provide `--ssr <entry-file-path>` if you want to use a different entry file for the server. This is mostly useful if you are wrapping Vite SSR in another library.
 
 ## References
 
@@ -105,8 +110,9 @@ The following projects served as learning material to develop this tool:
 
 - [x] TypeScript
 - [x] Make `src/main.js` file name configurable
-- [ ] Support build options as CLI flags (currently only configurable via JS API or in vite.config.js)
+- [x] Support build options as CLI flags (`--ssr entry-file` supported)
 - [x] Support React
 - [x] SSR dev-server
 - [x] Make SSR dev-server similar to Vite's dev-server (options, terminal output)
+- [ ] Research if `vite-ssr` CLI logic can be moved to the plugin to use `vite` command instead.
 - [x] Docs

@@ -1,14 +1,8 @@
 import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
-import {
-  createUrl,
-  parseHTML,
-  getFullPath,
-  withoutSuffix,
-  findDependencies,
-  renderPreloadLinks,
-} from './utils'
+import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
+import { parseHTML, findDependencies, renderPreloadLinks } from '../utils/html'
 
 export default function (App, { routes, base }, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {

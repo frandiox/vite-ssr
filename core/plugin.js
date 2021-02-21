@@ -3,7 +3,7 @@ const name = 'vite-ssr'
 module.exports = () => ({
   name,
   configResolved: (config) => {
-    let lib = '' // default is Vue
+    let lib = '/vue' // default
 
     if (
       config.plugins.findIndex((plugin) => plugin.name === 'react-refresh') >= 0

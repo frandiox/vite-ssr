@@ -1,3 +1,5 @@
+// This is a generic mix of framework types
+
 declare module 'vite-ssr' {
   const handler: (
     App: any,
@@ -14,8 +16,8 @@ declare module 'vite-ssr' {
       initialState: any
       initialRoute: any
       [key: string]: any
-    }) => Promise<void>
-  ) => Promise<(url: string | URL) => Promise<{ html: string }>>
+    }) => any
+  ) => any
 
   export default handler
 }

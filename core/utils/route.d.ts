@@ -1,4 +1,4 @@
-declare module 'vite-ssr/utils' {
+declare module 'vite-ssr/utils/route' {
   export const withPrefix: (string: string, prefix: string) => string
   export const withoutPrefix: (string: string, prefix: string) => string
   export const withSuffix: (string: string, suffix: string) => string

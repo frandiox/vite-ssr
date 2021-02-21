@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
-import { parseHTML, createUrl, getFullPath, withoutSuffix } from '../utils'
+import { parseHTML } from '../utils/html'
+import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 
 export default function (App, { base } = {}, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {

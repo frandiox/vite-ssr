@@ -1,7 +1,4 @@
-declare module 'vite-ssr/entry-server' {
-  import Vue, { App } from 'vue'
-  import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
-
+declare module 'vite-ssr/react/entry-server' {
   type Renderer = (
     url: string | URL,
     options?: {
@@ -12,17 +9,15 @@ declare module 'vite-ssr/entry-server' {
   ) => Promise<{ html: string; dependencies: string[] }>
 
   const handlerSSR: (
-    App: typeof Vue,
+    App: any,
     options?: {
-      routes?: RouteLocationRaw[]
+      routes?: Record<string, any>[]
       base?: (params: { url: URL }) => string
     },
     hook?: (params: {
-      app: App
-      router: Router
+      router: any
       isClient: false
-      initialState: any
-      initialRoute: RouteLocationNormalized
+      initialState: Record<string, any>
       [key: string]: any
     }) => Promise<void>
   ) => Promise<Renderer>

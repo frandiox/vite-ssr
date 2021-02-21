@@ -1,4 +1,4 @@
-declare module 'vite-ssr/entry-client' {
+declare module 'vite-ssr/vue/entry-client' {
   import Vue, { App } from 'vue'
   import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
 

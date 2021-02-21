@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-import { withoutSuffix } from '../utils'
+import { withoutSuffix } from '../utils/route'
 
 export default async function (App, { base, debug = {} } = {}, hook) {
   const url = window.location
