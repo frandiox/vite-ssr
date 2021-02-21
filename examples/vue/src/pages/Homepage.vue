@@ -7,6 +7,7 @@
     title="Home!"
   >
     <meta name="description" content="This should be moved to head" />
+    <meta name="description" :content="homeLocalState" />
   </Helmet>
 
   <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
@@ -47,8 +48,11 @@ export default defineComponent({
     const fetchMyLocalState = async () => {
       if (!homeLocalState.value) {
         // No data, get it fresh from any API
-        homeLocalState.value = await Promise.resolve(
-          'This is local component state using serverPrefetch'
+        homeLocalState.value = await new Promise((resolve) =>
+          setTimeout(
+            () => resolve('This is local component state using serverPrefetch'),
+            500
+          )
         )
 
         if (import.meta.env.SSR) {
