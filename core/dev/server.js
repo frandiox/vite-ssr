@@ -35,7 +35,9 @@ async function resolveHttpServer(app) {
   }
 }
 
-async function createSsrServer() {
+async function createSsrServer(options = {}) {
+  const { plugin: pluginName = 'vite-ssr' } = options
+
   const app = connect()
   const httpServer = await resolveHttpServer(app)
   const vite = await createViteServer({
@@ -48,12 +50,20 @@ async function createSsrServer() {
   // but we need to reach the entry-server here. This trick
   // replaces the plugin behavior in the config and seems
   // to keep the entry-client for the SPA.
-  const plugin = vite.config.resolve.alias.find(
+  const alias = vite.config.resolve.alias.find(
     (item) =>
       typeof item.replacement === 'string' &&
-      (item.replacement || '').includes('vite-ssr')
+      (item.replacement || '').includes(pluginName)
   )
-  plugin.replacement = plugin.replacement.replace('client', 'server')
+  alias.replacement = alias.replacement.replace('client', 'server')
+
+  // Find Vite SSR options added by another that uses it internally.
+  options = Object.assign(
+    {},
+    (vite.config.plugins.find((plugin) => plugin.name === pluginName) || {})
+      .viteSsr || {},
+    options
+  )
 
   const resolve = (p) => path.resolve(vite.config.root, p)
   async function getIndexTemplate(url) {
@@ -68,10 +78,12 @@ async function createSsrServer() {
     }
 
     try {
-      const template = await getIndexTemplate(request.originalUrl)
+      const template = await getIndexTemplate(request.url)
       const entryPoint = await getEntryPoint(vite.config.root, template)
-      const resolved = await vite.ssrLoadModule(resolve(entryPoint))
-      const render = resolved.default || resolved
+
+      let resolvedEntryPoint = await vite.ssrLoadModule(resolve(entryPoint))
+      resolvedEntryPoint = resolvedEntryPoint.default || resolvedEntryPoint
+      const render = resolvedEntryPoint.render || resolvedEntryPoint
 
       const protocol =
         request.protocol ||
@@ -80,13 +92,23 @@ async function createSsrServer() {
 
       const url = protocol + '://' + request.headers.host + request.url
 
+      // This context might contain initialState provided by other plugins
+      const context = options.getRenderContext
+        ? await options.getRenderContext({
+            url,
+            request,
+            response,
+            resolvedEntryPoint,
+          })
+        : {}
+
       const {
         htmlAttrs,
         head,
         body,
         bodyAttrs,
         initialState,
-      } = await render(url, { request, response })
+      } = await render(url, { request, response, ...context })
 
       // These replacements should be similar to the build behavior
       const html = template
@@ -108,16 +130,13 @@ async function createSsrServer() {
   })
 
   return {
-    listen(port, host, cb) {
+    listen(port = 3000, host = 'localhost', cb) {
       globalThis.fetch = require('node-fetch')
 
       httpServer.listen(
-        port || 3000,
-        host || 'localhost',
-        cb ||
-          (() => {
-            console.log('http://localhost:3000')
-          })
+        port,
+        host,
+        cb || (() => console.log(`http://${host}:${port}`))
       )
     },
   }
