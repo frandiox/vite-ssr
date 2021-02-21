@@ -53,6 +53,8 @@ export default function (App, { routes, base }, hook) {
 
     const rawAppHtml = await renderToString(app, context)
 
+    // TODO: in Vite 2 is already possible to have some kind of `useHead` utility.
+    // Replace this HTML parsing with a hook.
     let { body, htmlAttrs, head, bodyAttrs } = parseHTML(rawAppHtml)
 
     const dependencies = manifest

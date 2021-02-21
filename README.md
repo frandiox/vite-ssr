@@ -105,8 +105,8 @@ The following projects served as learning material to develop this tool:
 
 - [x] TypeScript
 - [x] Make `src/main.js` file name configurable
-- [ ] Support build options in CLI (currently only configurable via JS API)
+- [ ] Support build options as CLI flags (currently only configurable via JS API or in vite.config.js)
 - [x] Support React
 - [x] SSR dev-server
-- [ ] Make SSR dev-server similar to Vite's dev-server (options, terminal output)
+- [x] Make SSR dev-server similar to Vite's dev-server (options, terminal output)
 - [x] Docs

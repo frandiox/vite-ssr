@@ -41,7 +41,15 @@ async function createSsrServer(options = {}) {
   const app = connect()
   const httpServer = await resolveHttpServer(app)
   const vite = await createViteServer({
-    server: { middlewareMode: true },
+    base: options.base,
+    mode: options.mode,
+    configFile: options.config,
+    logLevel: options.logLevel,
+    clearScreen: options.clearScreen,
+    server: {
+      ...options,
+      middlewareMode: true,
+    },
   })
 
   app.use(vite.middlewares)
@@ -57,7 +65,7 @@ async function createSsrServer(options = {}) {
   )
   alias.replacement = alias.replacement.replace('client', 'server')
 
-  // Find Vite SSR options added by another that uses it internally.
+  // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
   options = Object.assign(
     {},
     (vite.config.plugins.find((plugin) => plugin.name === pluginName) || {})
@@ -103,10 +111,10 @@ async function createSsrServer(options = {}) {
         : {}
 
       const {
-        htmlAttrs,
         head,
         body,
         bodyAttrs,
+        htmlAttrs,
         initialState,
       } = await render(url, { request, response, ...context })
 
@@ -129,15 +137,16 @@ async function createSsrServer(options = {}) {
     }
   })
 
+  // Add the custom server back to Vite in order
+  // to reuse its own terminal output style, etc.
+  vite.httpServer = httpServer
+
   return {
-    listen(port = 3000, host = 'localhost', cb) {
+    async listen(port, host) {
       globalThis.fetch = require('node-fetch')
 
-      httpServer.listen(
-        port,
-        host,
-        cb || (() => console.log(`http://${host}:${port}`))
-      )
+      await vite.listen(port, host)
+      vite.config.logger.info('\n -- SSR mode\n')
     },
   }
 }
