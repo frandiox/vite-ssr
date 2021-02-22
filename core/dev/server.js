@@ -35,6 +35,19 @@ async function resolveHttpServer(app) {
   }
 }
 
+function fixEntryPoint(vite, pluginName) {
+  // The plugin is redirecting to the entry-client for the SPA,
+  // but we need to reach the entry-server here. This trick
+  // replaces the plugin behavior in the config and seems
+  // to keep the entry-client for the SPA.
+  const alias = vite.config.resolve.alias.find(
+    (item) =>
+      typeof item.replacement === 'string' &&
+      (item.replacement || '').includes(pluginName)
+  )
+  alias.replacement = alias.replacement.replace('client', 'server')
+}
+
 async function createSsrServer(options = {}) {
   const { plugin: pluginName = 'vite-ssr' } = options
 
@@ -53,17 +66,6 @@ async function createSsrServer(options = {}) {
   })
 
   app.use(vite.middlewares)
-
-  // The plugin is redirecting to the entry-client for the SPA,
-  // but we need to reach the entry-server here. This trick
-  // replaces the plugin behavior in the config and seems
-  // to keep the entry-client for the SPA.
-  const alias = vite.config.resolve.alias.find(
-    (item) =>
-      typeof item.replacement === 'string' &&
-      (item.replacement || '').includes(pluginName)
-  )
-  alias.replacement = alias.replacement.replace('client', 'server')
 
   // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
   options = Object.assign(
@@ -84,6 +86,8 @@ async function createSsrServer(options = {}) {
     if (request.method !== 'GET') {
       return next()
     }
+
+    fixEntryPoint(vite, pluginName)
 
     try {
       const template = await getIndexTemplate(request.url)
