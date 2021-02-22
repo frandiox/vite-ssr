@@ -1,4 +1,4 @@
-import { createSSRApp } from 'vue'
+import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 
@@ -10,7 +10,7 @@ export default async function (App, { routes, base, debug = {} } = {}, hook) {
     routes,
   })
 
-  const app = createSSRApp(App)
+  const app = createApp(App)
   app.use(router)
 
   let entryRouteName
