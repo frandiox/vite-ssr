@@ -10,7 +10,9 @@ Server Side Rendering for Vite 2 in Node.js. Supports Vue and React (Svelte WIP)
 - 💁‍♂️ Consistent DX experience abstracting most of the SSR complexity.
 - 🔍 Small library, unopinionated about your API logic and page routing.
 
-See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
+[Live demo](https://vitesse-ssr.vercel.app/) of Vitesse + Vite SSR.
+
+> See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
 
 ## Installation
 
