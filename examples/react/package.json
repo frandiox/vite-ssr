@@ -5,7 +5,7 @@
     "dev": "vite --port 1337 --open --force",
     "dev:ssr": "vite-ssr --port 1337 --open --force",
     "build": "rm -rf dist && vite-ssr build",
-    "refresh": "rm -rf node_modules/vite-ssr && cp -r ../../core node_modules/vite-ssr && cp ../../core/cli.js node_modules/.bin/vite-ssr",
+    "refresh": "rm -rf node_modules/vite-ssr && cp -r ../../src node_modules/vite-ssr && cp ../../src/cli.js node_modules/.bin/vite-ssr",
     "serve:node": "node ../node-server/index react"
   },
   "dependencies": {
@@ -13,7 +13,7 @@
     "react-dom": "^17.0.0",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
-    "vite-ssr": "file:../../core"
+    "vite-ssr": "file:../../src"
   },
   "devDependencies": {
     "@vitejs/plugin-react-refresh": "^1.1.0",
