@@ -186,6 +186,39 @@ export default viteSSR(App, { routes }, ({ url, initialState }) => {
 </p>
 </details>
 
+## Head tags and global attributes
+
+<details><summary>Vue Head</summary>
+<p>
+
+Install [`@vueuse/head`](https://github.com/vueuse/head) as follows:
+
+```js
+import { createHead } from '@vueuse/head'
+
+export default viteSSR(App, { routes }, ({ app }) => {
+  const head = createHead()
+  app.use(head)
+
+  return { head }
+})
+
+// In your components:
+// import { useHead } from '@vueuse/head'
+// ... useHead({ ... })
+```
+
+</p>
+</details>
+
+<details><summary>React Helmet</summary>
+<p>
+
+Use [`react-helmet-async`](https://github.com/staylor/react-helmet-async) from your components (similar usage to `react-helmet`).
+
+</p>
+</details>
+
 ## Development
 
 There are two ways to run the app locally for development:
