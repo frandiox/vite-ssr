@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
-import { parseHTML } from '../utils/html'
+import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 
 export default function (App, { base } = {}, hook) {
@@ -17,18 +17,32 @@ export default function (App, { base } = {}, hook) {
         (await hook({ ...context })) || context.initialState
     }
 
-    const router = React.createElement(
-      StaticRouter,
-      {
-        basename: routeBase,
-        location: fullPath,
-      },
-      React.createElement(App, context)
+    const helmetContext = {}
+
+    const app = React.createElement(
+      HelmetProvider,
+      { context: helmetContext },
+      React.createElement(
+        StaticRouter,
+        {
+          basename: routeBase,
+          location: fullPath,
+        },
+        React.createElement(App, context)
+      )
     )
 
-    const rawAppHtml = await ReactDOMServer.renderToString(router)
+    const body = await ReactDOMServer.renderToString(app)
 
-    const { body, htmlAttrs, headTags, bodyAttrs } = parseHTML(rawAppHtml)
+    const {
+      htmlAttributes: htmlAttrs = '',
+      bodyAttributes: bodyAttrs = '',
+      ...tags
+    } = helmetContext.helmet || {}
+
+    const headTags = Object.keys(tags)
+      .map((key) => (tags[key] || '').toString())
+      .join('')
 
     const initialState = JSON.stringify(context.initialState || {})
 

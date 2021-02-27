@@ -11,6 +11,7 @@
   "dependencies": {
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-helmet-async": "^1.0.7",
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
     "vite-ssr": "file:../../src"

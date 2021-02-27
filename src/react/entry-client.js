@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
+import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 
 export default async function (App, { base, debug = {} } = {}, hook) {
@@ -13,24 +14,23 @@ export default async function (App, { base, debug = {} } = {}, hook) {
     isClient: true,
   }
 
-  const router = React.createElement(
-    BrowserRouter,
-    { basename: routeBase },
-    React.createElement(App, context)
+  const app = React.createElement(
+    HelmetProvider,
+    {},
+    React.createElement(
+      BrowserRouter,
+      { basename: routeBase },
+      React.createElement(App, context)
+    )
   )
 
   if (hook) {
-    await hook({
-      router,
-      ...context,
-    })
+    await hook(context)
   }
 
   if (debug.mount !== false) {
     const el = document.getElementById('app')
 
-    import.meta.env.DEV
-      ? ReactDOM.render(router, el)
-      : ReactDOM.hydrate(router, el)
+    import.meta.env.DEV ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
   }
 }
