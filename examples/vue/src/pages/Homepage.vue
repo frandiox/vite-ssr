@@ -1,15 +1,4 @@
 <template>
-  <Helmet
-    :html-attrs="{ lang: 'es' }"
-    :body-attrs="{ class: 'dummy test' }"
-    :link="[{ rel: 'stylesheet' }]"
-    :script="[{ type: 'application/ld+json', content: json }]"
-    title="Home!"
-  >
-    <meta name="description" content="This should be moved to head" />
-    <meta name="description" :content="homeLocalState" />
-  </Helmet>
-
   <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
   <p class="test">Message from server: {{ msg }}</p>
 
@@ -18,6 +7,7 @@
 
 <script>
 import { defineComponent, inject, onBeforeMount, ref } from 'vue'
+import { useHead } from '@vueuse/head'
 
 export default defineComponent({
   name: 'Homepage',
@@ -64,10 +54,26 @@ export default defineComponent({
 
     onBeforeMount(fetchMyLocalState)
 
+    useHead({
+      title: 'Home!',
+      htmlAttrs: { lang: 'es' },
+      bodyAttrs: { class: 'dummy test' },
+      meta: [
+        { name: 'description', content: 'This should be moved to head' },
+        { property: 'test', content: homeLocalState },
+      ],
+      link: [{ rel: 'stylesheet' }],
+      script: [
+        {
+          type: 'application/ld+json',
+          content: JSON.stringify({ something: true }),
+        },
+      ],
+    })
+
     return {
       fetchMyLocalState,
       homeLocalState,
-      json: JSON.stringify({ something: true }),
     }
   },
 })

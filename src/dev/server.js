@@ -116,7 +116,7 @@ async function createSsrServer(options = {}) {
         : {}
 
       const {
-        head,
+        headTags,
         body,
         bodyAttrs,
         htmlAttrs,
@@ -127,7 +127,7 @@ async function createSsrServer(options = {}) {
       const html = template
         .replace('<html', `<html ${htmlAttrs} `)
         .replace('<body', `<body ${bodyAttrs} `)
-        .replace('</head>', `${head}\n</head>`)
+        .replace('</head>', `${headTags}\n</head>`)
         .replace(
           '<div id="app"></div>',
           `<div id="app" data-server-rendered="true">${body}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>`

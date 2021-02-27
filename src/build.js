@@ -36,7 +36,7 @@ module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
               __VITE_SSR_HTML__: indexHtml.source
                 .replace('<html', '<html ${htmlAttrs} ')
                 .replace('<body', '<body ${bodyAttrs} ')
-                .replace('</head>', '${head}\n</head>')
+                .replace('</head>', '${headTags}\n</head>')
                 .replace(
                   '<div id="app"></div>',
                   '<div id="app" data-server-rendered="true">${body}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'

@@ -28,7 +28,7 @@ export default function (App, { base } = {}, hook) {
 
     const rawAppHtml = await ReactDOMServer.renderToString(router)
 
-    const { body, htmlAttrs, head, bodyAttrs } = parseHTML(rawAppHtml)
+    const { body, htmlAttrs, headTags, bodyAttrs } = parseHTML(rawAppHtml)
 
     const initialState = JSON.stringify(context.initialState || {})
 
@@ -37,7 +37,7 @@ export default function (App, { base } = {}, hook) {
       // and injects all the previous variables.
       html: `__VITE_SSR_HTML__`,
       htmlAttrs,
-      head,
+      headTags,
       body,
       bodyAttrs,
       initialState,

@@ -6,6 +6,7 @@ declare module 'vite-ssr' {
     options: {
       routes: Record<string, any>[]
       base?: (params: { url: URL }) => string
+      head?: any
       debug?: { mount?: boolean }
     },
     hook?: (params: {

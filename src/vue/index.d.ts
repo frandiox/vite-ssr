@@ -1,6 +1,11 @@
 declare module 'vite-ssr/vue' {
   import Vue, { App } from 'vue'
   import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
+  import { Head } from '@vueuse/head'
+
+  type HookResponse = void | {
+    head?: Head
+  }
 
   const handlerClient: (
     App: typeof Vue,
@@ -14,7 +19,7 @@ declare module 'vite-ssr/vue' {
       router: Router
       isClient: true
       initialRoute: RouteLocationNormalized
-    }) => Promise<void>
+    }) => HookResponse | Promise<HookResponse>
   ) => Promise<void>
 
   export default handlerClient

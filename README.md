@@ -29,9 +29,11 @@ yarn create @vitejs/app my-app --template [vue|vue-ts|react|react-ts]
 Then, add `vite-ssr` with your package manager (direct dependency) and your framework router.
 
 ```sh
-yarn add vite-ssr vue-router@4
+# For Vue
+yarn add vite-ssr vue@3 vue-router@4 @vueuse/head
 
-yarn add vite-ssr react-router-dom@5
+# For React
+yarn add vite-ssr react@16 react-router-dom@5
 ```
 
 ## Usage

@@ -26,17 +26,17 @@ export function renderPreloadLinks(files) {
 
 export function parseHTML(body = '') {
   const [helmet = ''] = body.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
-  let [, head = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
+  let [, headTags = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
   let [, bodyAttrs = ''] = helmet.match(/<body([^>]*?)>/im) || []
   let [, htmlAttrs = ''] = helmet.match(/<html([^>]*?)>/im) || []
 
   if (helmet) {
     const viteDataAttribute = /\sdata-v-[\d\w]+/gm
-    head = head.replace(viteDataAttribute, '')
+    headTags = headTags.replace(viteDataAttribute, '')
     bodyAttrs = bodyAttrs.replace(viteDataAttribute, '')
     htmlAttrs = htmlAttrs.replace(viteDataAttribute, '')
     body = body.replace(helmet, '<!---->')
   }
 
-  return { body, head, bodyAttrs, htmlAttrs }
+  return { body, headTags, bodyAttrs, htmlAttrs }
 }

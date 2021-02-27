@@ -11,6 +11,7 @@
   "dependencies": {
     "@vitejs/plugin-vue": "^1.1.4",
     "@vue/compiler-sfc": "^3.0.5",
+    "@vueuse/head": "^0.3.1",
     "vite": "^2.0.0",
     "vite-ssr": "file:../../src",
     "vue": "^3.0.5",

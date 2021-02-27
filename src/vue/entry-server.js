@@ -3,6 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { parseHTML, findDependencies, renderPreloadLinks } from '../utils/html'
+import { renderHeadToString } from '@vueuse/head'
 
 export default function (App, { routes, base }, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
@@ -17,8 +18,6 @@ export default function (App, { routes, base }, hook) {
     const app = createSSRApp(App)
     app.use(router)
 
-    const fullPath = getFullPath(url, routeBase)
-
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
@@ -27,14 +26,17 @@ export default function (App, { routes, base }, hook) {
       ...extra,
     }
 
-    if (hook) {
-      await hook({
-        app,
-        router,
-        initialRoute: router.resolve(fullPath),
-        ...context,
-      })
-    }
+    const fullPath = getFullPath(url, routeBase)
+
+    const { head } =
+      (hook &&
+        (await hook({
+          app,
+          router,
+          initialRoute: router.resolve(fullPath),
+          ...context,
+        }))) ||
+      {}
 
     router.push(fullPath)
 
@@ -47,16 +49,20 @@ export default function (App, { routes, base }, hook) {
 
     const rawAppHtml = await renderToString(app, context)
 
-    // TODO: in Vite 2 is already possible to have some kind of `useHead` utility.
-    // Replace this HTML parsing with a hook.
-    let { body, htmlAttrs, head, bodyAttrs } = parseHTML(rawAppHtml)
+    // TODO: remove parseHTML when vueuse/head supports ld+json
+    let {
+      body = rawAppHtml,
+      headTags = '',
+      htmlAttrs = '',
+      bodyAttrs = '',
+    } = head ? renderHeadToString(head) : parseHTML(rawAppHtml)
 
     const dependencies = manifest
       ? findDependencies(context.modules, manifest)
       : []
 
     if (preload && dependencies.length > 0) {
-      head += renderPreloadLinks(dependencies)
+      headTags += renderPreloadLinks(dependencies)
     }
 
     const initialState = JSON.stringify(context.initialState || {})
@@ -66,7 +72,7 @@ export default function (App, { routes, base }, hook) {
       // and injects all the previous variables.
       html: `__VITE_SSR_HTML__`,
       htmlAttrs,
-      head,
+      headTags,
       body,
       bodyAttrs,
       initialState,

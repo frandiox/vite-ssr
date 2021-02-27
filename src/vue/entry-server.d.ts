@@ -1,6 +1,7 @@
 declare module 'vite-ssr/vue/entry-server' {
   import Vue, { App } from 'vue'
   import { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-router'
+  import { Head } from '@vueuse/head'
 
   type Renderer = (
     url: string | URL,
@@ -10,6 +11,10 @@ declare module 'vite-ssr/vue/entry-server' {
       [key: string]: any
     }
   ) => Promise<{ html: string; dependencies: string[] }>
+
+  type HookResponse = void | {
+    head?: Head
+  }
 
   const handlerSSR: (
     App: typeof Vue,
@@ -24,7 +29,7 @@ declare module 'vite-ssr/vue/entry-server' {
       initialState: any
       initialRoute: RouteLocationNormalized
       [key: string]: any
-    }) => Promise<void>
+    }) => HookResponse | Promise<HookResponse>
   ) => Promise<Renderer>
 
   export default handlerSSR

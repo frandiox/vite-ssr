@@ -2,7 +2,7 @@ import './index.css'
 import App from './App.vue'
 import routes from './routes'
 import viteSSR from 'vite-ssr'
-import { Helmet } from 'vite-ssr/components'
+import { createHead } from '@vueuse/head'
 
 // This piece will move route.meta.state to Page props.
 // This can be ignored if you prefer Vuex instead of Page props.
@@ -14,7 +14,8 @@ export default viteSSR(
   App,
   { routes },
   ({ app, router, isClient, url, initialState, initialRoute }) => {
-    app.component(Helmet.name, Helmet)
+    const head = createHead()
+    app.use(head)
 
     // The 'initialState' is hydrated in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than page props.
@@ -66,5 +67,7 @@ export default viteSSR(
 
       next()
     })
+
+    return { head }
   }
 )
