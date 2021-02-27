@@ -23,4 +23,5 @@ declare module 'vite-ssr/vue/entry-client' {
   ) => HookResponse | Promise<HookResponse>
 
   export default handlerClient
+  export const ClientOnly: typeof Vue
 }

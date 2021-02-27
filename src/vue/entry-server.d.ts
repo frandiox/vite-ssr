@@ -33,4 +33,5 @@ declare module 'vite-ssr/vue/entry-server' {
   ) => Promise<Renderer>
 
   export default handlerSSR
+  export const ClientOnly: typeof Vue
 }

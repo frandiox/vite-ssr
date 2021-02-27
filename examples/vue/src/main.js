@@ -1,7 +1,7 @@
 import './index.css'
 import App from './App.vue'
 import routes from './routes'
-import viteSSR from 'vite-ssr'
+import viteSSR, { ClientOnly } from 'vite-ssr'
 import { createHead } from '@vueuse/head'
 
 // This piece will move route.meta.state to Page props.
@@ -16,6 +16,8 @@ export default viteSSR(
   ({ app, router, isClient, url, initialState, initialRoute }) => {
     const head = createHead()
     app.use(head)
+
+    app.component(ClientOnly.name, ClientOnly)
 
     // The 'initialState' is hydrated in the browser and can be used to
     // pass it to Vuex, for example, if you prefer to rely on stores rather than page props.

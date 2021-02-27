@@ -23,4 +23,5 @@ declare module 'vite-ssr/vue' {
   ) => Promise<void>
 
   export default handlerClient
+  export const ClientOnly: typeof Vue
 }

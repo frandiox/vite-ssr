@@ -4,18 +4,19 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { parseHTML, findDependencies, renderPreloadLinks } from '../utils/html'
 import { renderHeadToString } from '@vueuse/head'
+export { ClientOnly } from '../components.mjs'
 
 export default function (App, { routes, base }, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
-    url = createUrl(url)
+    const app = createSSRApp(App)
 
+    url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const router = createRouter({
       history: createMemoryHistory(routeBase),
       routes,
     })
 
-    const app = createSSRApp(App)
     app.use(router)
 
     // This can be injected with useSSRContext() in setup functions

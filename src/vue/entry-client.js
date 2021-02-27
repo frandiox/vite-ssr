@@ -1,8 +1,11 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
+export { ClientOnly } from '../components.mjs'
 
 export default async function (App, { routes, base, debug = {} } = {}, hook) {
+  const app = createApp(App)
+
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
@@ -10,7 +13,6 @@ export default async function (App, { routes, base, debug = {} } = {}, hook) {
     routes,
   })
 
-  const app = createApp(App)
   app.use(router)
 
   let entryRouteName

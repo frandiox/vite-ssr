@@ -21,4 +21,5 @@ declare module 'vite-ssr' {
   ) => any
 
   export default handler
+  export const ClientOnly: any
 }
