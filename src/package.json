@@ -22,7 +22,7 @@
   "bin": "./cli.js",
   "types": "./index.d.ts",
   "peerDependencies": {
-    "@vueuse/head": "^0.3.1",
+    "@vueuse/head": "^0.5.0",
     "react": "^16 || ^17",
     "react-dom": "^16 || ^17",
     "react-helmet-async": "^1.0.0",
@@ -43,7 +43,7 @@
     "react": {
       "optional": true
     },
-    "react-router-dom": {
+    "react-dom": {
       "optional": true
     },
     "react-helmet-async": {
