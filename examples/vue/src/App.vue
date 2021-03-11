@@ -7,7 +7,12 @@
     <RouterLink to="/b">Go to B</RouterLink>
   </nav>
   <h1>Below is the currently rendered route:</h1>
-  <RouterView />
+
+  <RouterView v-slot="{ Component }">
+    <Suspense>
+      <component :is="Component" />
+    </Suspense>
+  </RouterView>
 </template>
 
 <script>

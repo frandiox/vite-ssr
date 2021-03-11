@@ -132,7 +132,7 @@ export default viteSSR(App, { routes }, async ({ app }) => {
 })
 ```
 
-- Using Vue's `serverPrefetch` to call your API from any component and save the result in the SSR initial state. See a full example [here](./examples/vue/src/pages/Homepage.vue).
+- Calling your API directly from Vue components and save the result in the SSR initial state. You can rely on Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch) or [`suspense`](https://v3.vuejs.org/guide/migration/suspense.html) to await for your data and then render the view. See a full example with `suspense` [here](./examples/vue/src/pages/Homepage.vue).
 
 ```js
 // Main
@@ -145,7 +145,7 @@ export default viteSSR(App, { routes }, ({ app, initialState }) => {
   app.provide('initial-state', initialState)
 })
 
-// Page Component
+// Page Component with Server Prefetch
 export default {
   async serverPrefetch() {
     await this.fetchMyData()
@@ -161,6 +161,28 @@ export default {
     },
   },
 }
+```
+
+```js
+// Page Component with Async Setup
+export default {
+  async setup() {
+    const data = await (await fetch('my/api/data')).json()
+    const store = useStore()
+    store.commit('myData', data)
+
+    return { data }
+  },
+}
+
+// Use Suspense in your app root
+<template>
+  <RouterView v-slot="{ Component }">
+    <Suspense>
+      <component :is="Component" />
+    </Suspense>
+  </RouterView>
+</template>
 ```
 
 </p>

@@ -25,34 +25,12 @@ export default defineComponent({
       default: '',
     },
   },
-  serverPrefetch() {
-    return this.fetchMyLocalState()
-  },
-  setup() {
+  async setup() {
     // This is provided in main.js
     const initialState = inject('initialState')
 
     // Hydrate from initialState, if there's anything
     const homeLocalState = ref(initialState.homeLocalState || null)
-
-    const fetchMyLocalState = async () => {
-      if (!homeLocalState.value) {
-        // No data, get it fresh from any API
-        homeLocalState.value = await new Promise((resolve) =>
-          setTimeout(
-            () => resolve('This is local component state using serverPrefetch'),
-            500
-          )
-        )
-
-        if (import.meta.env.SSR) {
-          // Save this data in SSR initial state for hydration later
-          initialState.homeLocalState = homeLocalState.value
-        }
-      }
-    }
-
-    onBeforeMount(fetchMyLocalState)
 
     useHead({
       title: 'Home!',
@@ -71,8 +49,22 @@ export default defineComponent({
       ],
     })
 
+    if (!homeLocalState.value) {
+      // No data, get it fresh from any API
+      homeLocalState.value = await new Promise((resolve) =>
+        setTimeout(
+          () => resolve('This is local component state using Suspense'),
+          500
+        )
+      )
+
+      if (import.meta.env.SSR) {
+        // Save this data in SSR initial state for hydration later
+        initialState.homeLocalState = homeLocalState.value
+      }
+    }
+
     return {
-      fetchMyLocalState,
       homeLocalState,
     }
   },
