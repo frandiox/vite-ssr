@@ -9,8 +9,6 @@ import { getPageProps } from './api'
 // before rendering. This could be done in each page separately.
 let isFirstRoute = true
 function PropsProvider({ route, context }) {
-  console.log('Rendering ', route.name, context.initialState)
-
   // Prevent rerrendering
   route.props =
     isFirstRoute && !import.meta.env.DEV

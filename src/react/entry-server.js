@@ -1,10 +1,11 @@
 import React from 'react'
-import ReactDOMServer from 'react-dom/server'
+import ssrPrepass from 'react-ssr-prepass'
+import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 
-export default function (App, { base } = {}, hook) {
+export default function (App, { base, prepassVisitor } = {}, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
     url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
@@ -32,7 +33,8 @@ export default function (App, { base } = {}, hook) {
       )
     )
 
-    const body = await ReactDOMServer.renderToString(app)
+    await ssrPrepass(app, prepassVisitor)
+    const body = renderToString(app)
 
     const {
       htmlAttributes: htmlAttrs = '',

@@ -4,7 +4,11 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 
-export default async function (App, { base, debug = {} } = {}, hook) {
+export default async function (
+  App,
+  { base, suspenseFallback, debug = {} } = {},
+  hook
+) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
 
@@ -20,7 +24,11 @@ export default async function (App, { base, debug = {} } = {}, hook) {
     React.createElement(
       BrowserRouter,
       { basename: routeBase },
-      React.createElement(App, context)
+      React.createElement(
+        React.Suspense,
+        { fallback: suspenseFallback || '' },
+        React.createElement(App, context)
+      )
     )
   )
 
