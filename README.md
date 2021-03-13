@@ -191,18 +191,56 @@ export default {
 <details><summary>Initial state in React</summary>
 <p>
 
-React and its router don't provide yet any mechanism to allow easy data prefetch in SSR (perhaps Suspense or Server Components will make it possible when they are stable).
+There are a few ways to provide initial state in React:
 
-Therefore, the only way to add initial state is modifying or returning it from the main Vite SSR handler. See [`main.jsx`](./examples/react/src/main.jsx) for an example.
+- Call your API and throw a promise in order to leverage React's Suspense (in both browser and server) anywhere in your components. Vite SSR is already adding Suspense to the root so you don't need to provide it.
 
 ```jsx
-export default viteSSR(App, { routes }, ({ url, initialState }) => {
-  if (!initialState.myData) {
-    initialState.myData = await fetchMyData({ url })
+function App({ initialState }) {
+  if (!initialState.ready) {
+    const promise = getPageProps(route).then((state) => {
+      Object.assign(initialState, state)
+      initialState.ready = true
+    })
+
+    // Throw the promise so Suspense can await it
+    throw promise
   }
 
-  myStore.dispatch({ type: 'ADD_INITIAL_STATE', initialState })
-})
+  return <div>{initialState}</div>
+}
+```
+
+- Calling your API before entering a route and populate `route.meta.state`. Vite SSR will get the first route's state and use it as the SSR initial state. See a full example [here](./examples/react/src/api.jsx).
+
+```jsx
+function App({ router }) {
+  // This router is provided by Vite SSR.
+  // Use it to render routes and save initial state.
+
+  return (
+    <Switch>
+      {router.routes.map((route) => {
+        if (!route.meta.state) {
+          // Call custom API and return a promise
+          const promise = getPageProps(route).then((state) => {
+            // This is similar to modifying initialState in the previous example
+            route.meta.state = state
+          })
+
+          // Throw the promise so Suspense can await it
+          throw promise
+        }
+
+        return (
+          <Route key={route.path} path={route.path}>
+            <route.component props={...route.meta.state} />
+          </Route>
+        )
+      })}
+    </Switch>
+  )
+}
 ```
 
 </p>
