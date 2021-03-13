@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
+import { createRouter } from './utils'
 
 export default async function (
   App,
-  { base, suspenseFallback, debug = {} } = {},
+  { routes, base, suspenseFallback, debug = {} } = {},
   hook
 ) {
   const url = window.location
@@ -15,6 +16,7 @@ export default async function (
   const context = {
     url,
     initialState: window.__INITIAL_STATE__ || {},
+    router: createRouter(routes, window.__INITIAL_STATE__ || null),
     isClient: true,
   }
 

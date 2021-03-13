@@ -4,14 +4,16 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
+import { createRouter } from './utils'
 
-export default function (App, { base, prepassVisitor } = {}, hook) {
+export default function (App, { routes, base, prepassVisitor } = {}, hook) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
     url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
     const context = { url, isClient: false, initialState: {}, ...extra }
+    context.router = createRouter(routes, context.initialState)
 
     if (hook) {
       context.initialState =
@@ -35,6 +37,9 @@ export default function (App, { base, prepassVisitor } = {}, hook) {
 
     await ssrPrepass(app, prepassVisitor)
     const body = renderToString(app)
+
+    const currentRoute = context.router.getCurrentRoute()
+    Object.assign(context.initialState || {}, currentRoute.meta.state || {})
 
     const {
       htmlAttributes: htmlAttrs = '',

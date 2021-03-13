@@ -1,30 +1,9 @@
 import './App.css'
 import React, { useState } from 'react'
 import { Link, Route, Switch } from 'react-router-dom'
-import { routes } from './routes'
 import logo from './logo.svg'
-import { getPageProps } from './api'
-
-// Simple wrapper that provides props to the pages
-// before rendering. This could be done in each page separately.
-let isFirstRoute = true
-function PropsProvider({ route, context }) {
-  // Prevent rerrendering
-  route.props =
-    isFirstRoute && !import.meta.env.DEV
-      ? context.initialState
-      : route.props || getPageProps({ ...route, ...context })
-
-  isFirstRoute = false
-
-  return route.props ? (
-    <route.component {...route.props} />
-  ) : (
-    <div>Loading...</div>
-  )
-}
-
-export default function App(context) {
+export default function App({ isClient, url, router }) {
+  const baseUrl = isClient ? '' : url.origin
   const [count, setCount] = useState(0)
 
   return (
@@ -40,7 +19,7 @@ export default function App(context) {
 
         <nav>
           <ul>
-            {routes.map(({ name, path }) => {
+            {router.routes.map(({ name, path }) => {
               return (
                 <li key={path}>
                   <Link to={path}>{name}</Link>
@@ -51,10 +30,10 @@ export default function App(context) {
         </nav>
       </header>
       <Switch>
-        {routes.map((route) => {
+        {router.routes.map((route) => {
           return (
             <Route key={route.path} path={route.path}>
-              <PropsProvider route={route} context={context} />
+              <route.component route={route} baseUrl={baseUrl} />
             </Route>
           )
         })}

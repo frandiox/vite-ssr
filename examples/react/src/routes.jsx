@@ -1,4 +1,5 @@
 import React from 'react'
+import { PropsProvider } from './api.jsx'
 
 // Auto generates routes from files under ./pages
 // https://vitejs.dev/guide/features.html#glob-import
@@ -23,7 +24,7 @@ export const routes = Object.keys(pages).map((path) => {
         throw loadingComponent
       }
 
-      return React.createElement(component, props)
+      return React.createElement(PropsProvider, props, component)
     },
   }
 })
