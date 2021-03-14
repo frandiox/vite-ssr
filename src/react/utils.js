@@ -3,8 +3,8 @@ import React from 'react'
 export function createRouter({
   routes,
   initialState,
-  passToPage,
   PropsProvider,
+  pagePropsOptions = { passToPage: true },
 }) {
   let currentRoute = null
 
@@ -31,11 +31,12 @@ export function createRouter({
         if (PropsProvider) {
           return React.createElement(
             PropsProvider,
-            { ...props, from, to, passToPage },
+            { ...props, from, to, pagePropsOptions },
             originalRoute.component
           )
         }
 
+        const { passToPage } = pagePropsOptions || {}
         return React.createElement(originalRoute.component, {
           ...props,
           ...((passToPage && meta.state) || {}),

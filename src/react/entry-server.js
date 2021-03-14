@@ -8,13 +8,7 @@ import { createRouter } from './utils'
 
 export default function (
   App,
-  {
-    routes,
-    base,
-    prepassVisitor,
-    PropsProvider,
-    pageProps = { passToPage: true },
-  } = {},
+  { routes, base, prepassVisitor, PropsProvider, pageProps } = {},
   hook
 ) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
@@ -25,8 +19,8 @@ export default function (
     const context = { url, isClient: false, initialState: {}, ...extra }
     context.router = createRouter({
       routes,
-      initialState: context.initialState,
-      passToPage,
+      initialState: extra.initialState || null,
+      pagePropsOptions: pageProps,
       PropsProvider,
     })
 
