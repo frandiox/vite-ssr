@@ -83,7 +83,7 @@ async function createSsrServer(options = {}) {
   }
 
   app.use(async (request, response, next) => {
-    if (request.method !== 'GET') {
+    if (request.method !== 'GET' || request.url === '/favicon.ico') {
       return next()
     }
 
