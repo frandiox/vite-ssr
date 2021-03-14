@@ -47,7 +47,9 @@ export default function (
     const body = renderToString(app)
 
     const currentRoute = context.router.getCurrentRoute()
-    Object.assign(context.initialState || {}, currentRoute.meta.state || {})
+    if (currentRoute) {
+      Object.assign(context.initialState || {}, currentRoute.meta.state || {})
+    }
 
     const {
       htmlAttributes: htmlAttrs = '',
