@@ -5,6 +5,7 @@ declare module 'vite-ssr/react/entry-client' {
       routes?: Record<string, any>[]
       base?: (params: { url: URL }) => string
       debug?: { mount?: boolean }
+      PropsProvider?: (props: Record<string, any>) => any
     },
     hook?: (params: {
       router: any

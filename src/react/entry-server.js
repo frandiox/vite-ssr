@@ -6,14 +6,22 @@ import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
 
-export default function (App, { routes, base, prepassVisitor } = {}, hook) {
+export default function (
+  App,
+  { routes, base, prepassVisitor, PropsProvider } = {},
+  hook
+) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
     url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
     const context = { url, isClient: false, initialState: {}, ...extra }
-    context.router = createRouter(routes, context.initialState)
+    context.router = createRouter({
+      routes,
+      initialState: context.initialState,
+      PropsProvider,
+    })
 
     if (hook) {
       context.initialState =

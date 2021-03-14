@@ -1,7 +1,6 @@
 import React from 'react'
 
-export function createRouter(routes, initialState) {
-  let isFirstRoute = true
+export function createRouter({ routes, initialState, PropsProvider }) {
   let currentRoute = null
   return {
     getCurrentRoute: () => currentRoute,
@@ -16,11 +15,22 @@ export function createRouter(routes, initialState) {
         ...originalRoute,
         meta,
         component: (props) => {
+          const from = currentRoute
+          const to = augmentedRoute
+
+          if (!import.meta.env.SSR && !currentRoute) {
+            // First route in browser
+            meta.state = initialState
+          }
+
           currentRoute = augmentedRoute
 
-          if (!import.meta.env.SSR && isFirstRoute) {
-            meta.state = initialState
-            isFirstRoute = false
+          if (PropsProvider) {
+            return React.createElement(
+              PropsProvider,
+              { ...props, from, to },
+              originalRoute.component
+            )
           }
 
           return React.createElement(originalRoute.component, props)

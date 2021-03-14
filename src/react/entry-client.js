@@ -7,7 +7,7 @@ import { createRouter } from './utils'
 
 export default async function (
   App,
-  { routes, base, suspenseFallback, debug = {} } = {},
+  { routes, base, suspenseFallback, PropsProvider, debug = {} } = {},
   hook
 ) {
   const url = window.location
@@ -16,7 +16,11 @@ export default async function (
   const context = {
     url,
     initialState: window.__INITIAL_STATE__ || {},
-    router: createRouter(routes, window.__INITIAL_STATE__ || null),
+    router: createRouter({
+      routes,
+      initialState: window.__INITIAL_STATE__ || null,
+      PropsProvider,
+    }),
     isClient: true,
   }
 
