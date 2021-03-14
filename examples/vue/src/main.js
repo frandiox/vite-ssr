@@ -4,12 +4,6 @@ import routes from './routes'
 import viteSSR, { ClientOnly } from 'vite-ssr'
 import { createHead } from '@vueuse/head'
 
-// This piece will move route.meta.state to Page props.
-// This can be ignored if you prefer Vuex instead of Page props.
-routes.forEach((route) => {
-  route.props = (r) => ({ ...(r.meta.state || {}), ...(r.props || {}) })
-})
-
 export default viteSSR(
   App,
   { routes },

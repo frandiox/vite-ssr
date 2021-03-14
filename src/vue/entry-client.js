@@ -1,9 +1,18 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
+import { addPagePropsGetterToRoutes } from './utils'
 export { ClientOnly } from '../components.mjs'
 
-export default async function (App, { routes, base, debug = {} } = {}, hook) {
+export default async function (
+  App,
+  { routes, base, pageProps = { passToPage: true }, debug = {} } = {},
+  hook
+) {
+  if (pageProps && pageProps.passToPage) {
+    addPagePropsGetterToRoutes(routes)
+  }
+
   const app = createApp(App)
 
   const url = window.location

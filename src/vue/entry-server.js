@@ -3,10 +3,19 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { parseHTML, findDependencies, renderPreloadLinks } from '../utils/html'
+import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 export { ClientOnly } from '../components.mjs'
 
-export default function (App, { routes, base }, hook) {
+export default function (
+  App,
+  { routes, base, pageProps = { passToPage: true } },
+  hook
+) {
+  if (pageProps && pageProps.passToPage) {
+    addPagePropsGetterToRoutes(routes)
+  }
+
   return async function (url, { manifest, preload = false, ...extra } = {}) {
     const app = createSSRApp(App)
 

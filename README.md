@@ -111,11 +111,6 @@ Vue has multiple ways to provide the initial state to Vite SSR:
 - Calling your API before entering a route (Router's `beforeEach` or `beforeEnter`) and populate `route.meta.state`. Vite SSR will get the first route's state and use it as the SSR initial state. See a full example [here](./examples/vue/src/main.js).
 
 ```js
-routes.forEach((route) => {
-  // Get meta.state as page props
-  route.props = (route) => route.meta.state
-})
-
 export default viteSSR(App, { routes }, async ({ app }) => {
   router.beforEach((to, from, next) => {
     if (to.meta.state) {

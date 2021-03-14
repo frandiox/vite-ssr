@@ -13,6 +13,7 @@ declare module 'vite-ssr/vue/entry-client' {
       routes?: RouteLocationRaw[]
       base?: (params: { url: URL }) => string
       debug?: { mount?: boolean }
+      pageProps?: { passToPage: boolean }
     },
     hook?: (params: {
       app: App
