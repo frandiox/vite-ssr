@@ -16,8 +16,8 @@ export function createRouter({ routes, initialState, PropsProvider }) {
         const from = currentRoute
         const to = augmentedRoute
 
-        if (!import.meta.env.SSR && !currentRoute) {
-          // First route in browser
+        if (!currentRoute) {
+          // First route, use provided initialState
           meta.state = initialState
         }
 
@@ -31,7 +31,10 @@ export function createRouter({ routes, initialState, PropsProvider }) {
           )
         }
 
-        return React.createElement(originalRoute.component, props)
+        return React.createElement(originalRoute.component, {
+          ...props,
+          ...(meta.state || {}),
+        })
       },
     }
 
