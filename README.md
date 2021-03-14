@@ -71,7 +71,20 @@ That's right, in Vite SSR **there's only 1 single entry file** by default 🎉. 
 
 If you need conditional logic that should only run in either client or server, use Vite's `import.meta.env.SSR` boolean variable and the tree-shaking will do the rest.
 
-<details><summary>Separate entry files option</summary>
+<details><summary>Available options</summary>
+<p>
+
+The previous handler accepts the following options as its second argument:
+
+- `routes`: Array of routes, according to each framework's router (see [`vue-router`](https://next.router.vuejs.org/api/#routerecordraw) or [`react-router-config`](https://www.npmjs.com/package/react-router-config#route-configuration-shape)).
+- `base`: Function that returns a string with the router base. Can be useful for i18n routes or when the app is not deployed at the domain root.
+- `pageProps.passToPage`: Whether each route's `initialState` should be automatically passed to the page components as props.
+- `debug.mount`: Pass `false` to prevent mounting the app in the client. You will need to do this manually on your own but it's useful to see differences between SSR and hydration.
+
+</p>
+</details>
+
+<details><summary>Using separate entry files</summary>
 <p>
 
 Even though Vite SSR uses 1 single entry file by default, thus abstracting complexity from your app, you can still have separate entry files for client and server if you need more flexibility. This can happen when building a library on top of Vite SSR, for example.
