@@ -1,6 +1,11 @@
 import React from 'react'
 
-export function createRouter({ routes, initialState, PropsProvider }) {
+export function createRouter({
+  routes,
+  initialState,
+  passToPage,
+  PropsProvider,
+}) {
   let currentRoute = null
 
   function augmentRoute(originalRoute) {
@@ -26,14 +31,14 @@ export function createRouter({ routes, initialState, PropsProvider }) {
         if (PropsProvider) {
           return React.createElement(
             PropsProvider,
-            { ...props, from, to },
+            { ...props, from, to, passToPage },
             originalRoute.component
           )
         }
 
         return React.createElement(originalRoute.component, {
           ...props,
-          ...(meta.state || {}),
+          ...((passToPage && meta.state) || {}),
         })
       },
     }

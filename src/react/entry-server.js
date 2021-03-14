@@ -8,7 +8,13 @@ import { createRouter } from './utils'
 
 export default function (
   App,
-  { routes, base, prepassVisitor, PropsProvider } = {},
+  {
+    routes,
+    base,
+    prepassVisitor,
+    PropsProvider,
+    pageProps = { passToPage: true },
+  } = {},
   hook
 ) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
@@ -20,6 +26,7 @@ export default function (
     context.router = createRouter({
       routes,
       initialState: context.initialState,
+      passToPage,
       PropsProvider,
     })
 

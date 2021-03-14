@@ -5,6 +5,7 @@ declare module 'vite-ssr/react' {
       routes?: Record<string, any>[]
       base?: (params: { url: URL }) => string
       debug?: { mount?: boolean }
+      pageProps?: { passToPage: boolean }
     },
     hook?: (params: {
       router: any

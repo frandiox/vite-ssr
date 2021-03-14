@@ -7,7 +7,14 @@ import { createRouter } from './utils'
 
 export default async function (
   App,
-  { routes, base, suspenseFallback, PropsProvider, debug = {} } = {},
+  {
+    routes,
+    base,
+    suspenseFallback,
+    PropsProvider,
+    pageProps = { passToPage: true },
+    debug = {},
+  } = {},
   hook
 ) {
   const url = window.location
@@ -19,6 +26,7 @@ export default async function (
     router: createRouter({
       routes,
       initialState: window.__INITIAL_STATE__ || null,
+      passToPage,
       PropsProvider,
     }),
     isClient: true,
