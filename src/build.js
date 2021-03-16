@@ -57,6 +57,11 @@ module.exports = async ({ clientOptions = {}, serverOptions = {} } = {}) => {
   //     ? 'module'
   //     : 'commonjs'
 
+  // index.html is not used in SSR and might be served by mistake
+  await fs
+    .unlink(path.join(clientBuildOptions.build.outDir, 'index.html'))
+    .catch(() => null)
+
   const packageJson = {
     // type,
     main: path.parse(serverBuildOptions.build.ssr).name + '.js',
