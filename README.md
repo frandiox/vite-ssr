@@ -256,6 +256,8 @@ function App({ router }) {
 
 ## Head tags and global attributes
 
+Use your framework's utilities to handle head tags and attributes for html and body elements.
+
 <details><summary>Vue Head</summary>
 <p>
 
@@ -282,10 +284,39 @@ export default viteSSR(App, { routes }, ({ app }) => {
 <details><summary>React Helmet</summary>
 <p>
 
-Use [`react-helmet-async`](https://github.com/staylor/react-helmet-async) from your components (similar usage to `react-helmet`).
+Use [`react-helmet-async`](https://github.com/staylor/react-helmet-async) from your components (similar usage to `react-helmet`). The provider is already added by Vite SSR.
+
+```jsx
+import { Helmet } from 'react-helmet-async'
+
+// ...
+;<>
+  <Helmet>
+    <html lang="en" />
+    <meta charSet="utf-8" />
+    <title>Home</title>
+    <link rel="canonical" href="http://mysite.com/example" />
+  </Helmet>
+</>
+```
 
 </p>
 </details>
+
+## Rendering only in client/browser
+
+Vite SSR exports `ClientOnly` component that renders its children only in the browser:
+
+```jsx
+import { ClientOnly } from 'vite-ssr'
+
+//...
+;<div>
+  <ClientOnly>
+    <div>...</div>
+  </ClientOnly>
+</div>
+```
 
 ## Development
 
