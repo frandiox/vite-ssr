@@ -5,6 +5,7 @@ import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
+export { ClientOnly } from './components.js'
 
 export default function (
   App,

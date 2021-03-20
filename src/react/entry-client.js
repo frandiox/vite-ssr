@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
+export { ClientOnly } from './components.js'
 
 export default async function (
   App,

@@ -2,6 +2,7 @@ import './App.css'
 import React, { useState } from 'react'
 import { Link, Route, Switch } from 'react-router-dom'
 import logo from './logo.svg'
+import { ClientOnly } from 'vite-ssr'
 export default function App({ isClient, url, router }) {
   const baseUrl = isClient ? '' : url.origin
   const [count, setCount] = useState(0)
@@ -38,6 +39,10 @@ export default function App({ isClient, url, router }) {
           )
         })}
       </Switch>
+
+      <ClientOnly>
+        <div>This text only renders in client side</div>
+      </ClientOnly>
     </div>
   )
 }
