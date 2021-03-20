@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { addPagePropsGetterToRoutes } from './utils'
-export { ClientOnly } from '../components.mjs'
+export { ClientOnly } from './components.js'
 
 export default async function (
   App,

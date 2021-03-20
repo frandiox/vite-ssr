@@ -5,7 +5,7 @@ import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-export { ClientOnly } from '../components.mjs'
+export { ClientOnly } from './components.js'
 
 export default function (
   App,
