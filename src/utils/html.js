@@ -23,20 +23,3 @@ export function renderPreloadLinks(files) {
 
   return link
 }
-
-export function parseHTML(body = '') {
-  const [helmet = ''] = body.match(/<html[^>]*?>(.|\s)*?<\/html>/im) || []
-  let [, headTags = ''] = helmet.match(/<head[^>]*?>((.|\s)*?)<\/head>/im) || []
-  let [, bodyAttrs = ''] = helmet.match(/<body([^>]*?)>/im) || []
-  let [, htmlAttrs = ''] = helmet.match(/<html([^>]*?)>/im) || []
-
-  if (helmet) {
-    const viteDataAttribute = /\sdata-v-[\d\w]+/gm
-    headTags = headTags.replace(viteDataAttribute, '')
-    bodyAttrs = bodyAttrs.replace(viteDataAttribute, '')
-    htmlAttrs = htmlAttrs.replace(viteDataAttribute, '')
-    body = body.replace(helmet, '<!---->')
-  }
-
-  return { body, headTags, bodyAttrs, htmlAttrs }
-}

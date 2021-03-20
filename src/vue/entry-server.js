@@ -2,7 +2,7 @@ import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
-import { parseHTML, findDependencies, renderPreloadLinks } from '../utils/html'
+import { findDependencies, renderPreloadLinks } from '../utils/html'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 export { ClientOnly } from '../components.mjs'
@@ -57,15 +57,11 @@ export default function (
       router.currentRoute.value.meta.state || {}
     )
 
-    const rawAppHtml = await renderToString(app, context)
+    const body = await renderToString(app, context)
 
-    // TODO: remove parseHTML when vueuse/head supports ld+json
-    let {
-      body = rawAppHtml,
-      headTags = '',
-      htmlAttrs = '',
-      bodyAttrs = '',
-    } = head ? renderHeadToString(head) : parseHTML(rawAppHtml)
+    let { headTags = '', htmlAttrs = '', bodyAttrs = '' } = head
+      ? renderHeadToString(head)
+      : {}
 
     const dependencies = manifest
       ? findDependencies(context.modules, manifest)
