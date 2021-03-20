@@ -9,10 +9,6 @@ module.exports = () => ({
       config.plugins.findIndex((plugin) => plugin.name === 'react-refresh') >= 0
     ) {
       lib = '/react'
-
-      config.optimizeDeps = config.optimizeDeps || {}
-      config.optimizeDeps.include = config.optimizeDeps.include || []
-      config.optimizeDeps.include.push('react-ssr-prepass')
     }
 
     const file = config.build.ssr ? '/entry-server' : '/entry-client'
