@@ -19,6 +19,7 @@ export default async function (
     initialState: window.__INITIAL_STATE__ || {},
     router: createRouter({
       routes,
+      base,
       initialState: window.__INITIAL_STATE__ || null,
       pagePropsOptions: pageProps,
       PropsProvider,

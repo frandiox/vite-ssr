@@ -20,6 +20,7 @@ export default function (
     const context = { url, isClient: false, initialState: {}, ...extra }
     context.router = createRouter({
       routes,
+      base,
       initialState: extra.initialState || null,
       pagePropsOptions: pageProps,
       PropsProvider,
