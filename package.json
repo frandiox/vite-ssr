@@ -5,10 +5,16 @@
   "description": "Vite utility for server side rendering",
   "main": "./entry-server.js",
   "scripts": {
-    "clean": "rm -rf dist && mkdir dist",
-    "copy": "cp README.md LICENSE dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
-    "build": "yarn clean && yarn copy && cd src && yarn tsc",
-    "dev": "rm -rf node_modules/vite-ssr && mkdir node_modules/vite-ssr && cp package.json ./node_modules/vite-ssr && cd src && yarn tsc --watch --incremental --outDir ./node_modules/vite-ssr"
+    "dev": "npm-run-all dev:* --parallel dev:watch:* ",
+    "dev:clean": "rm -rf node_modules/vite-ssr && mkdir node_modules/vite-ssr",
+    "dev:copy": "cp package.json node_modules/vite-ssr/",
+    "dev:watch:cjs": "cd src && yarn tsc --watch --incremental --outDir ./node_modules/vite-ssr",
+    "dev:watch:esm": "yarn dev:watch:cjs --project tsconfig-esm.json",
+    "build": "npm-run-all build:* --parallel build:compile:*",
+    "build:clean": "rm -rf dist && mkdir dist",
+    "build:copy": "cp README.md LICENSE dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
+    "build:compile:cjs": "cd src && yarn tsc",
+    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json"
   },
   "repository": {
     "type": "git",
@@ -73,6 +79,10 @@
     "react-ssr-prepass": "^1.4.0"
   },
   "devDependencies": {
+    "@types/connect": "^3.4.34",
+    "@types/node": "^14.14.37",
+    "@types/node-fetch": "^2.5.9",
+    "npm-run-all": "^4.1.5",
     "tsc": "^1.20150623.0",
     "typescript": "^4.2.3"
   }
