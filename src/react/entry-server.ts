@@ -5,8 +5,8 @@ import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
-import { SsrHandler } from './types'
-export { ClientOnly } from './components.js'
+export { ClientOnly } from './components'
+import type { SsrHandler } from './types'
 
 const viteSSR: SsrHandler = function (
   App,

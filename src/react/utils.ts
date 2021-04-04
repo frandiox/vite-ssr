@@ -2,14 +2,8 @@ import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getFullPath } from '../utils/route'
 import { createUrl } from '../utils/route'
-import type {
-  Base,
-  Meta,
-  State,
-  RouteRaw,
-  PagePropsOptions,
-  PropsProvider as PropsProviderType,
-} from './types'
+import type { RouteRaw, PropsProvider as PropsProviderType } from './types'
+import type { Base, Meta, State, PagePropsOptions } from '../utils/types'
 
 type RouterOptions = {
   base?: Base

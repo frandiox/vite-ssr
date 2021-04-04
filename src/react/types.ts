@@ -1,10 +1,5 @@
 import type { FunctionComponent, ReactNode } from 'react'
-
-export type Meta = {
-  propsGetter?: boolean | string
-  state?: Record<string, any> | null
-  [key: string]: any
-}
+import type { Base, Meta, PagePropsOptions, Renderer } from '../utils/types'
 
 export type RouteRaw = {
   name?: string
@@ -14,14 +9,6 @@ export type RouteRaw = {
   routes?: RouteRaw[]
   [key: string]: any
 }
-
-export type Base = (params: { url: Location | URL }) => string
-
-export type PagePropsOptions = {
-  passToPage?: boolean
-}
-
-export type State = Record<string, any>
 
 export type PropsProvider = FunctionComponent<{
   from?: RouteRaw
@@ -46,15 +33,6 @@ export type Hook = (params: {
   isClient: boolean
   initialState: Record<string, any>
 }) => any | Promise<any>
-
-type Renderer = (
-  url: string | URL,
-  options?: {
-    manifest?: Record<string, string[]>
-    preload?: boolean
-    [key: string]: any
-  }
-) => Promise<{ html: string; dependencies: string[] }>
 
 export type ClientHandler = (
   App: any,

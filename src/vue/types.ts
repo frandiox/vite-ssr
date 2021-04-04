@@ -5,11 +5,7 @@ import type {
   Router,
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
-
-export type Meta = {
-  propsGetter?: boolean | string
-  [key: string]: any
-}
+import type { Meta, PagePropsOptions, Renderer } from '../utils/types'
 
 export type ExtendedRouteRaw = RouteLocationRaw & {
   props?: any
@@ -25,7 +21,7 @@ export type Options = {
   routes: ExtendedRouteRaw[]
   base?: (params: { url: Location | URL }) => string
   debug?: { mount?: boolean }
-  pageProps?: { passToPage: boolean }
+  pageProps?: PagePropsOptions
   transformState?: (state: any) => any | Promise<any>
 }
 
@@ -41,15 +37,6 @@ export type Hook = (params: {
   initialState: Record<string, any>
   initialRoute: RouteLocationNormalized
 }) => HookResponse | Promise<HookResponse>
-
-type Renderer = (
-  url: string | URL,
-  options?: {
-    manifest?: Record<string, string[]>
-    preload?: boolean
-    [key: string]: any
-  }
-) => Promise<{ html: string; dependencies: string[] }>
 
 export type ClientHandler = (
   App: Component,
