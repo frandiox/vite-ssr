@@ -15,6 +15,7 @@ declare module 'vite-ssr/react/entry-server' {
       base?: (params: { url: URL }) => string
       PropsProvider?: (props: Record<string, any>) => any
       pageProps?: { passToPage: boolean }
+      transformState?: (state: any) => any | Promise<any>
     },
     hook?: (params: {
       router: any

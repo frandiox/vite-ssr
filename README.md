@@ -303,6 +303,30 @@ import { Helmet } from 'react-helmet-async'
 </p>
 </details>
 
+## State serialization
+
+Vite SSR simply uses `JSON.stringify` to serialize the state and saves it in the DOM. This can be changed by using the `transformState` hook:
+
+```js
+import viteSSR from 'vite-ssr'
+import App from './app'
+import routes from './routes'
+
+export default viteSSR(App, {
+  routes,
+  transformState(state) {
+    if (import.meta.state.SSR) {
+      // Serialize during SSR by using,
+      // for example, @nuxt/devalue
+      return customSerialize(state)
+    } else {
+      // Deserialize in browser
+      return customDeserialize(state)
+    }
+  },
+})
+```
+
 ## Rendering only in client/browser
 
 Vite SSR exports `ClientOnly` component that renders its children only in the browser:

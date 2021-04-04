@@ -7,6 +7,7 @@ declare module 'vite-ssr/react/entry-client' {
       debug?: { mount?: boolean }
       PropsProvider?: (props: Record<string, any>) => any
       pageProps?: { passToPage: boolean }
+      transformState?: (state: any) => any | Promise<any>
     },
     hook?: (params: {
       router: any

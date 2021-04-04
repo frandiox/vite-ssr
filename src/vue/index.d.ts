@@ -14,6 +14,7 @@ declare module 'vite-ssr/vue' {
       base?: (params: { url: URL }) => string
       debug?: { mount?: boolean }
       pageProps?: { passToPage: boolean }
+      transformState?: (state: any) => any | Promise<any>
     },
     hook?: (params: {
       app: App

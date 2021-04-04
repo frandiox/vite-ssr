@@ -9,7 +9,14 @@ export { ClientOnly } from './components.js'
 
 export default function (
   App,
-  { routes, base, prepassVisitor, PropsProvider, pageProps } = {},
+  {
+    routes,
+    base,
+    prepassVisitor,
+    PropsProvider,
+    pageProps,
+    transformState = (state) => JSON.stringify(state || {}),
+  } = {},
   hook
 ) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
@@ -64,7 +71,7 @@ export default function (
       .map((key) => (tags[key] || '').toString())
       .join('')
 
-    const initialState = JSON.stringify(context.initialState || {})
+    const initialState = await transformState(context.initialState || {})
 
     return {
       // This string is replaced at build time

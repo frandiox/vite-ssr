@@ -22,6 +22,7 @@ declare module 'vite-ssr/vue/entry-server' {
       routes?: RouteLocationRaw[]
       base?: (params: { url: URL }) => string
       pageProps?: { passToPage: boolean }
+      transformState?: (state: any) => any | Promise<any>
     },
     hook?: (params: {
       app: App

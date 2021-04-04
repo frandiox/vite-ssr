@@ -8,6 +8,7 @@ declare module 'vite-ssr' {
       base?: (params: { url: URL }) => string
       head?: any
       debug?: { mount?: boolean }
+      transformState?: (state: any) => any | Promise<any>
     },
     hook?: (params: {
       url: URL

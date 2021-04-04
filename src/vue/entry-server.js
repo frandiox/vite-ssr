@@ -9,7 +9,12 @@ export { ClientOnly } from './components.js'
 
 export default function (
   App,
-  { routes, base, pageProps = { passToPage: true } },
+  {
+    routes,
+    base,
+    pageProps = { passToPage: true },
+    transformState = (state) => JSON.stringify(state || {}),
+  },
   hook
 ) {
   if (pageProps && pageProps.passToPage) {
@@ -71,7 +76,7 @@ export default function (
       headTags += renderPreloadLinks(dependencies)
     }
 
-    const initialState = JSON.stringify(context.initialState || {})
+    const initialState = await transformState(context.initialState || {})
 
     return {
       // This string is replaced at build time

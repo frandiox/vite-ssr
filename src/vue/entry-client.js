@@ -6,7 +6,13 @@ export { ClientOnly } from './components.js'
 
 export default async function (
   App,
-  { routes, base, pageProps = { passToPage: true }, debug = {} } = {},
+  {
+    routes,
+    base,
+    pageProps = { passToPage: true },
+    debug = {},
+    transformState = (state) => state,
+  } = {},
   hook
 ) {
   if (pageProps && pageProps.passToPage) {
@@ -24,6 +30,8 @@ export default async function (
 
   app.use(router)
 
+  const initialState = await transformState(window.__INITIAL_STATE__)
+
   let entryRouteName
   let isFirstRoute = true
   router.beforeEach((to, from, next) => {
@@ -31,7 +39,7 @@ export default async function (
       // The first route is rendered in the server and its state is provided globally.
       isFirstRoute = false
       entryRouteName = to.name
-      to.meta.state = window.__INITIAL_STATE__ || {}
+      to.meta.state = initialState
     }
 
     next()
@@ -43,7 +51,7 @@ export default async function (
       app,
       router,
       isClient: true,
-      initialState: window.__INITIAL_STATE__ || {},
+      initialState: initialState || {},
       initialRoute: router.resolve(getFullPath(url, routeBase)),
     })
   }
