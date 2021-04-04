@@ -4,9 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
-export { ClientOnly } from './components.js'
+export { ClientOnly } from './components'
+import type { ClientHandler } from './types'
 
-export default async function (
+export const viteSSR: ClientHandler = async function (
   App,
   {
     routes,
@@ -16,11 +17,12 @@ export default async function (
     pageProps,
     debug = {},
     transformState = (state) => state,
-  } = {},
+  },
   hook
 ) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
+  // @ts-ignore
   const initialState = await transformState(window.__INITIAL_STATE__ || null)
 
   const context = {
@@ -57,6 +59,9 @@ export default async function (
   if (debug.mount !== false) {
     const el = document.getElementById('app')
 
+    // @ts-ignore
     import.meta.env.DEV ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
   }
 }
+
+export default viteSSR

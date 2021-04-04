@@ -1,9 +1,32 @@
 {
   "compilerOptions": {
-    "outDir": "./built",
-    "allowJs": true,
+    "outDir": "./dist",
+    "target": "ES2019",
+    "module": "CommonJS",
+    "lib": ["ESNext", "DOM"],
     "esModuleInterop": true,
-    "target": "es5"
+    "allowJs": true,
+    "checkJs": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "stripInternal": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": false,
+    "removeComments": false,
   },
-  "include": ["./src/**/*", "./example/**/*"]
+  "include": [
+    "./src",
+  ],
+  "exclude": [
+    "./src/vue/*",
+    "./src/react/*",
+    "./src/utils/*"
+  ]
 }

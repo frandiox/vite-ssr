@@ -1,8 +1,21 @@
 {
   "name": "vite-ssr",
   "version": "0.6.8",
+  "private": true,
   "description": "Vite utility for server side rendering",
   "main": "./entry-server.js",
+  "scripts": {
+    "dev": "npm-run-all dev:* --parallel dev:watch:* ",
+    "dev:clean": "rm -rf node_modules/vite-ssr && mkdir node_modules/vite-ssr",
+    "dev:copy": "cp package.json src/index.d.ts node_modules/vite-ssr/",
+    "dev:watch:cjs": "cd src && yarn tsc --watch --incremental --outDir ./node_modules/vite-ssr",
+    "dev:watch:esm": "yarn dev:watch:cjs --project tsconfig-esm.json",
+    "build": "npm-run-all build:* --parallel build:compile:*",
+    "build:clean": "rm -rf dist && mkdir dist",
+    "build:copy": "cp README.md LICENSE src/index.d.ts dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
+    "build:compile:cjs": "cd src && yarn tsc",
+    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frandiox/vite-ssr.git"
@@ -21,6 +34,10 @@
   "homepage": "https://github.com/frandiox/vite-ssr#readme",
   "bin": "./cli.js",
   "types": "./index.d.ts",
+  "workspaces": [
+    "examples/vue",
+    "examples/react"
+  ],
   "peerDependencies": {
     "@vueuse/head": "^0.5.0",
     "react": "^16.8 || ^17",
@@ -60,5 +77,17 @@
     "connect": "^3.7.0",
     "node-fetch": "^2.6.1",
     "react-ssr-prepass": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/connect": "^3.4.34",
+    "@types/node": "^14.14.37",
+    "@types/node-fetch": "^2.5.9",
+    "@types/react": "^17.0.3",
+    "@types/react-dom": "^17.0.3",
+    "@types/react-router-config": "^5.0.2",
+    "@types/react-router-dom": "^5.1.7",
+    "npm-run-all": "^4.1.5",
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.2.3"
   }
 }

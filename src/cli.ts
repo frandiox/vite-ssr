@@ -2,7 +2,7 @@
 
 const [, , ...args] = process.argv
 
-const options = {}
+const options = {} as Record<string, any>
 
 for (let i = 0; i < args.length; i++) {
   const arg = args[i]
@@ -16,7 +16,8 @@ for (let i = 0; i < args.length; i++) {
 const [command] = args
 
 if (command === 'build') {
-  const build = require('./build')
+  // @ts-ignore
+  const build = require('./build.js')
 
   ;(async () => {
     await build({ serverOptions: { build: { ssr: options.ssr } } })

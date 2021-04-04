@@ -1,18 +1,19 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { addPagePropsGetterToRoutes } from './utils'
 export { ClientOnly } from './components.js'
+import type { ClientHandler } from './types'
 
-export default async function (
+export const viteSSR: ClientHandler = async function viteSSR(
   App,
   {
     routes,
     base,
     pageProps = { passToPage: true },
     debug = {},
-    transformState = (state) => state,
-  } = {},
+    transformState = (state: any) => state,
+  },
   hook
 ) {
   if (pageProps && pageProps.passToPage) {
@@ -25,20 +26,21 @@ export default async function (
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
     history: createWebHistory(routeBase),
-    routes,
+    routes: routes as RouteRecordRaw[],
   })
 
   app.use(router)
 
+  // @ts-ignore
   const initialState = await transformState(window.__INITIAL_STATE__)
 
-  let entryRouteName
+  let entryRoutePath: string | undefined
   let isFirstRoute = true
   router.beforeEach((to, from, next) => {
-    if (isFirstRoute || (entryRouteName && entryRouteName === to.name)) {
+    if (isFirstRoute || (entryRoutePath && entryRoutePath === to.path)) {
       // The first route is rendered in the server and its state is provided globally.
       isFirstRoute = false
-      entryRouteName = to.name
+      entryRoutePath = to.path
       to.meta.state = initialState
     }
 
@@ -60,14 +62,15 @@ export default async function (
     // this will hydrate the app
     await router.isReady()
     app.mount('#app', true)
+    // it is possible to debug differences of SSR / Hydrated app state
+    // by adding a timeout between rendering the SSR version and hydrating it later
+    // window.setTimeout(() => {
+    //   console.log('The app has now hydrated');
+    //   router.isReady().then(() => {
+    //     app.mount('#app', true);
+    //   });
+    // }, 5000);
   }
 }
 
-// it is possible to debug differences of SSR / Hydrated app state
-// by adding a timeout between rendering the SSR version and hydrating it later
-// window.setTimeout(() => {
-//   console.log('The app has now hydrated');
-//   router.isReady().then(() => {
-//     app.mount('#app', true);
-//   });
-// }, 5000);
+export default viteSSR

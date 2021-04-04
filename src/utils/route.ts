@@ -1,23 +1,23 @@
 const S = '/'
 
-export function withPrefix(string, prefix) {
+export function withPrefix(string: string, prefix: string) {
   return string.startsWith(prefix) ? string : prefix + string
 }
 
-export function withoutPrefix(string, prefix) {
+export function withoutPrefix(string: string, prefix: string) {
   return string.startsWith(prefix) ? string.slice(prefix.length) : string
 }
 
-export function withSuffix(string, suffix) {
+export function withSuffix(string: string, suffix: string) {
   return string.endsWith(suffix) ? string : string + suffix
 }
-export function withoutSuffix(string, suffix) {
+export function withoutSuffix(string: string, suffix: string) {
   return string.endsWith(suffix)
     ? string.slice(0, -1 * suffix.length)
     : string + suffix
 }
 
-export function createUrl(urlLike) {
+export function createUrl(urlLike: string | URL) {
   if (urlLike instanceof URL) {
     return urlLike
   }
@@ -29,11 +29,11 @@ export function createUrl(urlLike) {
   return new URL(urlLike)
 }
 
-export function joinPaths(...paths) {
+export function joinPaths(...paths: string[]) {
   return paths.reduce((acc, path) => acc + path, '').replace(/\/\//g, S)
 }
 
-export function getFullPath(url, routeBase) {
+export function getFullPath(url: string | URL | Location, routeBase?: string) {
   url = typeof url === 'string' ? createUrl(url) : url
   let fullPath = withoutPrefix(url.href, url.origin)
 

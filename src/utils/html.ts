@@ -1,5 +1,8 @@
-export function findDependencies(modules, manifest) {
-  const files = new Set()
+export function findDependencies(
+  modules: string[],
+  manifest: Record<string, string[]>
+) {
+  const files = new Set<string>()
 
   for (const id of modules || []) {
     for (const file of manifest[id] || []) {
@@ -10,7 +13,7 @@ export function findDependencies(modules, manifest) {
   return [...files]
 }
 
-export function renderPreloadLinks(files) {
+export function renderPreloadLinks(files: string[]) {
   let link = ''
 
   for (const file of files || []) {

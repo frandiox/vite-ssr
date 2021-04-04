@@ -1,11 +1,16 @@
-// @ts-ignore
-const fs = require('fs').promises
-const path = require('path')
-const connect = require('connect')
-const { createServer: createViteServer, resolveConfig } = require('vite')
-const { getEntryPoint } = require('../config')
+import { promises as fs } from 'fs'
+import path from 'path'
+import connect from 'connect'
+import {
+  createServer as createViteServer,
+  InlineConfig,
+  resolveConfig,
+  ViteDevServer,
+} from 'vite'
+import { getEntryPoint } from '../config'
+import type { ServerResponse } from 'node:http'
 
-async function resolveHttpServer(app) {
+async function resolveHttpServer(app: connect.Server) {
   const config = await resolveConfig(
     {},
     'serve',
@@ -19,11 +24,12 @@ async function resolveHttpServer(app) {
     // This should find that function in Vite internals but might need to be
     // adjusted from time to time if this is updated in Vite.
     const vitePath = require.resolve('vite')
-    let tmp = await fs.readFile(vitePath, 'utf-8')
-    const [, chunk] = tmp.match(/require\('(\.\/chunks\/.+)'\)/)
+    let tmp: string | null = await fs.readFile(vitePath, 'utf-8')
+    const [, chunk] = tmp.match(/require\('(\.\/chunks\/.+)'\)/) || []
     tmp = null
 
-    const internals = require(path.resolve(path.dirname(vitePath), chunk))
+    let internals = await import(path.resolve(path.dirname(vitePath), chunk))
+    internals = internals.default || internals
 
     return internals.resolveHttpServer(config.server, app)
   } catch (error) {
@@ -35,7 +41,7 @@ async function resolveHttpServer(app) {
   }
 }
 
-function fixEntryPoint(vite, pluginName) {
+function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
   // The plugin is redirecting to the entry-client for the SPA,
   // but we need to reach the entry-server here. This trick
   // replaces the plugin behavior in the config and seems
@@ -45,10 +51,25 @@ function fixEntryPoint(vite, pluginName) {
       typeof item.replacement === 'string' &&
       (item.replacement || '').includes(pluginName)
   )
-  alias.replacement = alias.replacement.replace('client', 'server')
+
+  if (alias) {
+    alias.replacement = alias.replacement.replace('client', 'server')
+  }
 }
 
-async function createSsrServer(options = {}) {
+type SsrOptions = InlineConfig & {
+  plugin?: string
+  config?: string
+  ssr?: string
+  getRenderContext?: (params: {
+    url: string
+    request: connect.IncomingMessage
+    response: ServerResponse
+    resolvedEntryPoint: Record<string, any>
+  }) => Promise<any>
+}
+
+export default async function createSsrServer(options: SsrOptions = {}) {
   const { plugin: pluginName = 'vite-ssr' } = options
 
   const app = connect()
@@ -70,13 +91,13 @@ async function createSsrServer(options = {}) {
   // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
   options = Object.assign(
     {},
-    (vite.config.plugins.find((plugin) => plugin.name === pluginName) || {})
-      .viteSsr || {},
+    (vite.config.plugins.find((plugin) => plugin.name === pluginName) as any)
+      ?.viteSsr || {},
     options
   )
 
-  const resolve = (p) => path.resolve(vite.config.root, p)
-  async function getIndexTemplate(url) {
+  const resolve = (p: string) => path.resolve(vite.config.root, p)
+  async function getIndexTemplate(url: string) {
     // Template should be fresh in every request
     const indexHtml = await fs.readFile(resolve('index.html'), 'utf-8')
     return await vite.transformIndexHtml(url, indexHtml)
@@ -90,7 +111,7 @@ async function createSsrServer(options = {}) {
     fixEntryPoint(vite, pluginName)
 
     try {
-      const template = await getIndexTemplate(request.url)
+      const template = await getIndexTemplate(request.url as string)
       const entryPoint =
         options.ssr || (await getEntryPoint(vite.config.root, template))
 
@@ -99,6 +120,7 @@ async function createSsrServer(options = {}) {
       const render = resolvedEntryPoint.render || resolvedEntryPoint
 
       const protocol =
+        // @ts-ignore
         request.protocol ||
         (request.headers.referer || '').split(':')[0] ||
         'http'
@@ -147,13 +169,13 @@ async function createSsrServer(options = {}) {
   vite.httpServer = httpServer
 
   return {
-    async listen(port, host) {
-      globalThis.fetch = require('node-fetch')
+    async listen(port?: number) {
+      const fetch = await import('node-fetch')
+      // @ts-ignore
+      globalThis.fetch = fetch.default || fetch
 
-      await vite.listen(port, host)
+      await vite.listen(port)
       vite.config.logger.info('\n -- SSR mode\n')
     },
   }
 }
-
-module.exports = createSsrServer

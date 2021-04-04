@@ -3,17 +3,15 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite --port 1337 --open --force",
-    "dev:ssr": "vite-ssr --port 1337 --open --force",
-    "build": "rm -rf dist && vite-ssr build",
-    "refresh": "rm -rf node_modules/vite-ssr && cp -r ../../src node_modules/vite-ssr && cp ../../src/cli.js node_modules/.bin/vite-ssr",
+    "dev:ssr": "node ../../node_modules/vite-ssr/cli.js --port 1337 --open --force",
+    "build": "rm -rf dist && node ../../node_modules/vite-ssr/cli.js build",
     "serve:node": "node ../node-server/index react"
   },
   "dependencies": {
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.0.9",
-    "react-router-dom": "^5.2.0",
-    "vite-ssr": "file:../../src"
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react-refresh": "^1.1.0",

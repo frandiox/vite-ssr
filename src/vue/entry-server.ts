@@ -1,19 +1,20 @@
 import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
-import { createRouter, createMemoryHistory } from 'vue-router'
+import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 export { ClientOnly } from './components.js'
+import type { SsrHandler } from './types'
 
-export default function (
+export const viteSSR: SsrHandler = function viteSSR(
   App,
   {
     routes,
     base,
     pageProps = { passToPage: true },
-    transformState = (state) => JSON.stringify(state || {}),
+    transformState = (state: any) => JSON.stringify(state || {}),
   },
   hook
 ) {
@@ -28,7 +29,7 @@ export default function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const router = createRouter({
       history: createMemoryHistory(routeBase),
-      routes,
+      routes: routes as RouteRecordRaw[],
     })
 
     app.use(router)
@@ -69,7 +70,8 @@ export default function (
       : {}
 
     const dependencies = manifest
-      ? findDependencies(context.modules, manifest)
+      ? // @ts-ignore
+        findDependencies(context.modules, manifest)
       : []
 
     if (preload && dependencies.length > 0) {
@@ -91,3 +93,5 @@ export default function (
     }
   }
 }
+
+export default viteSSR
