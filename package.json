@@ -7,12 +7,12 @@
   "scripts": {
     "dev": "npm-run-all dev:* --parallel dev:watch:* ",
     "dev:clean": "rm -rf node_modules/vite-ssr && mkdir node_modules/vite-ssr",
-    "dev:copy": "cp package.json node_modules/vite-ssr/",
+    "dev:copy": "cp package.json src/index.d.ts node_modules/vite-ssr/",
     "dev:watch:cjs": "cd src && yarn tsc --watch --incremental --outDir ./node_modules/vite-ssr",
     "dev:watch:esm": "yarn dev:watch:cjs --project tsconfig-esm.json",
     "build": "npm-run-all build:* --parallel build:compile:*",
     "build:clean": "rm -rf dist && mkdir dist",
-    "build:copy": "cp README.md LICENSE dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
+    "build:copy": "cp README.md LICENSE src/index.d.ts dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
     "build:compile:cjs": "cd src && yarn tsc",
     "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json"
   },
