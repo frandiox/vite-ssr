@@ -34,13 +34,13 @@ export const viteSSR: ClientHandler = async function viteSSR(
   // @ts-ignore
   const initialState = await transformState(window.__INITIAL_STATE__)
 
-  let entryRouteName: string | undefined
+  let entryRoutePath: string | undefined
   let isFirstRoute = true
   router.beforeEach((to, from, next) => {
-    if (isFirstRoute || (entryRouteName && entryRouteName === to.name)) {
+    if (isFirstRoute || (entryRoutePath && entryRoutePath === to.path)) {
       // The first route is rendered in the server and its state is provided globally.
       isFirstRoute = false
-      entryRouteName = to.name as string
+      entryRoutePath = to.path
       to.meta.state = initialState
     }
 
