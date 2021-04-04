@@ -3,7 +3,7 @@
     "outDir": "./dist",
     "target": "ES2019",
     "module": "CommonJS",
-    "lib": [ "ESNext", "DOM" ],
+    "lib": ["ESNext", "DOM"],
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,

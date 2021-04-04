@@ -2,6 +2,22 @@ import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getFullPath } from '../utils/route'
 import { createUrl } from '../utils/route'
+import type {
+  Base,
+  Meta,
+  State,
+  RouteRaw,
+  PagePropsOptions,
+  PropsProvider as PropsProviderType,
+} from './types'
+
+type RouterOptions = {
+  base?: Base
+  routes: RouteRaw[]
+  initialState?: State
+  PropsProvider?: PropsProviderType
+  pagePropsOptions?: PagePropsOptions
+}
 
 export function createRouter({
   base,
@@ -9,11 +25,11 @@ export function createRouter({
   initialState,
   PropsProvider,
   pagePropsOptions = { passToPage: true },
-}) {
-  let currentRoute = null
+}: RouterOptions) {
+  let currentRoute: RouteRaw | undefined = undefined
 
-  function augmentRoute(originalRoute) {
-    const meta = {
+  function augmentRoute(originalRoute: RouteRaw) {
+    const meta: Meta = {
       ...(originalRoute.meta || {}),
       state: null,
     }
@@ -21,7 +37,7 @@ export function createRouter({
     const augmentedRoute = {
       ...originalRoute,
       meta,
-      component: (props) => {
+      component: (props: Record<string, any>) => {
         const { pathname, hash, search } = useLocation()
         const url = createUrl(pathname + search + hash)
         const routeBase = base && base({ url })
@@ -33,6 +49,7 @@ export function createRouter({
           hash,
           search,
           params: useParams(),
+          // @ts-ignore -- This should be in ES2019 ??
           query: Object.fromEntries(url.searchParams),
           fullPath: getFullPath(url, routeBase),
         }

@@ -5,9 +5,10 @@ import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
+import { SsrHandler } from './types'
 export { ClientOnly } from './components.js'
 
-export default function (
+const viteSSR: SsrHandler = function (
   App,
   {
     routes,
@@ -16,7 +17,7 @@ export default function (
     PropsProvider,
     pageProps,
     transformState = (state) => JSON.stringify(state || {}),
-  } = {},
+  },
   hook
 ) {
   return async function (url, { manifest, preload = false, ...extra } = {}) {
@@ -24,21 +25,25 @@ export default function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
-    const context = { url, isClient: false, initialState: {}, ...extra }
-    context.router = createRouter({
-      routes,
-      base,
-      initialState: extra.initialState || null,
-      pagePropsOptions: pageProps,
-      PropsProvider,
-    })
-
-    if (hook) {
-      context.initialState =
-        (await hook({ ...context })) || context.initialState
+    const context = {
+      url,
+      isClient: false,
+      initialState: {},
+      ...extra,
+      router: createRouter({
+        routes,
+        base,
+        initialState: extra.initialState || null,
+        pagePropsOptions: pageProps,
+        PropsProvider,
+      }),
     }
 
-    const helmetContext = {}
+    if (hook) {
+      context.initialState = (await hook(context)) || context.initialState
+    }
+
+    const helmetContext: Record<string, Record<string, string>> = {}
 
     const app = React.createElement(
       HelmetProvider,
@@ -58,7 +63,7 @@ export default function (
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {
-      Object.assign(context.initialState || {}, currentRoute.meta.state || {})
+      Object.assign(context.initialState || {}, currentRoute.meta?.state || {})
     }
 
     const {
@@ -86,3 +91,5 @@ export default function (
     }
   }
 }
+
+export default viteSSR
