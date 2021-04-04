@@ -5,9 +5,10 @@
   "description": "Vite utility for server side rendering",
   "main": "./entry-server.js",
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && mkdir dist",
     "copy": "cp README.md LICENSE dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
-    "build": "yarn clean && cd src && yarn tsc && yarn copy"
+    "build": "yarn clean && yarn copy && cd src && yarn tsc",
+    "dev": "rm -rf node_modules/vite-ssr && mkdir node_modules/vite-ssr && cp package.json ./node_modules/vite-ssr && cd src && yarn tsc --watch --incremental --outDir ./node_modules/vite-ssr"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,10 @@
   "homepage": "https://github.com/frandiox/vite-ssr#readme",
   "bin": "./cli.js",
   "types": "./index.d.ts",
+  "workspaces": [
+    "examples/vue",
+    "examples/react"
+  ],
   "peerDependencies": {
     "@vueuse/head": "^0.5.0",
     "react": "^16.8 || ^17",
