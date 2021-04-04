@@ -1,12 +1,12 @@
-const fs = require('fs')
-const path = require('path')
-const { resolveConfig } = require('vite')
+import fs from 'fs'
+import path from 'path'
+import { resolveConfig } from 'vite'
 
 const viteConfigJS = 'vite.config.js'
 const viteConfigMJS = 'vite.config.mjs'
 const viteConfigTS = 'vite.config.ts'
 const systemRoot = path.parse(process.cwd()).root
-const fileExists = (dir, file) => {
+const fileExists = (dir: string, file: string) => {
   try {
     fs.accessSync(path.resolve(dir, file))
     return true
@@ -15,12 +15,12 @@ const fileExists = (dir, file) => {
   }
 }
 
-let rootDir
-let configFileName
+let rootDir: string
+let configFileName: string
 let isTS = false
 let isMJS = false
 
-exports.getProjectInfo = function () {
+export function getProjectInfo() {
   if (!rootDir) {
     let currentDir = process.cwd()
     while (!rootDir && currentDir !== systemRoot) {
@@ -53,9 +53,9 @@ exports.getProjectInfo = function () {
   }
 }
 
-exports.getEntryPoint = async function (root, indexHtml) {
+export async function getEntryPoint(root?: string, indexHtml?: string) {
   if (!root) {
-    root = exports.getProjectInfo().rootDir
+    root = getProjectInfo().rootDir
   }
 
   if (!indexHtml) {
@@ -69,12 +69,12 @@ exports.getEntryPoint = async function (root, indexHtml) {
     .substr(indexHtml.lastIndexOf('script type="module"'))
     .match(/src="(.*)">/i)
 
-  const entryFile = matches[1] || 'src/main'
+  const entryFile = matches?.[1] || 'src/main'
 
   return path.join(root, entryFile)
 }
 
-exports.resolveViteConfig = async function (mode) {
+export async function resolveViteConfig(mode?: string) {
   return resolveConfig(
     {},
     'build',
