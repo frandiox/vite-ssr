@@ -1,8 +1,14 @@
 {
   "name": "vite-ssr",
   "version": "0.6.8",
+  "private": true,
   "description": "Vite utility for server side rendering",
   "main": "./entry-server.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "copy": "cp README.md LICENSE dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
+    "build": "yarn clean && cd src && yarn tsc && yarn copy"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/frandiox/vite-ssr.git"
@@ -60,5 +66,9 @@
     "connect": "^3.7.0",
     "node-fetch": "^2.6.1",
     "react-ssr-prepass": "^1.4.0"
+  },
+  "devDependencies": {
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.2.3"
   }
 }
