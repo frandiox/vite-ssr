@@ -60,7 +60,7 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     Object.assign(
       context.initialState || {},
-      router.currentRoute.value.meta.state || {}
+      (router.currentRoute.value.meta || {}).state || {}
     )
 
     const body = await renderToString(app, context)

@@ -63,7 +63,10 @@ const viteSSR: SsrHandler = function (
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {
-      Object.assign(context.initialState || {}, currentRoute.meta?.state || {})
+      Object.assign(
+        context.initialState || {},
+        (currentRoute.meta || {}).state || {}
+      )
     }
 
     const {
