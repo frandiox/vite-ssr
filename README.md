@@ -266,7 +266,7 @@ import routes from './routes'
 export default viteSSR(App, {
   routes,
   transformState(state) {
-    if (import.meta.state.SSR) {
+    if (import.meta.env.SSR) {
       // Serialize during SSR by using,
       // for example, @nuxt/devalue
       return customSerialize(state)
