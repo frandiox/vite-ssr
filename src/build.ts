@@ -61,10 +61,11 @@ export = async ({
   await build(serverBuildOptions)
 
   // --- Generate package.json
-  // const type =
-  //   (ssrBuildOptions.rollupOutputOptions || {}).format === 'es'
-  //     ? 'module'
-  //     : 'commonjs'
+  const type =
+    // @ts-ignore
+    serverBuildOptions.build?.rollupOptions?.output?.format === 'es'
+      ? 'module'
+      : 'commonjs'
 
   // index.html is not used in SSR and might be served by mistake
   await fs
@@ -72,7 +73,7 @@ export = async ({
     .catch(() => null)
 
   const packageJson = {
-    // type,
+    type,
     main: path.parse(serverBuildOptions.build?.ssr as string).name + '.js',
     ssr: {
       // This can be used later to serve static assets
