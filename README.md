@@ -14,9 +14,9 @@ Simple yet powerlful Server Side Rendering for Vite 2 in Node.js.
 
 Start a new SSR project right away using Vue, filesystem routes, page layouts, icons auto-import and more with [Vitesse SSR template](https://github.com/frandiox/vitesse-ssr-template). See [live demo](https://vitesse-ssr.vercel.app/).
 
-Vite SSR can be deployed to any Node.js environment, including serverless platforms like Vercel or Netlify. It can create pages dynamically from a cloud function and cache the result at the edge network for subsequent requests, effectively behaving as statically generated pages with no cost.
+Vite SSR can be deployed to any Node.js or browser-like environment, including serverless platforms like Vercel, Netlify, or even Cloudflare Workers. It can create pages dynamically from a cloud function and cache the result at the edge network for subsequent requests, effectively behaving as statically generated pages with no cost.
 
-See [Vitedge](https://github.com/frandiox/vitedge) for SSR in Cloudflare Workers.
+See [Vitedge](https://github.com/frandiox/vitedge) for a more opinionated and fullstack setup.
 
 ## Installation
 
