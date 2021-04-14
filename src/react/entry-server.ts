@@ -1,6 +1,6 @@
 import React from 'react'
 import ssrPrepass from 'react-ssr-prepass'
-import { renderToString } from 'react-dom/server'
+import { renderToString } from 'react-dom/server.js'
 import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
