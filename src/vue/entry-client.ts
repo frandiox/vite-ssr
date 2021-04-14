@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
+import { deserializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 export { ClientOnly } from './components.js'
 import type { ClientHandler } from './types'
@@ -12,7 +13,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
     base,
     pageProps = { passToPage: true },
     debug = {},
-    transformState = (state: any) => state,
+    transformState = deserializeState,
   },
   hook
 ) {

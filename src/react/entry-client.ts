@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
+import { deserializeState } from '../utils/state'
 import { createRouter } from './utils'
 export { ClientOnly } from './components'
 import type { ClientHandler } from './types'
@@ -16,7 +17,7 @@ export const viteSSR: ClientHandler = async function (
     PropsProvider,
     pageProps,
     debug = {},
-    transformState = (state) => state,
+    transformState = deserializeState,
   },
   hook
 ) {

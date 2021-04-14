@@ -4,6 +4,7 @@ import { renderToString } from 'react-dom/server.js'
 import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
+import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
 export { ClientOnly } from './components'
 import type { SsrHandler } from './types'
@@ -16,7 +17,7 @@ const viteSSR: SsrHandler = function (
     prepassVisitor,
     PropsProvider,
     pageProps,
-    transformState = (state) => JSON.stringify(state || {}),
+    transformState = serializeState,
   },
   hook
 ) {

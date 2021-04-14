@@ -3,6 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
+import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 export { ClientOnly } from './components.js'
@@ -14,7 +15,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     routes,
     base,
     pageProps = { passToPage: true },
-    transformState = (state: any) => JSON.stringify(state || {}),
+    transformState = serializeState,
   },
   hook
 ) {

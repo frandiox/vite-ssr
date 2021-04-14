@@ -256,7 +256,7 @@ function App({ router }) {
 
 ### State serialization
 
-Vite SSR simply uses `JSON.stringify` to serialize the state and saves it in the DOM. This behavior can be overriden by using the `transformState` hook:
+Vite SSR simply uses `JSON.stringify` to serialize the state, escapes certain characters to prevent XSS and saves it in the DOM. This behavior can be overriden by using the `transformState` hook in case you need to support dates, regexp or function serialization:
 
 ```js
 import viteSSR from 'vite-ssr'
