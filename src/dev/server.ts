@@ -137,6 +137,18 @@ export default async function createSsrServer(options: SsrOptions = {}) {
           })
         : {}
 
+      if (context && context.status) {
+        // If response-like is provided, just return the response
+        for (const [key, value] of Object.entries(context.headers || {})) {
+          response.setHeader(key, value as string)
+        }
+
+        response.statusCode = context.status
+        response.statusMessage = context.statusText
+
+        return response.end(context.body)
+      }
+
       const {
         headTags,
         body,
