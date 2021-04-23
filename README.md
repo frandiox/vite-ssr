@@ -278,6 +278,39 @@ export default viteSSR(App, {
 })
 ```
 
+## Accessing `response` and `request` objects.
+
+In development, both `response` and `request` objects are passed to the main hook during SSR:
+
+```js
+export default viteSSR(
+  App,
+  { routes },
+  ({ initialState, request, response }) => {
+    // Access request cookies, etc.
+  }
+)
+```
+
+In production, you control the server so you must pass these objects to the rendering function in order to have them available in the main hook:
+
+```js
+import render from './dist/server'
+
+//...
+
+const { html } = await render(url, {
+  manifest,
+  preload: true,
+  request,
+  response,
+  // Anything here will be available in the main hook.
+  initialState: { hello: 'world' }, // Optional prefilled state
+})
+```
+
+Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka.
+
 ## Head tags and global attributes
 
 Use your framework's utilities to handle head tags and attributes for html and body elements.
