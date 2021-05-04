@@ -26,7 +26,7 @@ export function serializeState(state: any) {
 
 export function deserializeState(state: string) {
   try {
-    return JSON.parse(state)
+    return JSON.parse(state || '{}')
   } catch (error) {
     console.error('[SSR] On state deserialization -', error, state)
     return {}
