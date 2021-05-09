@@ -265,11 +265,15 @@ import routes from './routes'
 
 export default viteSSR(App, {
   routes,
-  transformState(state) {
+  transformState(state, defaultTransformer) {
     if (import.meta.env.SSR) {
       // Serialize during SSR by using,
-      // for example, @nuxt/devalue
+      // for example, using @nuxt/devalue
       return customSerialize(state)
+
+      // -- Or use the defaultTransformer after modifying the state:
+      // state.apolloCache = state.apolloCache.extract()
+      // return defaultTransformer(state)
     } else {
       // Deserialize in browser
       return customDeserialize(state)
