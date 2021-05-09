@@ -22,7 +22,10 @@ export type Options = {
   base?: (params: { url: Location | URL }) => string
   debug?: { mount?: boolean }
   pageProps?: PagePropsOptions
-  transformState?: (state: any) => any | Promise<any>
+  transformState?: (
+    state: any,
+    defaultTransformer: (state: any) => any
+  ) => any | Promise<any>
 }
 
 type HookResponse = void | {

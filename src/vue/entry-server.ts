@@ -79,7 +79,10 @@ export const viteSSR: SsrHandler = function viteSSR(
       headTags += renderPreloadLinks(dependencies)
     }
 
-    const initialState = await transformState(context.initialState || {})
+    const initialState = await transformState(
+      context.initialState || {},
+      serializeState
+    )
 
     return {
       // This string is replaced at build time

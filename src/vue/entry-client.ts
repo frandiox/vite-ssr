@@ -32,8 +32,11 @@ export const viteSSR: ClientHandler = async function viteSSR(
 
   app.use(router)
 
-  // @ts-ignore
-  const initialState = await transformState(window.__INITIAL_STATE__)
+  const initialState = await transformState(
+    // @ts-ignore
+    window.__INITIAL_STATE__,
+    deserializeState
+  )
 
   let entryRoutePath: string | undefined
   let isFirstRoute = true

@@ -21,7 +21,10 @@ export type Options = {
   base?: Base
   debug?: { mount?: boolean }
   pageProps?: PagePropsOptions
-  transformState?: (state: any) => any | Promise<any>
+  transformState?: (
+    state: any,
+    defaultTransformer: (state: any) => any
+  ) => any | Promise<any>
   suspenseFallback?: ReactNode
   PropsProvider?: PropsProvider
   prepassVisitor?: any

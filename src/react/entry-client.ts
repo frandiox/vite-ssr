@@ -23,8 +23,11 @@ export const viteSSR: ClientHandler = async function (
 ) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
-  // @ts-ignore
-  const initialState = await transformState(window.__INITIAL_STATE__ || null)
+  const initialState = await transformState(
+    // @ts-ignore
+    window.__INITIAL_STATE__ || null,
+    deserializeState
+  )
 
   const context = {
     url,

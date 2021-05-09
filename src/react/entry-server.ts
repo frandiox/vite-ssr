@@ -80,7 +80,10 @@ const viteSSR: SsrHandler = function (
       .map((key) => (tags[key] || '').toString())
       .join('')
 
-    const initialState = await transformState(context.initialState || {})
+    const initialState = await transformState(
+      context.initialState || {},
+      serializeState
+    )
 
     return {
       // This string is replaced at build time
