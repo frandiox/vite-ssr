@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 import path from 'path'
-import connect from 'connect'
+import connect, { NextHandleFunction } from 'connect'
 import {
   createServer as createViteServer,
   InlineConfig,
@@ -57,7 +57,7 @@ function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
   }
 }
 
-type SsrOptions = InlineConfig & {
+type SsrOptions = {
   plugin?: string
   config?: string
   ssr?: string
@@ -69,53 +69,34 @@ type SsrOptions = InlineConfig & {
   }) => Promise<any>
 }
 
-export default async function createSsrServer(options: SsrOptions = {}) {
-  const { plugin: pluginName = 'vite-ssr' } = options
-
-  const app = connect()
-  const httpServer = await resolveHttpServer(app)
-  const vite = await createViteServer({
-    base: options.base,
-    mode: options.mode,
-    configFile: options.config,
-    logLevel: options.logLevel,
-    clearScreen: options.clearScreen,
-    server: {
-      ...options,
-      middlewareMode: true,
-    },
-  })
-
-  app.use(vite.middlewares)
-
-  // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
-  options = Object.assign(
-    {},
-    (vite.config.plugins.find((plugin) => plugin.name === pluginName) as any)
-      ?.viteSsr || {},
-    options
-  )
-
-  const resolve = (p: string) => path.resolve(vite.config.root, p)
+export const createSSRDevHandler = (
+  server: ViteDevServer,
+  options: SsrOptions = {}
+) => {
+  const resolve = (p: string) => path.resolve(server.config.root, p)
   async function getIndexTemplate(url: string) {
     // Template should be fresh in every request
     const indexHtml = await fs.readFile(resolve('index.html'), 'utf-8')
-    return await vite.transformIndexHtml(url, indexHtml)
+    return await server.transformIndexHtml(url, indexHtml)
   }
 
-  app.use(async (request, response, next) => {
+  const handleSsrRequest: NextHandleFunction = async (
+    request,
+    response,
+    next
+  ) => {
     if (request.method !== 'GET' || request.url === '/favicon.ico') {
       return next()
     }
 
-    fixEntryPoint(vite, pluginName)
+    fixEntryPoint(server, options.plugin || 'vite-ssr')
 
     try {
       const template = await getIndexTemplate(request.url as string)
       const entryPoint =
-        options.ssr || (await getEntryPoint(vite.config.root, template))
+        options.ssr || (await getEntryPoint(server.config.root, template))
 
-      let resolvedEntryPoint = await vite.ssrLoadModule(resolve(entryPoint))
+      let resolvedEntryPoint = await server.ssrLoadModule(resolve(entryPoint))
       resolvedEntryPoint = resolvedEntryPoint.default || resolvedEntryPoint
       const render = resolvedEntryPoint.render || resolvedEntryPoint
 
@@ -149,13 +130,8 @@ export default async function createSsrServer(options: SsrOptions = {}) {
         return response.end(context.body)
       }
 
-      const {
-        headTags,
-        body,
-        bodyAttrs,
-        htmlAttrs,
-        initialState,
-      } = await render(url, { request, response, ...context })
+      const { headTags, body, bodyAttrs, htmlAttrs, initialState } =
+        await render(url, { request, response, ...context })
 
       // These replacements should be similar to the build behavior
       const html = template
@@ -170,11 +146,46 @@ export default async function createSsrServer(options: SsrOptions = {}) {
       response.setHeader('Content-Type', 'text/html')
       response.end(html)
     } catch (e) {
-      vite.ssrFixStacktrace(e)
+      server.ssrFixStacktrace(e)
       console.log(e.stack)
       next(e)
     }
+  }
+
+  return handleSsrRequest
+}
+
+export default async function createSsrServer(
+  options: SsrOptions & InlineConfig = {}
+) {
+  const { plugin: pluginName = 'vite-ssr' } = options
+
+  const app = connect()
+  const httpServer = await resolveHttpServer(app)
+
+  const vite = await createViteServer({
+    base: options.base,
+    mode: options.mode,
+    configFile: options.config,
+    logLevel: options.logLevel,
+    clearScreen: options.clearScreen,
+    server: {
+      ...options,
+      middlewareMode: true,
+    },
   })
+
+  app.use(vite.middlewares)
+
+  // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
+  options = Object.assign(
+    {},
+    (vite.config.plugins.find((plugin) => plugin.name === pluginName) as any)
+      ?.viteSsr || {},
+    options
+  )
+
+  app.use(createSSRDevHandler(vite, options))
 
   // Add the custom server back to Vite in order
   // to reuse its own terminal output style, etc.
