@@ -57,7 +57,7 @@ function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
   }
 }
 
-type SsrOptions = {
+export type SsrOptions = {
   plugin?: string
   config?: string
   ssr?: string
@@ -85,14 +85,14 @@ export const createSSRDevHandler = (
     response,
     next
   ) => {
-    if (request.method !== 'GET' || request.url === '/favicon.ico') {
+    if (request.method !== 'GET' || request.originalUrl === '/favicon.ico') {
       return next()
     }
 
     fixEntryPoint(server, options.plugin || 'vite-ssr')
 
     try {
-      const template = await getIndexTemplate(request.url as string)
+      const template = await getIndexTemplate(request.originalUrl as string)
       const entryPoint =
         options.ssr || (await getEntryPoint(server.config.root, template))
 
@@ -106,7 +106,7 @@ export const createSSRDevHandler = (
         (request.headers.referer || '').split(':')[0] ||
         'http'
 
-      const url = protocol + '://' + request.headers.host + request.url
+      const url = protocol + '://' + request.headers.host + request.originalUrl
 
       // This context might contain initialState provided by other plugins
       const context = options.getRenderContext

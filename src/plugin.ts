@@ -1,10 +1,11 @@
 import type { Plugin } from 'vite'
+import { createSSRDevHandler, SsrOptions } from './dev/server'
 
 const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-export = function ViteSsrPlugin() {
+export = function ViteSsrPlugin(options: SsrOptions = {}) {
   return {
     name: pluginName,
     configResolved: (config) => {
@@ -30,6 +31,15 @@ export = function ViteSsrPlugin() {
         pluginName + lib + entryClient,
         pluginName + lib + entryServer
       )
+    },
+    async configureServer(server) {
+      const fetch = await import('node-fetch')
+      // @ts-ignore
+      globalThis.fetch = fetch.default || fetch
+
+      const handler = createSSRDevHandler(server, options)
+
+      return () => server.middlewares.use(handler)
     },
   } as Plugin
 }
