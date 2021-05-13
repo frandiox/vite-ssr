@@ -1,3 +1,4 @@
+import type { ServerResponse } from 'node:http'
 import { promises as fs } from 'fs'
 import path from 'path'
 import connect, { NextHandleFunction } from 'connect'
@@ -7,7 +8,7 @@ import {
   ViteDevServer,
 } from 'vite'
 import { getEntryPoint } from '../config'
-import type { ServerResponse } from 'node:http'
+import { buildHtmlDocument } from '../build/utils'
 
 function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
   // The plugin is redirecting to the entry-client for the SPA,
@@ -102,18 +103,8 @@ export const createSSRDevHandler = (
         return response.end(context.body)
       }
 
-      const { headTags, body, bodyAttrs, htmlAttrs, initialState } =
-        await render(url, { request, response, ...context })
-
-      // These replacements should be similar to the build behavior
-      const html = template
-        .replace('<html', `<html ${htmlAttrs} `)
-        .replace('<body', `<body ${bodyAttrs} `)
-        .replace('</head>', `${headTags}\n</head>`)
-        .replace(
-          '<div id="app"></div>',
-          `<div id="app" data-server-rendered="true">${body}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>`
-        )
+      const htmlParts = await render(url, { request, response, ...context })
+      const html = buildHtmlDocument(template, htmlParts)
 
       response.setHeader('Content-Type', 'text/html')
       response.end(html)
