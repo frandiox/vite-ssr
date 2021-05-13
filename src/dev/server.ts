@@ -4,42 +4,10 @@ import connect, { NextHandleFunction } from 'connect'
 import {
   createServer as createViteServer,
   InlineConfig,
-  resolveConfig,
   ViteDevServer,
 } from 'vite'
 import { getEntryPoint } from '../config'
 import type { ServerResponse } from 'node:http'
-
-async function resolveHttpServer(app: connect.Server) {
-  const config = await resolveConfig(
-    {},
-    'serve',
-    process.env.NODE_ENV || 'development'
-  )
-
-  try {
-    // In order to have the same behavior as Vite dev itself,
-    // we need to create the HTTP server in the same way as Vite does.
-    // However, Vite does not expose its internal HTTP server creator function.
-    // This should find that function in Vite internals but might need to be
-    // adjusted from time to time if this is updated in Vite.
-    const vitePath = require.resolve('vite')
-    let tmp: string | null = await fs.readFile(vitePath, 'utf-8')
-    const [, chunk] = tmp.match(/require\('(\.\/chunks\/.+)'\)/) || []
-    tmp = null
-
-    let internals = await import(path.resolve(path.dirname(vitePath), chunk))
-    internals = internals.default || internals
-
-    return internals.resolveHttpServer(config.server, app)
-  } catch (error) {
-    console.warn(
-      '\nCould not import internal Vite module. This likely means Vite internals have been updated in a new version.\n'
-    )
-
-    throw error
-  }
-}
 
 function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
   // The plugin is redirecting to the entry-client for the SPA,
@@ -59,7 +27,6 @@ function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
 
 export type SsrOptions = {
   plugin?: string
-  config?: string
   ssr?: string
   getRenderContext?: (params: {
     url: string
@@ -73,6 +40,11 @@ export const createSSRDevHandler = (
   server: ViteDevServer,
   options: SsrOptions = {}
 ) => {
+  options = {
+    ...server.config.inlineConfig, // CLI flags
+    ...options,
+  }
+
   const resolve = (p: string) => path.resolve(server.config.root, p)
   async function getIndexTemplate(url: string) {
     // Template should be fresh in every request
@@ -158,47 +130,24 @@ export const createSSRDevHandler = (
 export default async function createSsrServer(
   options: SsrOptions & InlineConfig = {}
 ) {
-  const { plugin: pluginName = 'vite-ssr' } = options
+  // Enable SSR in the plugin
+  process.env.__DEV_MODE_SSR = 'true'
 
-  const app = connect()
-  const httpServer = await resolveHttpServer(app)
-
-  const vite = await createViteServer({
-    base: options.base,
-    mode: options.mode,
-    configFile: options.config,
-    logLevel: options.logLevel,
-    clearScreen: options.clearScreen,
-    server: {
-      ...options,
-      middlewareMode: true,
-    },
+  const viteServer = await createViteServer({
+    ...options,
+    server: options,
   })
-
-  app.use(vite.middlewares)
-
-  // Find Vite SSR options added by another plugin that uses internally (e.g. Vitedge).
-  options = Object.assign(
-    {},
-    (vite.config.plugins.find((plugin) => plugin.name === pluginName) as any)
-      ?.viteSsr || {},
-    options
-  )
-
-  app.use(createSSRDevHandler(vite, options))
-
-  // Add the custom server back to Vite in order
-  // to reuse its own terminal output style, etc.
-  vite.httpServer = httpServer
 
   return {
     async listen(port?: number) {
-      const fetch = await import('node-fetch')
-      // @ts-ignore
-      globalThis.fetch = fetch.default || fetch
+      if (!globalThis.fetch) {
+        const fetch = await import('node-fetch')
+        // @ts-ignore
+        globalThis.fetch = fetch.default || fetch
+      }
 
-      await vite.listen(port)
-      vite.config.logger.info('\n -- SSR mode\n')
+      await viteServer.listen(port)
+      viteServer.config.logger.info('\n -- SSR mode\n')
     },
   }
 }

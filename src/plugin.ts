@@ -33,13 +33,10 @@ export = function ViteSsrPlugin(options: SsrOptions = {}) {
       )
     },
     async configureServer(server) {
-      const fetch = await import('node-fetch')
-      // @ts-ignore
-      globalThis.fetch = fetch.default || fetch
-
-      const handler = createSSRDevHandler(server, options)
-
-      return () => server.middlewares.use(handler)
+      if (process.env.__DEV_MODE_SSR) {
+        const handler = createSSRDevHandler(server, options)
+        return () => server.middlewares.use(handler)
+      }
     },
   } as Plugin
 }
