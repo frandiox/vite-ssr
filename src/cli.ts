@@ -17,7 +17,7 @@ const [command] = args
 
 if (command === 'build') {
   // @ts-ignore
-  const build = require('./build.js')
+  const build = require('./build')
 
   ;(async () => {
     await build({ serverOptions: { build: { ssr: options.ssr } } })

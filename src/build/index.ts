@@ -2,7 +2,8 @@ import { build, InlineConfig, mergeConfig } from 'vite'
 import replace from '@rollup/plugin-replace'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { getEntryPoint } from './config'
+import { getEntryPoint } from '../config'
+import { buildHtmlDocument } from './utils'
 import type { RollupOutput, OutputAsset } from 'rollup'
 
 type BuildOptions = {
@@ -42,14 +43,11 @@ export = async ({
         rollupOptions: {
           plugins: [
             replace({
-              __VITE_SSR_HTML__: (indexHtml.source as string)
-                .replace('<html', '<html ${htmlAttrs} ')
-                .replace('<body', '<body ${bodyAttrs} ')
-                .replace('</head>', '${headTags}\n</head>')
-                .replace(
-                  '<div id="app"></div>',
-                  '<div id="app" data-server-rendered="true">${body}</div>\n\n<script>window.__INITIAL_STATE__=${initialState}</script>'
+              values: {
+                __VITE_SSR_HTML__: buildHtmlDocument(
+                  indexHtml.source as string
                 ),
+              },
             }),
           ],
         },

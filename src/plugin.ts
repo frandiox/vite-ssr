@@ -1,10 +1,11 @@
 import type { Plugin } from 'vite'
+import { createSSRDevHandler, SsrOptions } from './dev/server'
 
 const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-export = function ViteSsrPlugin() {
+export = function ViteSsrPlugin(options: SsrOptions = {}) {
   return {
     name: pluginName,
     configResolved: (config) => {
@@ -30,6 +31,12 @@ export = function ViteSsrPlugin() {
         pluginName + lib + entryClient,
         pluginName + lib + entryServer
       )
+    },
+    async configureServer(server) {
+      if (process.env.__DEV_MODE_SSR) {
+        const handler = createSSRDevHandler(server, options)
+        return () => server.middlewares.use(handler)
+      }
     },
   } as Plugin
 }
