@@ -8,6 +8,25 @@ const entryClient = '/entry-client'
 export = function ViteSsrPlugin(options: SsrOptions = {}) {
   return {
     name: pluginName,
+    config() {
+      let external = []
+      let useApolloRenderer
+
+      try {
+        require.resolve('@vitejs/plugin-react-refresh')
+        require.resolve('@apollo/client/react/ssr')
+        useApolloRenderer = true
+      } catch (error) {
+        external.push('@apollo/client')
+      }
+
+      return {
+        ssr: { external },
+        define: {
+          __USE_APOLLO_RENDERER__: !!useApolloRenderer,
+        },
+      }
+    },
     configResolved: (config) => {
       let lib = '/vue' // default
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import ssrPrepass from 'react-ssr-prepass'
 import { renderToString } from 'react-dom/server.js'
 import { StaticRouter } from 'react-router-dom'
@@ -8,6 +8,20 @@ import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
 export { ClientOnly } from './components'
 import type { SsrHandler } from './types'
+
+let render: (element: ReactElement) => string | Promise<string> = renderToString
+
+// @ts-ignore
+if (__USE_APOLLO_RENDERER__) {
+  // Apollo does not support Suspense so it needs its own
+  // renderer in order to await for async queries.
+  // @ts-ignore
+  import('@apollo/client/react/ssr')
+    .then(({ renderToStringWithData }) => {
+      render = renderToStringWithData
+    })
+    .catch(() => null)
+}
 
 const viteSSR: SsrHandler = function (
   App,
@@ -60,7 +74,7 @@ const viteSSR: SsrHandler = function (
     )
 
     await ssrPrepass(app, prepassVisitor)
-    const body = renderToString(app)
+    const body = await render(app)
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {
