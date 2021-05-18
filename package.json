@@ -36,7 +36,8 @@
   "types": "./index.d.ts",
   "workspaces": [
     "examples/vue",
-    "examples/react"
+    "examples/react",
+    "examples/react-apollo"
   ],
   "peerDependencies": {
     "@vueuse/head": "^0.5.0",

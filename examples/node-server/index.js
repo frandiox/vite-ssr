@@ -35,7 +35,9 @@ for (const asset of ssr.assets || []) {
 
 // Custom API to get data for each page
 // See src/main.js to see how this is called
-api.forEach(({ route, handler }) => server.get(route, handler))
+api.forEach(({ route, handler, method = 'get' }) =>
+  server[method](route, handler)
+)
 
 // Everything else is treated as a "rendering request"
 server.get('*', async (req, res) => {
