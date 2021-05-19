@@ -5,7 +5,24 @@ const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-export = function ViteSsrPlugin(options: SsrOptions = {}) {
+type ViteSsrPluginOptions = {
+  features?: {
+    /**
+     * Use '@apollo/client' renderer if present
+     * @default true
+     */
+    reactApolloRenderer?: boolean
+    /**
+     * Collect 'styled-components' styles if present
+     * @default true
+     */
+    reactStyledComponents?: boolean
+  }
+}
+
+export = function ViteSsrPlugin(
+  options: ViteSsrPluginOptions & SsrOptions = {}
+) {
   return {
     name: pluginName,
     config() {
@@ -17,7 +34,7 @@ export = function ViteSsrPlugin(options: SsrOptions = {}) {
       } catch (error) {}
 
       return {
-        ...(isReact && detectReactConfigFeatures()),
+        ...(isReact && detectReactConfigFeatures(options.features)),
       }
     },
     configResolved: (config) => {
@@ -53,21 +70,23 @@ export = function ViteSsrPlugin(options: SsrOptions = {}) {
   } as Plugin
 }
 
-function detectReactConfigFeatures() {
+function detectReactConfigFeatures(
+  features: ViteSsrPluginOptions['features'] = {}
+) {
   const external = []
   let useApolloRenderer
   let useStyledComponents
 
   try {
     require.resolve('@apollo/client/react/ssr')
-    useApolloRenderer = true
+    useApolloRenderer = features.reactApolloRenderer !== false
   } catch (error) {
     external.push('@apollo/client')
   }
 
   try {
     require.resolve('styled-components')
-    useStyledComponents = true
+    useStyledComponents = features.reactStyledComponents !== false
   } catch (error) {
     external.push('styled-components')
   }

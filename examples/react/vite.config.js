@@ -5,7 +5,14 @@ const api = require('../node-server/api')
 
 module.exports = defineConfig({
   plugins: [
-    viteSSR(),
+    viteSSR({
+      features: {
+        // Manually disable features that are
+        // detected because this is a mono repo
+        reactStyledComponents: false,
+        reactApolloRenderer: false,
+      },
+    }),
     reactRefresh(),
     {
       // Mock API during development
