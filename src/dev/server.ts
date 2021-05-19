@@ -1,4 +1,4 @@
-import type { ServerResponse } from 'node:http'
+import type { ServerResponse } from 'http'
 import { promises as fs } from 'fs'
 import path from 'path'
 import connect, { NextHandleFunction } from 'connect'

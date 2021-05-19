@@ -42,7 +42,7 @@ const parseBody = (req) => {
 module.exports = [
   {
     route: '/api/getProps',
-    method: 'post',
+    method: 'get',
     handler(req, res) {
       const url = new URL('http://e.c' + req.originalUrl)
       console.log('getProps', url.searchParams.toString())
