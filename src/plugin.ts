@@ -56,6 +56,7 @@ export = function ViteSsrPlugin(options: SsrOptions = {}) {
 function detectReactConfigFeatures() {
   const external = []
   let useApolloRenderer
+  let useStyledComponents
 
   try {
     require.resolve('@apollo/client/react/ssr')
@@ -64,10 +65,18 @@ function detectReactConfigFeatures() {
     external.push('@apollo/client')
   }
 
+  try {
+    require.resolve('styled-components')
+    useStyledComponents = true
+  } catch (error) {
+    external.push('styled-components')
+  }
+
   return {
     ssr: { external },
     define: {
       __USE_APOLLO_RENDERER__: !!useApolloRenderer,
+      __USE_STYLED_COMPONENTS__: !!useStyledComponents,
     },
   }
 }

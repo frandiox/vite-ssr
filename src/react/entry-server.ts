@@ -23,6 +23,18 @@ if (__USE_APOLLO_RENDERER__) {
     .catch(() => null)
 }
 
+let appWrapper = (el: any, ctx: object) => el
+
+// @ts-ignore
+if (__USE_STYLED_COMPONENTS__) {
+  // @ts-ignore
+  import('./styled/styled-components')
+    .then(({ appStyledWrapper }) => {
+      appWrapper = appStyledWrapper
+    })
+    .catch(() => null)
+}
+
 const viteSSR: SsrHandler = function (
   App,
   {
@@ -60,17 +72,21 @@ const viteSSR: SsrHandler = function (
 
     const helmetContext: Record<string, Record<string, string>> = {}
 
-    const app = React.createElement(
-      HelmetProvider,
-      { context: helmetContext },
+    const styledContext = {}
+    const app = appWrapper(
       React.createElement(
-        StaticRouter,
-        {
-          basename: routeBase,
-          location: fullPath,
-        },
-        React.createElement(App, context)
-      )
+        HelmetProvider,
+        { context: helmetContext },
+        React.createElement(
+          StaticRouter,
+          {
+            basename: routeBase,
+            location: fullPath,
+          },
+          React.createElement(App, context)
+        )
+      ),
+      styledContext
     )
 
     await ssrPrepass(app, prepassVisitor)
@@ -90,9 +106,16 @@ const viteSSR: SsrHandler = function (
       ...tags
     } = helmetContext.helmet || {}
 
-    const headTags = Object.keys(tags)
-      .map((key) => (tags[key] || '').toString())
-      .join('')
+    const styleTags: string =
+      // @ts-ignore
+      (styledContext.styles && styledContext.styles()) || ''
+
+    const headTags =
+      Object.keys(tags)
+        .map((key) => (tags[key] || '').toString())
+        .join('') +
+      '\n' +
+      styleTags
 
     const initialState = await transformState(
       context.initialState || {},

@@ -1,6 +1,13 @@
 import React from 'react'
 import { Helmet } from 'react-helmet-async'
 import { gql, useQuery } from '@apollo/client'
+import styled from 'styled-components'
+
+const H1 = styled.h1`
+  font-size: 1.5em;
+  text-align: center;
+  color: palevioletred;
+`
 
 const GET_HELLO = gql`
   query Hello($msg: String!) {
@@ -31,7 +38,7 @@ export default function Home(props) {
         <link rel="canonical" href="http://mysite.com/example" />
       </Helmet>
 
-      <h1>Home</h1>
+      <H1>Home</H1>
 
       <div>{getGraphHello()}</div>
     </>
