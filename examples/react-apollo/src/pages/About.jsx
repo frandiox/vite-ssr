@@ -19,7 +19,7 @@ export default function About(props) {
       return <p>Loading ...</p>
     }
 
-    return <h3>{data?.hello?.otherAnswer || 'jio'}</h3>
+    return <h3>{(data && data.hello && data.hello.otherAnswer) || ''}</h3>
   }
 
   return (

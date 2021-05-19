@@ -26,7 +26,7 @@ export default function Home(props) {
     if (loading) {
       return <p>Loading ...</p>
     }
-    return <h3>{data?.hello?.answer || ''}</h3>
+    return <h3>{(data && data.hello && data.hello.answer) || ''}</h3>
   }
 
   return (
