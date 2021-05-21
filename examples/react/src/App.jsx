@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, Route, Switch } from 'react-router-dom'
 import logo from './logo.svg'
 import { ClientOnly } from 'vite-ssr'
-export default function App({ isClient, url, router }) {
+export default function App({ isClient, url, router, request }) {
   const baseUrl = isClient ? '' : url.origin
   const [count, setCount] = useState(0)
 

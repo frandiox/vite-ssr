@@ -7,7 +7,7 @@ import { createHead } from '@vueuse/head'
 export default viteSSR(
   App,
   { routes },
-  ({ app, router, isClient, url, initialState, initialRoute }) => {
+  ({ app, router, isClient, url, initialState, initialRoute, request }) => {
     const head = createHead()
     app.use(head)
 

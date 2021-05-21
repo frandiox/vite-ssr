@@ -40,15 +40,20 @@ api.forEach(({ route, handler, method = 'get' }) =>
 )
 
 // Everything else is treated as a "rendering request"
-server.get('*', async (req, res) => {
-  const url = req.protocol + '://' + req.get('host') + req.originalUrl
+server.get('*', async (request, response) => {
+  const url =
+    request.protocol + '://' + request.get('host') + request.originalUrl
 
   const { html } = await renderPage(url, {
     manifest,
     preload: true,
+    // Anything passed here will be available in the main hook
+    request,
+    response,
+    // initialState: { ... } // <- This would also be available
   })
 
-  res.end(html)
+  response.end(html)
 })
 
 const port = 8080

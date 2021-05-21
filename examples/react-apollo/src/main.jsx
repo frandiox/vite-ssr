@@ -15,7 +15,7 @@ export default viteSSR(
       return defaultTransformer(state)
     },
   },
-  ({ initialState }) => {
+  ({ initialState, request }) => {
     // Custom initialization hook
     if (import.meta.env.SSR) {
       initialState.apolloCache = new InMemoryCache()
