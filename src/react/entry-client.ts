@@ -63,6 +63,12 @@ export const viteSSR: ClientHandler = async function (
   if (debug.mount !== false) {
     const el = document.getElementById('app')
 
+    setTimeout(() => {
+      Array.from(
+        document.querySelectorAll('[data-remove-on-hydration]')
+      ).forEach((el) => el.parentElement && el.parentElement.removeChild(el))
+    })
+
     // @ts-ignore
     import.meta.env.DEV ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
   }

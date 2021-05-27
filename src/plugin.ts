@@ -17,6 +17,11 @@ type ViteSsrPluginOptions = {
      * @default true
      */
     reactStyledComponents?: boolean
+    /**
+     * Collect '@material-ui/core' styles if present
+     * @default true
+     */
+    reactMaterialUi?: boolean
   }
 }
 
@@ -76,6 +81,9 @@ function detectReactConfigFeatures(
   const external = []
   let useApolloRenderer
   let useStyledComponents
+  let useMaterialUi
+
+  // TODO use virtual modules for feature-detection
 
   try {
     require.resolve('@apollo/client/react/ssr')
@@ -91,11 +99,19 @@ function detectReactConfigFeatures(
     external.push('styled-components')
   }
 
+  try {
+    require.resolve('@material-ui/core')
+    useMaterialUi = features.reactMaterialUi !== false
+  } catch (error) {
+    external.push('@material-ui/core')
+  }
+
   return {
     ssr: { external },
     define: {
       __USE_APOLLO_RENDERER__: !!useApolloRenderer,
       __USE_STYLED_COMPONENTS__: !!useStyledComponents,
+      __USE_MATERIAL_UI__: !!useMaterialUi,
     },
   }
 }

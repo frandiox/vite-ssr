@@ -35,6 +35,16 @@ if (__USE_STYLED_COMPONENTS__) {
     .catch(() => null)
 }
 
+// @ts-ignore
+if (__USE_MATERIAL_UI__) {
+  // @ts-ignore
+  import('./styled/material-ui-core')
+    .then(({ appStyledWrapper }) => {
+      appWrapper = appStyledWrapper
+    })
+    .catch(() => null)
+}
+
 const viteSSR: SsrHandler = function (
   App,
   {
