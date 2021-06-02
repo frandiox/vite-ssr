@@ -19,7 +19,6 @@ export = async ({
     {
       build: {
         outDir: path.resolve(process.cwd(), 'dist/client'),
-        manifest: true,
         ssrManifest: true,
       },
     },
