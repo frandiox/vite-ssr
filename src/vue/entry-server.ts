@@ -33,8 +33,6 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
-    app.use(router)
-
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
@@ -55,6 +53,7 @@ export const viteSSR: SsrHandler = function viteSSR(
         }))) ||
       {}
 
+    app.use(router)
     router.push(fullPath)
 
     await router.isReady()

@@ -30,8 +30,6 @@ export const viteSSR: ClientHandler = async function viteSSR(
     routes: routes as RouteRecordRaw[],
   })
 
-  app.use(router)
-
   const initialState = await transformState(
     // @ts-ignore
     window.__INITIAL_STATE__,
@@ -61,6 +59,8 @@ export const viteSSR: ClientHandler = async function viteSSR(
       initialRoute: router.resolve(getFullPath(url, routeBase)),
     })
   }
+
+  app.use(router)
 
   if (debug.mount !== false) {
     // this will hydrate the app
