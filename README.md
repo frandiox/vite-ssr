@@ -4,7 +4,7 @@
 
 # Vite SSR
 
-Simple yet powerlful Server Side Rendering for Vite 2 in Node.js.
+Simple yet powerful Server Side Rendering for Vite 2 in Node.js.
 
 - ⚡ Lightning Fast HMR (powered by Vite, even in SSR mode).
 - 💁‍♂️ Consistent DX experience abstracting most of the SSR complexity.
