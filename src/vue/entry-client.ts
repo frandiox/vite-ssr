@@ -14,6 +14,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
     pageProps = { passToPage: true },
     debug = {},
     transformState = deserializeState,
+    scrollBehavior,
   },
   hook
 ) {
@@ -28,6 +29,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
   const router = createRouter({
     history: createWebHistory(routeBase),
     routes: routes as RouteRecordRaw[],
+    scrollBehavior,
   })
 
   const initialState = await transformState(

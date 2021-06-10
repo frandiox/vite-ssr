@@ -3,6 +3,7 @@ import type {
   RouteLocationNormalized,
   RouteLocationRaw,
   Router,
+  RouterScrollBehavior,
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
 import type { Meta, PagePropsOptions, Renderer } from '../utils/types'
@@ -26,6 +27,7 @@ export type Options = {
     state: any,
     defaultTransformer: (state: any) => any
   ) => any | Promise<any>
+  scrollBehavior?: RouterScrollBehavior
 }
 
 type HookResponse = void | {
