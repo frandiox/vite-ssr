@@ -14,6 +14,7 @@ export const viteSSR: SsrHandler = function viteSSR(
   {
     routes,
     base,
+    routerOptions = {},
     pageProps = { passToPage: true },
     transformState = serializeState,
   },
@@ -29,6 +30,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     url = createUrl(url)
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const router = createRouter({
+      ...routerOptions,
       history: createMemoryHistory(routeBase),
       routes: routes as RouteRecordRaw[],
     })

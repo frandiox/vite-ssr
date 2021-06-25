@@ -11,7 +11,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
   {
     routes,
     base,
-    routerOptions= {},
+    routerOptions = {},
     pageProps = { passToPage: true },
     debug = {},
     transformState = deserializeState,
@@ -27,9 +27,9 @@ export const viteSSR: ClientHandler = async function viteSSR(
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
+    ...routerOptions,
     history: createWebHistory(routeBase),
     routes: routes as RouteRecordRaw[],
-    ...routerOptions
   })
 
   const initialState = await transformState(
