@@ -78,6 +78,7 @@ The previous handler accepts the following options as its second argument:
 
 - `routes`: Array of routes, according to each framework's router (see [`vue-router`](https://next.router.vuejs.org/api/#routerecordraw) or [`react-router-config`](https://www.npmjs.com/package/react-router-config#route-configuration-shape)).
 - `base`: Function that returns a string with the router base. Can be useful for i18n routes or when the app is not deployed at the domain root.
+- `routerOptions`: Additional router options like scrollBehavior in vue-router (see[`vue-router`](https://next.router.vuejs.org/guide/advanced/scroll-behavior.html))
 - `transformState`: Modify the state to be serialized or deserialized. See [State serialization](#state-serialization) for more information.
 - `pageProps.passToPage`: Whether each route's `initialState` should be automatically passed to the page components as props.
 - `debug.mount`: Pass `false` to prevent mounting the app in the client. You will need to do this manually on your own but it's useful to see differences between SSR and hydration.
