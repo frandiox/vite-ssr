@@ -2,6 +2,7 @@ import type { App, Component } from 'vue'
 import type {
   RouteLocationNormalized,
   RouteLocationRaw,
+  RouterOptions,
   Router,
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
@@ -20,6 +21,7 @@ export type ExtendedRouteNormalized = RouteLocationNormalized & {
 export type Options = {
   routes: ExtendedRouteRaw[]
   base?: (params: { url: Location | URL }) => string
+  routerOptions?: Omit<RouterOptions, 'routes' | 'history'>
   debug?: { mount?: boolean }
   pageProps?: PagePropsOptions
   transformState?: (
