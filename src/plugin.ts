@@ -38,8 +38,16 @@ export = function ViteSsrPlugin(
         isReact = true
       } catch (error) {}
 
-      return {
+      const detectedFeats = {
         ...(isReact && detectReactConfigFeatures(options.features)),
+      }
+
+      return {
+        ...detectedFeats,
+        ssr: {
+          ...detectedFeats.ssr,
+          noExternal: [pluginName],
+        },
       }
     },
     configResolved: (config) => {
