@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { defineComponent, inject, onBeforeMount, ref } from 'vue'
+import { defineComponent, inject, ref } from 'vue'
 import { useHead } from '@vueuse/head'
 
 export default defineComponent({

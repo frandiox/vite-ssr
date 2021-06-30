@@ -64,6 +64,8 @@ export = function ViteSsrPlugin(
         find: /^vite-ssr$/,
         replacement:
           pluginName + lib + (config.build.ssr ? entryServer : entryClient),
+        // @ts-ignore
+        _viteSSR: true,
       })
 
       // @ts-ignore

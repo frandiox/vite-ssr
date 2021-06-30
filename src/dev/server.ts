@@ -10,19 +10,16 @@ import {
 import { getEntryPoint } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
-function fixEntryPoint(vite: ViteDevServer, pluginName: string) {
+function fixEntryPoint(vite: ViteDevServer) {
   // The plugin is redirecting to the entry-client for the SPA,
   // but we need to reach the entry-server here. This trick
   // replaces the plugin behavior in the config and seems
   // to keep the entry-client for the SPA.
-  const alias = vite.config.resolve.alias.find(
-    (item) =>
-      typeof item.replacement === 'string' &&
-      (item.replacement || '').includes(pluginName)
-  )
-
-  if (alias) {
-    alias.replacement = alias.replacement.replace('client', 'server')
+  for (const alias of vite.config.resolve.alias || []) {
+    // @ts-ignore
+    if (alias._viteSSR === true) {
+      alias.replacement = alias.replacement.replace('client', 'server')
+    }
   }
 }
 
@@ -62,7 +59,7 @@ export const createSSRDevHandler = (
       return next()
     }
 
-    fixEntryPoint(server, options.plugin || 'vite-ssr')
+    fixEntryPoint(server)
 
     try {
       const template = await getIndexTemplate(request.originalUrl as string)
