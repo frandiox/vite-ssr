@@ -60,6 +60,7 @@ Then, simply import the main Vite SSR handler in your main entry file as follows
 import App from './App' // Vue or React main app
 import routes from './routes'
 import viteSSR from 'vite-ssr'
+// or from 'vite-ssr/vue' or 'vite-ssr/react', which slightly improves typings
 
 export default viteSSR(App, { routes }, (context) => {
   /* custom logic */
@@ -142,7 +143,7 @@ export default viteSSR(App, { routes }, async ({ app }) => {
 })
 ```
 
-- Calling your API directly from Vue components and save the result in the SSR initial state. You can rely on Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch) or [`suspense`](https://v3.vuejs.org/guide/migration/suspense.html) to await for your data and then render the view. See a full example with `suspense` [here](./examples/vue/src/pages/Homepage.vue).
+- Calling your API directly from Vue components and save the result in the SSR initial state. You can rely on Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch) or [`suspense`](https://v3.vuejs.org/guide/migration/suspense.html) to await for your data and then render the view. See a full example with `suspense` [here](./examples/vue/src/pages/Homepage.vue). Example with [Pinia here](https://pinia.esm.dev/ssr/#state-hydration).
 
 ```js
 // Main
@@ -408,5 +409,5 @@ The following projects served as learning material to develop this tool:
 - [x] Support React
 - [x] SSR dev-server
 - [x] Make SSR dev-server similar to Vite's dev-server (options, terminal output)
-- [ ] Research if `vite-ssr` CLI logic can be moved to the plugin in Vite 2 to use `vite` command instead.
+- [x] Research if `vite-ssr` CLI logic can be moved to the plugin in Vite 2 to use `vite` command instead.
 - [x] Docs

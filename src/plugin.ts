@@ -61,7 +61,7 @@ export = function ViteSsrPlugin(
       }
 
       config.resolve.alias.push({
-        find: /^vite-ssr$/,
+        find: /^vite-ssr(\/vue|\/react)?$/,
         replacement:
           pluginName + lib + (config.build.ssr ? entryServer : entryClient),
         // @ts-ignore
