@@ -2,7 +2,7 @@ import { build, InlineConfig, mergeConfig } from 'vite'
 import replace from '@rollup/plugin-replace'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { getEntryPoint } from '../config'
+import { getEntryPoint, resolveViteConfig } from '../config'
 import { buildHtmlDocument } from './utils'
 import type { RollupOutput, OutputAsset } from 'rollup'
 
@@ -15,10 +15,13 @@ export = async ({
   clientOptions = {},
   serverOptions = {},
 }: BuildOptions = {}) => {
+  const viteConfig = await resolveViteConfig()
+  const distDir = viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
+
   const clientBuildOptions = mergeConfig(
     {
       build: {
-        outDir: path.resolve(process.cwd(), 'dist/client'),
+        outDir: path.resolve(distDir, 'client'),
         ssrManifest: true,
       },
     },
@@ -35,7 +38,7 @@ export = async ({
   const serverBuildOptions = mergeConfig(
     {
       build: {
-        outDir: path.resolve(process.cwd(), 'dist/server'),
+        outDir: path.resolve(distDir, 'server'),
         // The plugin is already changing the vite-ssr alias to point to the server-entry.
         // Therefore, here we can just use the same entry point as in the index.html
         ssr: await getEntryPoint(),
