@@ -20,7 +20,7 @@ let configFileName: string
 let isTS = false
 let isMJS = false
 
-export function getProjectInfo() {
+async function getProjectInfo() {
   if (!rootDir) {
     let currentDir = process.cwd()
     while (!rootDir && currentDir !== systemRoot) {
@@ -45,6 +45,11 @@ export function getProjectInfo() {
     }
   }
 
+  const viteConfig = await resolveViteConfig()
+  if (viteConfig.root !== undefined) {
+    rootDir = viteConfig.root
+  }
+
   return {
     isTS,
     isMJS,
@@ -55,7 +60,8 @@ export function getProjectInfo() {
 
 export async function getEntryPoint(root?: string, indexHtml?: string) {
   if (!root) {
-    root = getProjectInfo().rootDir
+    const projectInfo = await getProjectInfo()
+    root = projectInfo.rootDir
   }
 
   if (!indexHtml) {
