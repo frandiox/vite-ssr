@@ -16,7 +16,8 @@ export = async ({
   serverOptions = {},
 }: BuildOptions = {}) => {
   const viteConfig = await resolveViteConfig()
-  const distDir = viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
+  const distDir =
+    viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
 
   const clientBuildOptions = mergeConfig(
     {
@@ -41,7 +42,7 @@ export = async ({
         outDir: path.resolve(distDir, 'server'),
         // The plugin is already changing the vite-ssr alias to point to the server-entry.
         // Therefore, here we can just use the same entry point as in the index.html
-        ssr: await getEntryPoint(),
+        ssr: await getEntryPoint(viteConfig.root),
         rollupOptions: {
           plugins: [
             replace({
