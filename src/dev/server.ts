@@ -23,6 +23,14 @@ function fixEntryPoint(vite: ViteDevServer) {
   }
 }
 
+type ResponseLike = {
+  status?: number
+  statusText?: string
+  initialState?: any
+  headers?: Record<string, string>
+  [key: string]: any
+}
+
 export type SsrOptions = {
   plugin?: string
   ssr?: string
@@ -31,7 +39,7 @@ export type SsrOptions = {
     request: connect.IncomingMessage
     response: ServerResponse
     resolvedEntryPoint: Record<string, any>
-  }) => Promise<any>
+  }) => Promise<ResponseLike>
 }
 
 export const createSSRDevHandler = (
@@ -48,6 +56,19 @@ export const createSSRDevHandler = (
     // Template should be fresh in every request
     const indexHtml = await fs.readFile(resolve('index.html'), 'utf-8')
     return await server.transformIndexHtml(url, indexHtml)
+  }
+
+  function respondWithRedirect(
+    response: ServerResponse,
+    context: ResponseLike = {}
+  ) {
+    response.writeHead(
+      context.status || 302,
+      context.statusText || '',
+      context.headers || {}
+    )
+
+    return response.end(context.body)
   }
 
   const handleSsrRequest: NextHandleFunction = async (
@@ -90,14 +111,7 @@ export const createSSRDevHandler = (
 
       if (context && context.status) {
         // If response-like is provided, just return the response
-        for (const [key, value] of Object.entries(context.headers || {})) {
-          response.setHeader(key, value as string)
-        }
-
-        response.statusCode = context.status
-        response.statusMessage = context.statusText
-
-        return response.end(context.body)
+        return respondWithRedirect(response, context)
       }
 
       const htmlParts = await render(url, { request, response, ...context })
