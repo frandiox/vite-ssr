@@ -7,6 +7,8 @@ import type {
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
 import type { Meta, PagePropsOptions, Renderer } from '../utils/types'
+import type { IncomingMessage } from 'connect'
+import type { ServerResponse } from 'http'
 
 export type ExtendedRouteRaw = RouteLocationRaw & {
   props?: any
@@ -41,6 +43,9 @@ export type Hook = (params: {
   isClient: boolean
   initialState: Record<string, any>
   initialRoute: RouteLocationNormalized
+  request?: IncomingMessage
+  response?: ServerResponse
+  [key: string]: any
 }) => HookResponse | Promise<HookResponse>
 
 export type ClientHandler = (

@@ -1,4 +1,6 @@
 // This is a generic mix of framework types
+import type { IncomingMessage } from 'connect'
+import type { ServerResponse } from 'http'
 
 declare module 'vite-ssr' {
   const handler: (
@@ -21,6 +23,8 @@ declare module 'vite-ssr' {
       isClient: boolean
       initialState: any
       initialRoute: any
+      request?: IncomingMessage
+      response?: ServerResponse
       [key: string]: any
     }) => any
   ) => any

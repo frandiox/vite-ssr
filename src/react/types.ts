@@ -1,5 +1,7 @@
 import type { FunctionComponent, ReactNode } from 'react'
 import type { Base, Meta, PagePropsOptions, Renderer } from '../utils/types'
+import type { IncomingMessage } from 'connect'
+import type { ServerResponse } from 'http'
 
 export type RouteRaw = {
   name?: string
@@ -35,6 +37,9 @@ export type Hook = (params: {
   router: any
   isClient: boolean
   initialState: Record<string, any>
+  request?: IncomingMessage
+  response?: ServerResponse
+  [key: string]: any
 }) => any | Promise<any>
 
 export type ClientHandler = (
