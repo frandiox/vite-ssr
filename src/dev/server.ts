@@ -115,8 +115,12 @@ export const createSSRDevHandler = (
       }
 
       const htmlParts = await render(url, { request, response, ...context })
-      const html = buildHtmlDocument(template, htmlParts)
 
+      if (htmlParts && htmlParts.status) {
+        return respondWithRedirect(response, htmlParts)
+      }
+
+      const html = buildHtmlDocument(template, htmlParts)
       response.setHeader('Content-Type', 'text/html')
       response.end(html)
     } catch (e) {

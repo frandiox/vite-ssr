@@ -3,10 +3,12 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
+import { defer } from '../utils/other'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 import type { SsrHandler, Context } from './types'
+import type { Redirection } from '../utils/types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -37,11 +39,25 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
+    const rendered = defer<string>()
+
+    let redirection
+    function redirect({
+      location = '/',
+      status = 302,
+      statusText,
+      headers,
+    }: Redirection) {
+      redirection = { headers: { location, ...headers }, status, statusText }
+      rendered.resolve('')
+    }
+
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
       isClient: false,
       initialState: {},
+      redirect,
       ...extra,
     } as Context
 
@@ -64,16 +80,23 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
+    if (redirection) return redirection
+
     Object.assign(
       context.initialState || {},
       (router.currentRoute.value.meta || {}).state || {}
     )
 
-    const body = await renderToString(app, context)
+    renderToString(app, context).then(rendered.resolve).catch(rendered.reject)
+    const body = await rendered.promise
 
-    let { headTags = '', htmlAttrs = '', bodyAttrs = '' } = head
-      ? renderHeadToString(head)
-      : {}
+    if (redirection) return redirection
+
+    let {
+      headTags = '',
+      htmlAttrs = '',
+      bodyAttrs = '',
+    } = head ? renderHeadToString(head) : {}
 
     const dependencies = manifest
       ? // @ts-ignore

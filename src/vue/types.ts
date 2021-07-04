@@ -8,7 +8,12 @@ import type {
 import type { HeadClient } from '@vueuse/head'
 import type { IncomingMessage } from 'connect'
 import type { ServerResponse } from 'http'
-import type { Meta, PagePropsOptions, Renderer } from '../utils/types'
+import type {
+  Meta,
+  PagePropsOptions,
+  Redirection,
+  Renderer,
+} from '../utils/types'
 
 export type ExtendedRouteRaw = RouteLocationRaw & {
   props?: any
@@ -40,6 +45,7 @@ export type Context = {
   url: URL | Location
   isClient: boolean
   initialState: Record<string, any>
+  redirect: (redirection: Redirection) => void
   request?: IncomingMessage
   response?: ServerResponse
   [key: string]: any

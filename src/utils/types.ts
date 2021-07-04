@@ -12,6 +12,23 @@ export type PagePropsOptions = {
   passToPage?: boolean
 }
 
+export type Redirection = {
+  location?: string
+  status?: number
+  statusText?: string
+  headers?: Record<string, string>
+}
+
+export type Rendered = {
+  html: string
+  htmlAttrs: string
+  headTags: string
+  body: string
+  bodyAttrs: string
+  initialState: any
+  dependencies: string[]
+}
+
 export type Renderer = (
   url: string | URL,
   options?: {
@@ -19,4 +36,4 @@ export type Renderer = (
     preload?: boolean
     [key: string]: any
   }
-) => Promise<{ html: string; dependencies: string[] }>
+) => Promise<Rendered | Redirection>

@@ -4,6 +4,7 @@ import { getFullPath, withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import type { ClientHandler, Context } from './types'
+import type { Redirection } from '../utils/types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -53,10 +54,20 @@ export const viteSSR: ClientHandler = async function viteSSR(
     next()
   })
 
+  function redirect({ location = '/', headers = {} }: Redirection) {
+    const nextUrl = headers.location || location
+    if (nextUrl.startsWith('/')) {
+      return router.push(nextUrl)
+    } else {
+      window.location.href = nextUrl
+    }
+  }
+
   const context = {
     url,
     isClient: true,
     initialState: initialState || {},
+    redirect,
   } as Context
 
   provideContext(app, context)
