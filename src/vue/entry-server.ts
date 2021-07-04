@@ -6,8 +6,10 @@ import { findDependencies, renderPreloadLinks } from '../utils/html'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-export { ClientOnly } from './components.js'
-import type { SsrHandler } from './types'
+import type { SsrHandler, Context } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 export const viteSSR: SsrHandler = function viteSSR(
   App,
@@ -41,7 +43,9 @@ export const viteSSR: SsrHandler = function viteSSR(
       isClient: false,
       initialState: {},
       ...extra,
-    }
+    } as Context
+
+    provideContext(app, context)
 
     const fullPath = getFullPath(url, routeBase)
 
