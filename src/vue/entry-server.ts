@@ -3,7 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
-import { defer } from '../utils/other'
+import { defer } from '../utils/defer'
 import { isRedirect } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
@@ -46,6 +46,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     function writeResponse(params: WriteResponse) {
       response = params
       if (isRedirect(params)) {
+        // Stop waiting for rendering when redirecting
         rendered.resolve('')
       }
     }
