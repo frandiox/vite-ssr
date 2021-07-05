@@ -4,11 +4,12 @@ import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
 import { defer } from '../utils/other'
+import { isRedirect } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 import type { SsrHandler, Context } from './types'
-import type { Redirection } from '../utils/types'
+import type { WriteResponse } from '../utils/types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -41,15 +42,12 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     const rendered = defer<string>()
 
-    let redirection
-    function redirect({
-      location = '/',
-      status = 302,
-      statusText,
-      headers,
-    }: Redirection) {
-      redirection = { headers: { location, ...headers }, status, statusText }
-      rendered.resolve('')
+    let response: WriteResponse | undefined = undefined
+    function writeResponse(params: WriteResponse) {
+      response = params
+      if (isRedirect(params)) {
+        rendered.resolve('')
+      }
     }
 
     // This can be injected with useSSRContext() in setup functions
@@ -57,7 +55,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       url,
       isClient: false,
       initialState: {},
-      redirect,
+      writeResponse,
       ...extra,
     } as Context
 
@@ -80,7 +78,7 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
-    if (redirection) return redirection
+    if (response && isRedirect(response)) return response
 
     Object.assign(
       context.initialState || {},
@@ -90,7 +88,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     renderToString(app, context).then(rendered.resolve).catch(rendered.reject)
     const body = await rendered.promise
 
-    if (redirection) return redirection
+    if (response && isRedirect(response)) return response
 
     let {
       headTags = '',
@@ -122,6 +120,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       bodyAttrs,
       initialState,
       dependencies,
+      ...(response || {}),
     }
   }
 }

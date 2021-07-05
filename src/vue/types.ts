@@ -11,7 +11,7 @@ import type { ServerResponse } from 'http'
 import type {
   Meta,
   PagePropsOptions,
-  Redirection,
+  WriteResponse,
   Renderer,
 } from '../utils/types'
 
@@ -45,7 +45,7 @@ export type Context = {
   url: URL | Location
   isClient: boolean
   initialState: Record<string, any>
-  redirect: (redirection: Redirection) => void
+  writeResponse: (params: WriteResponse) => void
   request?: IncomingMessage
   response?: ServerResponse
   [key: string]: any

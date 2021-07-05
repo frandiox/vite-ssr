@@ -12,14 +12,13 @@ export type PagePropsOptions = {
   passToPage?: boolean
 }
 
-export type Redirection = {
-  location?: string
+export type WriteResponse = {
   status?: number
   statusText?: string
   headers?: Record<string, string>
 }
 
-export type Rendered = {
+export type Rendered = WriteResponse & {
   html: string
   htmlAttrs: string
   headTags: string
@@ -36,4 +35,4 @@ export type Renderer = (
     preload?: boolean
     [key: string]: any
   }
-) => Promise<Rendered | Redirection>
+) => Promise<Rendered | WriteResponse>

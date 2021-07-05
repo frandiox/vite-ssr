@@ -10,6 +10,11 @@ import {
 import { getEntryPoint } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
+import type { WriteResponse } from '../utils/types'
+
+// This cannot be imported from utils due to ESM <> CJS issues
+const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
+
 function fixEntryPoint(vite: ViteDevServer) {
   // The plugin is redirecting to the entry-client for the SPA,
   // but we need to reach the entry-server here. This trick
@@ -23,14 +28,6 @@ function fixEntryPoint(vite: ViteDevServer) {
   }
 }
 
-type ResponseLike = {
-  status?: number
-  statusText?: string
-  initialState?: any
-  headers?: Record<string, string>
-  [key: string]: any
-}
-
 export type SsrOptions = {
   plugin?: string
   ssr?: string
@@ -39,7 +36,7 @@ export type SsrOptions = {
     request: connect.IncomingMessage
     response: ServerResponse
     resolvedEntryPoint: Record<string, any>
-  }) => Promise<ResponseLike>
+  }) => Promise<WriteResponse>
 }
 
 export const createSSRDevHandler = (
@@ -58,17 +55,20 @@ export const createSSRDevHandler = (
     return await server.transformIndexHtml(url, indexHtml)
   }
 
-  function respondWithRedirect(
-    response: ServerResponse,
-    context: ResponseLike = {}
-  ) {
-    response.writeHead(
-      context.status || 302,
-      context.statusText || '',
-      context.headers || {}
-    )
+  function writeHead(response: ServerResponse, params: WriteResponse) {
+    if (params.status) {
+      response.statusCode = params.status
+    }
 
-    return response.end(context.body)
+    if (params.statusText) {
+      response.statusMessage = params.statusText
+    }
+
+    if (params.headers) {
+      for (const [key, value] of Object.entries(params.headers)) {
+        response.setHeader(key, value)
+      }
+    }
   }
 
   const handleSsrRequest: NextHandleFunction = async (
@@ -109,20 +109,21 @@ export const createSSRDevHandler = (
           })
         : {}
 
-      if (context && context.status) {
-        // If response-like is provided, just return the response
-        return respondWithRedirect(response, context)
+      // This is used by Vitedge
+      writeHead(response, context)
+      if (isRedirect(context)) {
+        return response.end()
       }
 
       const htmlParts = await render(url, { request, response, ...context })
 
-      if (htmlParts && htmlParts.status) {
-        return respondWithRedirect(response, htmlParts)
+      writeHead(response, htmlParts)
+      if (isRedirect(htmlParts)) {
+        return response.end()
       }
 
-      const html = buildHtmlDocument(template, htmlParts)
       response.setHeader('Content-Type', 'text/html')
-      response.end(html)
+      response.end(buildHtmlDocument(template, htmlParts))
     } catch (e) {
       server.ssrFixStacktrace(e)
       console.log(e.stack)
