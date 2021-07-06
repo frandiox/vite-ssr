@@ -6,8 +6,13 @@ import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
-export { ClientOnly } from './components'
-import type { SsrHandler } from './types'
+import { defer } from '../utils/defer'
+import { WriteResponse } from '../utils/types'
+import { isRedirect } from '../utils/response'
+import type { Context, SsrHandler } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 let render: (element: ReactElement) => string | Promise<string> = renderToString
 
@@ -62,10 +67,22 @@ const viteSSR: SsrHandler = function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
+    const rendered = defer<string>()
+
+    let response: WriteResponse | undefined = undefined
+    function writeResponse(params: WriteResponse) {
+      response = params
+      if (isRedirect(params)) {
+        // Stop waiting for rendering when redirecting
+        rendered.resolve('')
+      }
+    }
+
     const context = {
       url,
       isClient: false,
       initialState: {},
+      writeResponse,
       ...extra,
       router: createRouter({
         routes,
@@ -74,11 +91,13 @@ const viteSSR: SsrHandler = function (
         pagePropsOptions: pageProps,
         PropsProvider,
       }),
-    }
+    } as Context
 
     if (hook) {
       context.initialState = (await hook(context)) || context.initialState
     }
+
+    if (response && isRedirect(response)) return response
 
     const helmetContext: Record<string, Record<string, string>> = {}
 
@@ -93,14 +112,20 @@ const viteSSR: SsrHandler = function (
             basename: routeBase,
             location: fullPath,
           },
-          React.createElement(App, context)
+          provideContext(React.createElement(App, context), context)
         )
       ),
       styledContext
     )
 
-    await ssrPrepass(app, prepassVisitor)
-    const body = await render(app)
+    ssrPrepass(app, prepassVisitor)
+      .then(() => render(app))
+      .then(rendered.resolve)
+      .catch(rendered.reject)
+
+    const body = await rendered.promise
+
+    if (response && isRedirect(response)) return response
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {

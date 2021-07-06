@@ -1,7 +1,14 @@
 import type { FunctionComponent, ReactNode } from 'react'
-import type { Base, Meta, PagePropsOptions, Renderer } from '../utils/types'
 import type { IncomingMessage } from 'connect'
 import type { ServerResponse } from 'http'
+import type { Router } from './utils'
+import type {
+  Base,
+  Meta,
+  PagePropsOptions,
+  Renderer,
+  WriteResponse,
+} from '../utils/types'
 
 export type RouteRaw = {
   name?: string
@@ -32,15 +39,18 @@ export type Options = {
   prepassVisitor?: any
 }
 
-export type Hook = (params: {
+export type Context = {
   url: URL | Location
-  router: any
   isClient: boolean
+  router: Router
   initialState: Record<string, any>
+  writeResponse: (params: WriteResponse) => void
   request?: IncomingMessage
   response?: ServerResponse
   [key: string]: any
-}) => any | Promise<any>
+}
+
+export type Hook = (params: Context) => any | Promise<any>
 
 export type ClientHandler = (
   App: any,
