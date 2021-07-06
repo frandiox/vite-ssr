@@ -84,3 +84,5 @@ export function createRouter({
     routes: routes.map(augmentRoute),
   }
 }
+
+export type Router = ReturnType<typeof createRouter>

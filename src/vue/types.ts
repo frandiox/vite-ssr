@@ -6,9 +6,14 @@ import type {
   Router,
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
-import type { Meta, PagePropsOptions, Renderer } from '../utils/types'
 import type { IncomingMessage } from 'connect'
 import type { ServerResponse } from 'http'
+import type {
+  Meta,
+  PagePropsOptions,
+  WriteResponse,
+  Renderer,
+} from '../utils/types'
 
 export type ExtendedRouteRaw = RouteLocationRaw & {
   props?: any
@@ -36,17 +41,23 @@ type HookResponse = void | {
   head?: HeadClient
 }
 
-export type Hook = (params: {
-  app: App
+export type Context = {
   url: URL | Location
-  router: Router
   isClient: boolean
   initialState: Record<string, any>
-  initialRoute: RouteLocationNormalized
+  writeResponse: (params: WriteResponse) => void
   request?: IncomingMessage
   response?: ServerResponse
   [key: string]: any
-}) => HookResponse | Promise<HookResponse>
+}
+
+export type Hook = (
+  params: Context & {
+    app: App
+    router: Router
+    initialRoute: RouteLocationNormalized
+  }
+) => HookResponse | Promise<HookResponse>
 
 export type ClientHandler = (
   App: Component,

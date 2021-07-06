@@ -4,7 +4,7 @@
 
 # Vite SSR
 
-Simple yet powerful Server Side Rendering for Vite 2 in Node.js.
+Simple yet powerful Server Side Rendering for Vite 2 in Node.js (Vue & React).
 
 - ⚡ Lightning Fast HMR (powered by Vite, even in SSR mode).
 - 💁‍♂️ Consistent DX experience abstracting most of the SSR complexity.
@@ -63,7 +63,7 @@ import viteSSR from 'vite-ssr'
 // or from 'vite-ssr/vue' or 'vite-ssr/react', which slightly improves typings
 
 export default viteSSR(App, { routes }, (context) => {
-  /* custom logic */
+  /* Vite SSR main hook for custom logic */
   /* const { app, router, initialState, ... } = context */
 })
 ```
@@ -72,6 +72,8 @@ That's right, in Vite SSR **there's only 1 single entry file** by default 🎉. 
 
 If you need conditional logic that should only run in either client or server, use Vite's `import.meta.env.SSR` boolean variable and the tree-shaking will do the rest.
 
+The third argument is Vite SSR's main hook, which runs only once at the start. It it receives the SSR context and can be used to initialize the app or setup anything like state management or other plugins. See an example of [Vue + Pinia here](https://pinia.esm.dev/ssr/#state-hydration). In React, the same SSR Context is passed to the main App function/component as props.
+
 <details><summary>Available options</summary>
 <p>
 
@@ -79,10 +81,40 @@ The previous handler accepts the following options as its second argument:
 
 - `routes`: Array of routes, according to each framework's router (see [`vue-router`](https://next.router.vuejs.org/api/#routerecordraw) or [`react-router-config`](https://www.npmjs.com/package/react-router-config#route-configuration-shape)).
 - `base`: Function that returns a string with the router base. Can be useful for i18n routes or when the app is not deployed at the domain root.
-- `routerOptions`: Additional router options like scrollBehavior in vue-router (see[`vue-router`](https://next.router.vuejs.org/guide/advanced/scroll-behavior.html))
+- `routerOptions`: Additional router options like scrollBehavior in [`vue-router`](https://next.router.vuejs.org/guide/advanced/scroll-behavior.html).
 - `transformState`: Modify the state to be serialized or deserialized. See [State serialization](#state-serialization) for more information.
 - `pageProps.passToPage`: Whether each route's `initialState` should be automatically passed to the page components as props.
 - `debug.mount`: Pass `false` to prevent mounting the app in the client. You will need to do this manually on your own but it's useful to see differences between SSR and hydration.
+
+</p>
+</details>
+
+<details><summary>SSR Context</summary>
+<p>
+
+The context passed to the main hook (and to React's root component) contains:
+
+- `initialState`: Object that can be mutated during SSR to save any data to be serialized. This same object and data can be read in the browser.
+- `url`: Initial [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL).
+- `isClient`: Boolean similar to `import.meta.env.SSR`. Unlike the latter, `isClient` does not trigger tree shaking.
+- `request`: Available during SSR.
+- `writeResponse`: Isomorphic function to add status or headers to the `response` object or redirect.
+- `router`: Router instance in Vue, and a custom router in React to access the routes and page components.
+- `app`: App instance, only in Vue.
+- `initialRoute`: Initial Route object, only in Vue.
+
+This context can also be accesed from any component by using `useContext` hook:
+
+```js
+import { useContext } from 'vite-ssr'
+
+//...
+function() {
+  // In a component
+  const { initialState, writeResponse } = useContext()
+  // ...
+}
+```
 
 </p>
 </details>
@@ -119,6 +151,8 @@ export default viteSSR(App, { routes }, ({ initialState }) => {
 })
 ```
 
+If you prefer having a solution for data fetching out of the box, have a look at [Vitedge](https://github.com/frandiox/vitedge). Otherwise, you can implement it as follows:
+
 <details><summary>Initial state in Vue</summary>
 <p>
 
@@ -128,49 +162,41 @@ Vue has multiple ways to provide the initial state to Vite SSR:
 
 ```js
 export default viteSSR(App, { routes }, async ({ app }) => {
-  router.beforEach((to, from, next) => {
+  router.beforEach(async (to, from) => {
     if (to.meta.state) {
-      return next() // Already has state
+      return // Already has state
     }
 
-    const response = await fetch('my/api/data')
+    const response = await fetch('my/api/data/' + to.name)
 
     // This will modify initialState
     to.meta.state = await response.json()
-
-    next()
   })
 })
 ```
 
-- Calling your API directly from Vue components and save the result in the SSR initial state. You can rely on Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch) or [`suspense`](https://v3.vuejs.org/guide/migration/suspense.html) to await for your data and then render the view. See a full example with `suspense` [here](./examples/vue/src/pages/Homepage.vue). Example with [Pinia here](https://pinia.esm.dev/ssr/#state-hydration).
+- Calling your API directly from Vue components using [`Suspense`](https://v3.vuejs.org/guide/migration/suspense.html), and storing the result in the SSR initial state. See a full example with `Suspense` [here](./examples/vue/src/pages/Homepage.vue).
 
 ```js
-// Main
-export default viteSSR(App, { routes }, ({ app, initialState }) => {
-  // You can pass it to your state management, if you like that
-  const store = createStore({ state: initialState /* ... */ })
-  app.use(store)
+import { useContext } from 'vite-ssr'
+import { useRoute } from 'vue-router'
+import { inject, ref } from 'vue'
 
-  // Or provide it to child components
-  app.provide('initial-state', initialState)
-})
+// This is a custom hook to fetch data in components
+export async function useFetchData(endpoint) {
+  const { initialState } = useContext()
+  const { name } = useRoute() // this is just a unique key
+  const state = ref(initialState[name] || null)
 
-// Page Component with Server Prefetch
-export default {
-  async serverPrefetch() {
-    await this.fetchMyData()
-  },
-  async beforeMount() {
-    await this.fetchMyData()
-  },
-  methods: {
-    async fetchMyData() {
-      const data = await (await fetch('my/api/data')).json()
-      const store = useStore()
-      store.commit('myData', data)
-    },
-  },
+  if (!state.value) {
+    state.value = await (await fetch(endpoint)).json()
+
+    if (import.meta.env.SSR) {
+      initialState[name] = state.value
+    }
+  }
+
+  return state
 }
 ```
 
@@ -178,10 +204,7 @@ export default {
 // Page Component with Async Setup
 export default {
   async setup() {
-    const data = await (await fetch('my/api/data')).json()
-    const store = useStore()
-    store.commit('myData', data)
-
+    const state = await useFetchData('my-api-endpoint')
     return { data }
   },
 }
@@ -194,6 +217,48 @@ export default {
     </Suspense>
   </RouterView>
 </template>
+```
+
+- Calling your API directly from Vue components using Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch), and storing the result in the SSR initial state.
+
+```js
+// Main
+export default viteSSR(App, { routes }, ({ app, initialState }) => {
+  // You can pass it to your state management
+  // or use `useContext()` like in the Suspense example
+  const pinia = createPinia()
+
+  // Sync initialState with the store:
+  if (import.meta.env.SSR) {
+    initialState.pinia = pinia.state.value
+  } else {
+    pinia.state.value = initialState.pinia
+  }
+
+  app.use(pinia)
+})
+
+// Page Component with Server Prefetch
+export default {
+  beforeMount() {
+    // In browser
+    this.fetchMyData()
+  },
+  async serverPrefetch() {
+    // During SSR
+    await this.fetchMyData()
+  },
+  methods: {
+    fetchMyData() {
+      const store = useStore()
+      if (!store.myData) {
+        return fetch('my/api/data').then(res => res.json()).then((myData) => {
+          store.myData = myData
+        })
+      }
+    },
+  },
+}
 ```
 
 </p>
@@ -285,7 +350,7 @@ export default viteSSR(App, {
 })
 ```
 
-## Accessing `response` and `request` objects.
+## Accessing `response` and `request` objects
 
 In development, both `response` and `request` objects are passed to the main hook during SSR:
 
@@ -317,6 +382,30 @@ const { html } = await render(url, {
 ```
 
 Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka.
+
+### Editing Response and redirects
+
+It's possible to set a status or headers to the response with `writeResponse` utility, which works both in SSR and browser. For example, triggering a server redirect can be done as follows:
+
+```js
+import { useContext } from 'vite-ssr'
+
+// In a component
+function () {
+  const { writeResponse } = useContext()
+
+  if (/* ... */) {
+    writeResponse({
+      status: 302,
+      headers: { location: '/another-page' }
+    })
+  }
+
+  // ...
+}
+```
+
+In the browser, this will just behave as a normal Router push.
 
 ## Head tags and global attributes
 

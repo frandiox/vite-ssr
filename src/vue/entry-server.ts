@@ -3,11 +3,16 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
+import { defer } from '../utils/defer'
+import { isRedirect } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-export { ClientOnly } from './components.js'
-import type { SsrHandler } from './types'
+import type { SsrHandler, Context } from './types'
+import type { WriteResponse } from '../utils/types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 export const viteSSR: SsrHandler = function viteSSR(
   App,
@@ -35,13 +40,27 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
+    const rendered = defer<string>()
+
+    let response: WriteResponse | undefined = undefined
+    function writeResponse(params: WriteResponse) {
+      response = params
+      if (isRedirect(params)) {
+        // Stop waiting for rendering when redirecting
+        rendered.resolve('')
+      }
+    }
+
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
       isClient: false,
       initialState: {},
+      writeResponse,
       ...extra,
-    }
+    } as Context
+
+    provideContext(app, context)
 
     const fullPath = getFullPath(url, routeBase)
 
@@ -60,16 +79,23 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
+    if (response && isRedirect(response)) return response
+
     Object.assign(
       context.initialState || {},
       (router.currentRoute.value.meta || {}).state || {}
     )
 
-    const body = await renderToString(app, context)
+    renderToString(app, context).then(rendered.resolve).catch(rendered.reject)
+    const body = await rendered.promise
 
-    let { headTags = '', htmlAttrs = '', bodyAttrs = '' } = head
-      ? renderHeadToString(head)
-      : {}
+    if (response && isRedirect(response)) return response
+
+    let {
+      headTags = '',
+      htmlAttrs = '',
+      bodyAttrs = '',
+    } = head ? renderHeadToString(head) : {}
 
     const dependencies = manifest
       ? // @ts-ignore
@@ -95,6 +121,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       bodyAttrs,
       initialState,
       dependencies,
+      ...(response || {}),
     }
   }
 }
