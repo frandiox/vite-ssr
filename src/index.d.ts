@@ -1,6 +1,7 @@
 // This is a generic mix of framework types
 import type { IncomingMessage } from 'connect'
 import type { ServerResponse } from 'http'
+import type { WriteResponse } from './utils/types'
 
 declare module 'vite-ssr' {
   const handler: (
@@ -23,6 +24,7 @@ declare module 'vite-ssr' {
       isClient: boolean
       initialState: any
       initialRoute: any
+      writeResponse: (params: WriteResponse) => void
       request?: IncomingMessage
       response?: ServerResponse
       [key: string]: any
