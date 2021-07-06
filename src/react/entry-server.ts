@@ -167,6 +167,7 @@ const viteSSR: SsrHandler = function (
       bodyAttrs,
       initialState,
       dependencies: [], // React does not populate the manifest context :(
+      ...(response || {}),
     }
   }
 }
