@@ -5,7 +5,7 @@ const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
 
 export function useSsrResponse() {
   const deferred = defer<string>()
-  let response
+  let response = undefined as unknown as WriteResponse
 
   const writeResponse = (params: WriteResponse) => {
     response = params
