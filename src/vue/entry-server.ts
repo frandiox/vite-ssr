@@ -3,13 +3,11 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
-import { defer } from '../utils/defer'
-import { isRedirect } from '../utils/response'
+import { useResponseSSR } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
 import type { SsrHandler, Context } from './types'
-import type { WriteResponse } from '../utils/types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -40,16 +38,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
-    const rendered = defer<string>()
-
-    let response: WriteResponse | undefined = undefined
-    function writeResponse(params: WriteResponse) {
-      response = params
-      if (isRedirect(params)) {
-        // Stop waiting for rendering when redirecting
-        rendered.resolve('')
-      }
-    }
+    const { deferred, response, writeResponse, isRedirect } = useResponseSSR()
 
     // This can be injected with useSSRContext() in setup functions
     const context = {
@@ -79,17 +68,17 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
-    if (response && isRedirect(response)) return response
+    if (isRedirect()) return response
 
     Object.assign(
       context.initialState || {},
       (router.currentRoute.value.meta || {}).state || {}
     )
 
-    renderToString(app, context).then(rendered.resolve).catch(rendered.reject)
-    const body = await rendered.promise
+    renderToString(app, context).then(deferred.resolve).catch(deferred.reject)
+    const body = await deferred.promise
 
-    if (response && isRedirect(response)) return response
+    if (isRedirect()) return response
 
     let {
       headTags = '',

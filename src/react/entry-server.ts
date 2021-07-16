@@ -6,9 +6,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
-import { defer } from '../utils/defer'
-import { WriteResponse } from '../utils/types'
-import { isRedirect } from '../utils/response'
+import { useResponseSSR } from '../utils/response'
 import type { Context, SsrHandler } from './types'
 
 import { provideContext } from './components.js'
@@ -67,16 +65,7 @@ const viteSSR: SsrHandler = function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
-    const rendered = defer<string>()
-
-    let response: WriteResponse | undefined = undefined
-    function writeResponse(params: WriteResponse) {
-      response = params
-      if (isRedirect(params)) {
-        // Stop waiting for rendering when redirecting
-        rendered.resolve('')
-      }
-    }
+    const { deferred, response, writeResponse, isRedirect } = useResponseSSR()
 
     const context = {
       url,
@@ -97,7 +86,7 @@ const viteSSR: SsrHandler = function (
       context.initialState = (await hook(context)) || context.initialState
     }
 
-    if (response && isRedirect(response)) return response
+    if (isRedirect()) return response
 
     const helmetContext: Record<string, Record<string, string>> = {}
 
@@ -120,12 +109,12 @@ const viteSSR: SsrHandler = function (
 
     ssrPrepass(app, prepassVisitor)
       .then(() => render(app))
-      .then(rendered.resolve)
-      .catch(rendered.reject)
+      .then(deferred.resolve)
+      .catch(deferred.reject)
 
-    const body = await rendered.promise
+    const body = await deferred.promise
 
-    if (response && isRedirect(response)) return response
+    if (isRedirect()) return response
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {

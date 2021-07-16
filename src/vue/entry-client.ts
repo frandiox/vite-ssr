@@ -2,9 +2,9 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
+import { useResponseClient } from '../utils/response'
 import { addPagePropsGetterToRoutes } from './utils'
 import type { ClientHandler, Context } from './types'
-import type { WriteResponse } from '../utils/types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -54,15 +54,9 @@ export const viteSSR: ClientHandler = async function viteSSR(
     next()
   })
 
-  function writeResponse({ headers: { location } = {} }: WriteResponse) {
-    if (location) {
-      if (location.startsWith('/')) {
-        return router.push(location)
-      } else {
-        window.location.href = location
-      }
-    }
-  }
+  const { writeResponse } = useResponseClient({
+    spaRedirect: (location) => router.push(location),
+  })
 
   const context = {
     url,
