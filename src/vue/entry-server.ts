@@ -112,7 +112,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       bodyAttrs,
       initialState,
       dependencies,
-      ...(response || {}),
+      ...response,
     }
   }
 }

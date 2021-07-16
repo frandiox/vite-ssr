@@ -1,14 +1,14 @@
 import { defer } from './defer'
 import type { WriteResponse } from './types'
 
-const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
+const isRedirect = ({ status = 0 }) => status >= 300 && status < 400
 
 export function useSsrResponse() {
   const deferred = defer<string>()
-  let response = undefined as unknown as WriteResponse
+  let response = {} as WriteResponse
 
   const writeResponse = (params: WriteResponse) => {
-    response = params
+    Object.assign(response, params)
     if (isRedirect(params)) {
       // Stop waiting for rendering when redirecting
       deferred.resolve('')
@@ -19,7 +19,7 @@ export function useSsrResponse() {
     deferred,
     response,
     writeResponse,
-    isRedirect: () => !!response && isRedirect(response),
+    isRedirect: () => isRedirect(response),
     redirect: (location: string, status = 302) =>
       writeResponse({ headers: { location }, status }),
   }
