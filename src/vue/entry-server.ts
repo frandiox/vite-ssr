@@ -3,7 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
-import { useResponseSSR } from '../utils/response'
+import { useSsrResponse } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
@@ -38,13 +38,15 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
-    const { deferred, response, writeResponse, isRedirect } = useResponseSSR()
+    const { deferred, response, writeResponse, redirect, isRedirect } =
+      useSsrResponse()
 
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
       isClient: false,
       initialState: {},
+      redirect,
       writeResponse,
       ...extra,
     } as Context

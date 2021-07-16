@@ -4,7 +4,7 @@ import { BrowserRouter, useHistory } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
-import { useResponseClient } from '../utils/response'
+import { useClientRedirect } from '../utils/response'
 import { createRouter } from './utils'
 import type { ClientHandler, Context } from './types'
 
@@ -32,14 +32,15 @@ export const viteSSR: ClientHandler = async function (
     deserializeState
   )
 
-  const { writeResponse } = useResponseClient({
-    spaRedirect: (location) => useHistory().push(location),
-  })
+  const { redirect, writeResponse } = useClientRedirect((location) =>
+    useHistory().push(location)
+  )
 
   const context = {
     url,
     initialState: initialState || {},
     isClient: true,
+    redirect,
     writeResponse,
     router: createRouter({
       routes,

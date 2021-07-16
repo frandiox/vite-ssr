@@ -24,6 +24,7 @@ declare module 'vite-ssr' {
       isClient: boolean
       initialState: any
       initialRoute: any
+      redirect: (location: string, status?: number) => void
       writeResponse: (params: WriteResponse) => void
       request?: IncomingMessage
       response?: ServerResponse

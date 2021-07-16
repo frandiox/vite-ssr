@@ -44,6 +44,7 @@ export type Context = {
   isClient: boolean
   router: Router
   initialState: Record<string, any>
+  redirect: (location: string, status?: number) => void
   writeResponse: (params: WriteResponse) => void
   request?: IncomingMessage
   response?: ServerResponse

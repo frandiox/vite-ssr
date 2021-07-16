@@ -3,7 +3,7 @@ import type { WriteResponse } from './types'
 
 const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
 
-export function useResponseSSR() {
+export function useSsrResponse() {
   const deferred = defer<string>()
   let response
 
@@ -20,24 +20,21 @@ export function useResponseSSR() {
     response,
     writeResponse,
     isRedirect: () => !!response && isRedirect(response),
+    redirect: (location: string, status = 302) =>
+      writeResponse({ headers: { location }, status }),
   }
 }
 
-export function useResponseClient({
-  spaRedirect,
-}: { spaRedirect?: (location: string) => void } = {}) {
-  const writeResponse = (params: WriteResponse) => {
-    const location = (params.headers || {}).location
-    if (location) {
-      if (spaRedirect && location.startsWith('/')) {
+export function useClientRedirect(spaRedirect: (location: string) => void) {
+  return {
+    writeResponse: () =>
+      console.warn('[Vitedge] Do not call writeResponse in browser'),
+    redirect: (location: string, status?: number) => {
+      if (location.startsWith('/')) {
         return spaRedirect(location)
       } else {
         window.location.href = location
       }
-    }
-  }
-
-  return {
-    writeResponse,
+    },
   }
 }

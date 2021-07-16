@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
-import { useResponseClient } from '../utils/response'
+import { useClientRedirect } from '../utils/response'
 import { addPagePropsGetterToRoutes } from './utils'
 import type { ClientHandler, Context } from './types'
 
@@ -54,15 +54,16 @@ export const viteSSR: ClientHandler = async function viteSSR(
     next()
   })
 
-  const { writeResponse } = useResponseClient({
-    spaRedirect: (location) => router.push(location),
-  })
+  const { redirect, writeResponse } = useClientRedirect((location) =>
+    router.push(location)
+  )
 
   const context = {
     url,
     isClient: true,
     initialState: initialState || {},
     writeResponse,
+    redirect,
   } as Context
 
   provideContext(app, context)

@@ -6,7 +6,7 @@ import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
-import { useResponseSSR } from '../utils/response'
+import { useSsrResponse } from '../utils/response'
 import type { Context, SsrHandler } from './types'
 
 import { provideContext } from './components.js'
@@ -65,12 +65,14 @@ const viteSSR: SsrHandler = function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
-    const { deferred, response, writeResponse, isRedirect } = useResponseSSR()
+    const { deferred, response, writeResponse, redirect, isRedirect } =
+      useSsrResponse()
 
     const context = {
       url,
       isClient: false,
       initialState: {},
+      redirect,
       writeResponse,
       ...extra,
       router: createRouter({
