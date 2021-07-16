@@ -32,9 +32,10 @@ export const viteSSR: ClientHandler = async function (
     deserializeState
   )
 
-  const { redirect, writeResponse } = useClientRedirect((location) =>
-    useHistory().push(location)
-  )
+  const { redirect, writeResponse } = useClientRedirect((location) => {
+    const { push } = useHistory()
+    React.useEffect(() => push(location), [push])
+  })
 
   const context = {
     url,
