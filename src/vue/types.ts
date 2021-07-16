@@ -6,13 +6,11 @@ import type {
   Router,
 } from 'vue-router'
 import type { HeadClient } from '@vueuse/head'
-import type { IncomingMessage } from 'connect'
-import type { ServerResponse } from 'http'
 import type {
   Meta,
-  PagePropsOptions,
-  WriteResponse,
   Renderer,
+  SharedContext,
+  SharedOptions,
 } from '../utils/types'
 
 export type ExtendedRouteRaw = RouteLocationRaw & {
@@ -25,32 +23,16 @@ export type ExtendedRouteNormalized = RouteLocationNormalized & {
   meta?: Meta
 }
 
-export type Options = {
+export type Options = SharedOptions & {
   routes: ExtendedRouteRaw[]
-  base?: (params: { url: Location | URL }) => string
   routerOptions?: Omit<RouterOptions, 'routes' | 'history'>
-  debug?: { mount?: boolean }
-  pageProps?: PagePropsOptions
-  transformState?: (
-    state: any,
-    defaultTransformer: (state: any) => any
-  ) => any | Promise<any>
 }
 
 type HookResponse = void | {
   head?: HeadClient
 }
 
-export type Context = {
-  url: URL | Location
-  isClient: boolean
-  initialState: Record<string, any>
-  redirect: (location: string, status?: number) => void
-  writeResponse: (params: WriteResponse) => void
-  request?: IncomingMessage
-  response?: ServerResponse
-  [key: string]: any
-}
+export type Context = SharedContext
 
 export type Hook = (
   params: Context & {

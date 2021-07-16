@@ -1,37 +1,25 @@
 // This is a generic mix of framework types
 import type { IncomingMessage } from 'connect'
 import type { ServerResponse } from 'http'
-import type { WriteResponse } from './utils/types'
+import type { SharedContext, SharedOptions } from './utils/types'
 
 declare module 'vite-ssr' {
   const handler: (
     App: any,
-    options: {
-      routes: Record<string, any>[]
-      base?: (params: { url: URL }) => string
+    options: SharedOptions & {
+      routes: Array<Record<string, any>>
       routerOptions?: Record<string, any>
-      head?: any
-      debug?: { mount?: boolean }
-      transformState?: (
-        state: any,
-        defaultTransformer: (state: any) => any
-      ) => any | Promise<any>
     },
-    hook?: (params: {
-      url: URL
-      app: any
-      router: any
-      isClient: boolean
-      initialState: any
-      initialRoute: any
-      redirect: (location: string, status?: number) => void
-      writeResponse: (params: WriteResponse) => void
-      request?: IncomingMessage
-      response?: ServerResponse
-      [key: string]: any
-    }) => any
+    hook?: (
+      params: SharedContext & {
+        app: any
+        router: any
+        initialRoute: any
+      }
+    ) => any
   ) => any
 
   export default handler
   export const ClientOnly: any
+  export const useContext: () => SharedContext
 }

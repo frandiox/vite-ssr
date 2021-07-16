@@ -1,3 +1,6 @@
+import type { ServerResponse } from 'http'
+import type { IncomingMessage } from 'connect'
+
 export type Meta = {
   propsGetter?: boolean | string
   state?: Record<string, any> | null
@@ -10,6 +13,27 @@ export type State = Record<string, any>
 
 export type PagePropsOptions = {
   passToPage?: boolean
+}
+
+export type SharedOptions = {
+  base?: Base
+  debug?: { mount?: boolean }
+  pageProps?: PagePropsOptions
+  transformState?: (
+    state: any,
+    defaultTransformer: (state: any) => any
+  ) => any | Promise<any>
+}
+
+export type SharedContext = {
+  url: URL | Location
+  isClient: boolean
+  initialState: Record<string, any>
+  redirect: (location: string, status?: number) => void
+  writeResponse: (params: WriteResponse) => void
+  request?: IncomingMessage
+  response?: ServerResponse
+  [key: string]: any
 }
 
 export type WriteResponse = {

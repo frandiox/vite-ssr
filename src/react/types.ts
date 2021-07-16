@@ -1,13 +1,10 @@
 import type { FunctionComponent, ReactNode } from 'react'
-import type { IncomingMessage } from 'connect'
-import type { ServerResponse } from 'http'
 import type { Router } from './utils'
 import type {
-  Base,
   Meta,
-  PagePropsOptions,
   Renderer,
-  WriteResponse,
+  SharedContext,
+  SharedOptions,
 } from '../utils/types'
 
 export type RouteRaw = {
@@ -25,30 +22,15 @@ export type PropsProvider = FunctionComponent<{
   [key: string]: any
 }>
 
-export type Options = {
+export type Options = SharedOptions & {
   routes: RouteRaw[]
-  base?: Base
-  debug?: { mount?: boolean }
-  pageProps?: PagePropsOptions
-  transformState?: (
-    state: any,
-    defaultTransformer: (state: any) => any
-  ) => any | Promise<any>
   suspenseFallback?: ReactNode
   PropsProvider?: PropsProvider
   prepassVisitor?: any
 }
 
-export type Context = {
-  url: URL | Location
-  isClient: boolean
+export type Context = SharedContext & {
   router: Router
-  initialState: Record<string, any>
-  redirect: (location: string, status?: number) => void
-  writeResponse: (params: WriteResponse) => void
-  request?: IncomingMessage
-  response?: ServerResponse
-  [key: string]: any
 }
 
 export type Hook = (params: Context) => any | Promise<any>
