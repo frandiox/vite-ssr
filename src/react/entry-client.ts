@@ -1,12 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, useHistory } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
+import { useClientRedirect } from '../utils/response'
 import { createRouter } from './utils'
-export { ClientOnly } from './components'
-import type { ClientHandler } from './types'
+import type { ClientHandler, Context } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 export const viteSSR: ClientHandler = async function (
   App,
@@ -29,9 +32,17 @@ export const viteSSR: ClientHandler = async function (
     deserializeState
   )
 
+  const { redirect, writeResponse } = useClientRedirect((location) => {
+    const { push } = useHistory()
+    React.useEffect(() => push(location), [push])
+  })
+
   const context = {
     url,
     initialState: initialState || {},
+    isClient: true,
+    redirect,
+    writeResponse,
     router: createRouter({
       routes,
       base,
@@ -39,8 +50,7 @@ export const viteSSR: ClientHandler = async function (
       pagePropsOptions: pageProps,
       PropsProvider,
     }),
-    isClient: true,
-  }
+  } as Context
 
   const app = React.createElement(
     HelmetProvider,
@@ -51,7 +61,7 @@ export const viteSSR: ClientHandler = async function (
       React.createElement(
         React.Suspense,
         { fallback: suspenseFallback || '' },
-        React.createElement(App, context)
+        provideContext(React.createElement(App, context), context)
       )
     )
   )

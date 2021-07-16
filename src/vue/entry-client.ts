@@ -2,9 +2,12 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { deserializeState } from '../utils/state'
+import { useClientRedirect } from '../utils/response'
 import { addPagePropsGetterToRoutes } from './utils'
-export { ClientOnly } from './components.js'
-import type { ClientHandler } from './types'
+import type { ClientHandler, Context } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 export const viteSSR: ClientHandler = async function viteSSR(
   App,
@@ -51,14 +54,26 @@ export const viteSSR: ClientHandler = async function viteSSR(
     next()
   })
 
+  const { redirect, writeResponse } = useClientRedirect((location) =>
+    router.push(location)
+  )
+
+  const context = {
+    url,
+    isClient: true,
+    initialState: initialState || {},
+    writeResponse,
+    redirect,
+  } as Context
+
+  provideContext(app, context)
+
   if (hook) {
     await hook({
-      url,
       app,
       router,
-      isClient: true,
-      initialState: initialState || {},
       initialRoute: router.resolve(getFullPath(url, routeBase)),
+      ...context,
     })
   }
 

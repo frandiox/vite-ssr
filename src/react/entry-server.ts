@@ -6,8 +6,11 @@ import { HelmetProvider } from 'react-helmet-async'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { serializeState } from '../utils/state'
 import { createRouter } from './utils'
-export { ClientOnly } from './components'
-import type { SsrHandler } from './types'
+import { useSsrResponse } from '../utils/response'
+import type { Context, SsrHandler } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 let render: (element: ReactElement) => string | Promise<string> = renderToString
 
@@ -62,10 +65,15 @@ const viteSSR: SsrHandler = function (
     const routeBase = base && withoutSuffix(base({ url }), '/')
     const fullPath = getFullPath(url, routeBase)
 
+    const { deferred, response, writeResponse, redirect, isRedirect } =
+      useSsrResponse()
+
     const context = {
       url,
       isClient: false,
       initialState: {},
+      redirect,
+      writeResponse,
       ...extra,
       router: createRouter({
         routes,
@@ -74,11 +82,13 @@ const viteSSR: SsrHandler = function (
         pagePropsOptions: pageProps,
         PropsProvider,
       }),
-    }
+    } as Context
 
     if (hook) {
       context.initialState = (await hook(context)) || context.initialState
     }
+
+    if (isRedirect()) return response
 
     const helmetContext: Record<string, Record<string, string>> = {}
 
@@ -93,14 +103,20 @@ const viteSSR: SsrHandler = function (
             basename: routeBase,
             location: fullPath,
           },
-          React.createElement(App, context)
+          provideContext(React.createElement(App, context), context)
         )
       ),
       styledContext
     )
 
-    await ssrPrepass(app, prepassVisitor)
-    const body = await render(app)
+    ssrPrepass(app, prepassVisitor)
+      .then(() => render(app))
+      .then(deferred.resolve)
+      .catch(deferred.reject)
+
+    const body = await deferred.promise
+
+    if (isRedirect()) return response
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {
@@ -142,6 +158,7 @@ const viteSSR: SsrHandler = function (
       bodyAttrs,
       initialState,
       dependencies: [], // React does not populate the manifest context :(
+      ...response,
     }
   }
 }

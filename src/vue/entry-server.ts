@@ -3,11 +3,14 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
+import { useSsrResponse } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-export { ClientOnly } from './components.js'
-import type { SsrHandler } from './types'
+import type { SsrHandler, Context } from './types'
+
+import { provideContext } from './components.js'
+export { ClientOnly, useContext } from './components.js'
 
 export const viteSSR: SsrHandler = function viteSSR(
   App,
@@ -35,13 +38,20 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
+    const { deferred, response, writeResponse, redirect, isRedirect } =
+      useSsrResponse()
+
     // This can be injected with useSSRContext() in setup functions
     const context = {
       url,
       isClient: false,
       initialState: {},
+      redirect,
+      writeResponse,
       ...extra,
-    }
+    } as Context
+
+    provideContext(app, context)
 
     const fullPath = getFullPath(url, routeBase)
 
@@ -60,16 +70,23 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
+    if (isRedirect()) return response
+
     Object.assign(
       context.initialState || {},
       (router.currentRoute.value.meta || {}).state || {}
     )
 
-    const body = await renderToString(app, context)
+    renderToString(app, context).then(deferred.resolve).catch(deferred.reject)
+    const body = await deferred.promise
 
-    let { headTags = '', htmlAttrs = '', bodyAttrs = '' } = head
-      ? renderHeadToString(head)
-      : {}
+    if (isRedirect()) return response
+
+    let {
+      headTags = '',
+      htmlAttrs = '',
+      bodyAttrs = '',
+    } = head ? renderHeadToString(head) : {}
 
     const dependencies = manifest
       ? // @ts-ignore
@@ -95,6 +112,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       bodyAttrs,
       initialState,
       dependencies,
+      ...response,
     }
   }
 }
