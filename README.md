@@ -98,7 +98,8 @@ The context passed to the main hook (and to React's root component) contains:
 - `url`: Initial [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL).
 - `isClient`: Boolean similar to `import.meta.env.SSR`. Unlike the latter, `isClient` does not trigger tree shaking.
 - `request`: Available during SSR.
-- `writeResponse`: Isomorphic function to add status or headers to the `response` object or redirect.
+- `redirect`: Isomorphic function to redirect to a different URL.
+- `writeResponse`: Function to add status or headers to the `response` object (only in backend).
 - `router`: Router instance in Vue, and a custom router in React to access the routes and page components.
 - `app`: App instance, only in Vue.
 - `initialRoute`: Initial Route object, only in Vue.
@@ -111,7 +112,7 @@ import { useContext } from 'vite-ssr'
 //...
 function() {
   // In a component
-  const { initialState, writeResponse } = useContext()
+  const { initialState, redirect } = useContext()
   // ...
 }
 ```
@@ -385,19 +386,23 @@ Beware that, in development, Vite uses plain Node.js + Connect for middleware. T
 
 ### Editing Response and redirects
 
-It's possible to set a status or headers to the response with `writeResponse` utility, which works both in SSR and browser. For example, triggering a server redirect can be done as follows:
+It's possible to set status and headers to the response with `writeResponse` utility. For redirects, the `redirect` utility works both in SSR (server redirect) and browser (history push):
 
 ```js
 import { useContext } from 'vite-ssr'
 
 // In a component
 function () {
-  const { writeResponse } = useContext()
+  const { redirect, writeResponse } = useContext()
 
   if (/* ... */) {
+    redirect('/another-page', 302)
+  }
+
+  if (import.meta.env.SSR && /* ... */) {
     writeResponse({
-      status: 302,
-      headers: { location: '/another-page' }
+      status: 404,
+      headers: {}
     })
   }
 
