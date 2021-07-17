@@ -52,6 +52,7 @@ export = async ({
         rollupOptions: {
           plugins: [
             replace({
+              preventAssignment: true,
               values: {
                 __VITE_SSR_HTML__: buildHtmlDocument(
                   indexHtml.source as string
