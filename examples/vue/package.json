@@ -2,8 +2,8 @@
   "name": "example",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --port 1337 --open --force",
-    "dev:ssr": "node ../../node_modules/vite-ssr/cli.js --port 1337 --open --force",
+    "dev": "node ../../node_modules/vite-ssr/cli.js --port 1337 --force",
+    "dev:spa": "vite --port 1337 --force",
     "build": "rm -rf dist && node ../../node_modules/vite-ssr/cli.js build",
     "serve:node": "node ../node-server/index vue"
   },
