@@ -1,6 +1,4 @@
 // This is a generic mix of framework types
-import type { IncomingMessage } from 'connect'
-import type { ServerResponse } from 'http'
 import type { SharedContext, SharedOptions } from './utils/types'
 
 declare module 'vite-ssr' {
