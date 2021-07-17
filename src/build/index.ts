@@ -29,9 +29,15 @@ export = async ({
     clientOptions
   ) as NonNullable<BuildOptions['clientOptions']>
 
-  const clientResult = (await build(clientBuildOptions)) as RollupOutput
+  const clientResult = (await build(clientBuildOptions)) as
+    | RollupOutput
+    | RollupOutput[]
 
-  const indexHtml = clientResult.output.find(
+  const clientOutputs = (
+    Array.isArray(clientResult) ? clientResult : [clientResult]
+  ).flatMap((result) => result.output)
+
+  const indexHtml = clientOutputs.find(
     (file) => file.type === 'asset' && file.fileName === 'index.html'
   ) as OutputAsset
 
