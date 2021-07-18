@@ -28,7 +28,7 @@ export function useSsrResponse() {
 export function useClientRedirect(spaRedirect: (location: string) => void) {
   return {
     writeResponse: () =>
-      console.warn('[Vitedge] Do not call writeResponse in browser'),
+      console.warn('[SSR] Do not call writeResponse in browser'),
     redirect: (location: string, status?: number) => {
       if (location.startsWith('/')) {
         return spaRedirect(location)
