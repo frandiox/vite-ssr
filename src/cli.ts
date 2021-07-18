@@ -20,13 +20,16 @@ if (command === 'build') {
   const build = require('./build')
 
   ;(async () => {
-    const { mode, ssr } = options
+    const { mode, ssr, watch } = options
 
     await build({
-      clientOptions: { mode },
+      clientOptions: { mode, build: { watch } },
       serverOptions: { mode, build: { ssr } },
     })
-    process.exit()
+
+    if (!watch) {
+      process.exit()
+    }
   })()
 } else if (
   command === 'dev' ||

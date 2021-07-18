@@ -4,7 +4,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import { getEntryPoint, resolveViteConfig } from '../config'
 import { buildHtmlDocument } from './utils'
-import type { RollupOutput, OutputAsset } from 'rollup'
+import type { RollupOutput, RollupWatcher, OutputAsset } from 'rollup'
 
 type BuildOptions = {
   clientOptions?: InlineConfig
@@ -19,6 +19,8 @@ export = async ({
   const distDir =
     viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
 
+  let indexHtmlTemplate = ''
+
   const clientBuildOptions = mergeConfig(
     {
       build: {
@@ -29,19 +31,6 @@ export = async ({
     clientOptions
   ) as NonNullable<BuildOptions['clientOptions']>
 
-  const clientResult = (await build(clientBuildOptions)) as
-    | RollupOutput
-    | RollupOutput[]
-
-  const clientOutputs = (
-    Array.isArray(clientResult) ? clientResult : [clientResult]
-  ).flatMap((result) => result.output)
-
-  const indexHtml = clientOutputs.find(
-    (file) => file.type === 'asset' && file.fileName === 'index.html'
-  ) as OutputAsset
-
-  // -- SSR build
   const serverBuildOptions = mergeConfig(
     {
       build: {
@@ -54,9 +43,7 @@ export = async ({
             replace({
               preventAssignment: true,
               values: {
-                __VITE_SSR_HTML__: buildHtmlDocument(
-                  indexHtml.source as string
-                ),
+                __VITE_SSR_HTML__: () => buildHtmlDocument(indexHtmlTemplate),
               },
             }),
           ],
@@ -66,19 +53,74 @@ export = async ({
     serverOptions
   ) as NonNullable<BuildOptions['serverOptions']>
 
-  await build(serverBuildOptions)
+  const clientResult = await build(clientBuildOptions)
 
-  // --- Generate package.json
+  const isWatching = Object.prototype.hasOwnProperty.call(
+    clientResult,
+    '_maxListeners'
+  )
+
+  if (isWatching) {
+    // This is a build watcher
+    const watcher = clientResult as RollupWatcher
+
+    // @ts-ignore
+    watcher.on('event', async ({ result }) => {
+      if (result) {
+        // This piece runs everytime there is
+        // an updated frontend bundle.
+        result.close()
+
+        // Re-read the index.html in case it changed.
+        // This content is not included in the virtual bundle.
+        indexHtmlTemplate = await fs.readFile(
+          (clientBuildOptions.build?.outDir as string) + '/index.html',
+          'utf-8'
+        )
+
+        // Build SSR bundle with the new index.html
+        await build(serverBuildOptions)
+        await generatePackageJson(clientBuildOptions, serverBuildOptions)
+      }
+    })
+  } else {
+    // This is a normal one-off build
+    const clientOutputs = (
+      Array.isArray(clientResult)
+        ? clientResult
+        : [clientResult as RollupOutput]
+    ).flatMap((result) => result.output)
+
+    // Get the index.html from the resulting bundle.
+    indexHtmlTemplate = (
+      clientOutputs.find(
+        (file) => file.type === 'asset' && file.fileName === 'index.html'
+      ) as OutputAsset
+    )?.source as string
+
+    await build(serverBuildOptions)
+
+    // index.html file is not used in SSR and might be
+    // served by mistake, so let's remove it to avoid issues.
+    await fs
+      .unlink(
+        path.join(clientBuildOptions.build?.outDir as string, 'index.html')
+      )
+      .catch(() => null)
+
+    await generatePackageJson(clientBuildOptions, serverBuildOptions)
+  }
+}
+
+async function generatePackageJson(
+  clientBuildOptions: InlineConfig,
+  serverBuildOptions: NonNullable<BuildOptions['serverOptions']>
+) {
   const type =
     // @ts-ignore
     serverBuildOptions.build?.rollupOptions?.output?.format === 'es'
       ? 'module'
       : 'commonjs'
-
-  // index.html is not used in SSR and might be served by mistake
-  await fs
-    .unlink(path.join(clientBuildOptions.build?.outDir as string, 'index.html'))
-    .catch(() => null)
 
   const packageJson = {
     type,
@@ -94,6 +136,7 @@ export = async ({
 
   await fs.writeFile(
     path.join(serverBuildOptions.build?.outDir as string, 'package.json'),
-    JSON.stringify(packageJson, null, 2)
+    JSON.stringify(packageJson, null, 2),
+    'utf-8'
   )
 }
