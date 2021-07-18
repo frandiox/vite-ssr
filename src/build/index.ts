@@ -27,12 +27,13 @@ export = async ({
         outDir: path.resolve(distDir, 'client'),
         ssrManifest: true,
       },
-    },
+    } as InlineConfig,
     clientOptions
   ) as NonNullable<BuildOptions['clientOptions']>
 
   const serverBuildOptions = mergeConfig(
     {
+      publicDir: false, // No need to copy public files to SSR directory
       build: {
         outDir: path.resolve(distDir, 'server'),
         // The plugin is already changing the vite-ssr alias to point to the server-entry.
@@ -49,7 +50,7 @@ export = async ({
           ],
         },
       },
-    },
+    } as InlineConfig,
     serverOptions
   ) as NonNullable<BuildOptions['serverOptions']>
 
