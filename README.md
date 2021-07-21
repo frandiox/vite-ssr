@@ -12,11 +12,11 @@ Simple yet powerful Server Side Rendering for Vite 2 in Node.js (Vue & React).
 - 🔥 Fast and SEO friendly thanks to SSR, with SPA takeover for snappy UX.
 - 🧱 Compatible with Vite's plugin ecosystem such as file-based routing, PWA, etc.
 
-Start a new SSR project right away using Vue, filesystem routes, page layouts, icons auto-import and more with [Vitesse SSR template](https://github.com/frandiox/vitesse-ssr-template). See [live demo](https://vitesse-ssr.vercel.app/).
+Vite SSR can be deployed to any Node.js or browser-like environment, including serverless platforms like Vercel, Netlify, or even Cloudflare Workers. It can also run with more traditional servers like Express.js or Fastify.
 
-Vite SSR can be deployed to any Node.js or browser-like environment, including serverless platforms like Vercel, Netlify, or even Cloudflare Workers. It can create pages dynamically from a cloud function and cache the result at the edge network for subsequent requests, effectively behaving as statically generated pages with no cost.
+> Vite SSR is unopinionated about your API logic so you must bring your own. If you want a more opiniated and fullstack setup with filesystem-based API endpoints and auto-managed edge cache, have a look at [Vitedge](https://github.com/frandiox/vitedge). It wraps Vite SSR and can be deployed to Cloudflare Workers or any Node.js environment.
 
-See [Vitedge](https://github.com/frandiox/vitedge) for a more opinionated and fullstack setup.
+Start a new SSR project right away using Vue, filesystem routes, page layouts, i18n, icons auto-import and more with [Vitesse SSR template](https://github.com/frandiox/vitesse-ssr-template). See [live demo](https://vitesse-ssr.vercel.app/).
 
 ## Installation
 
@@ -176,7 +176,7 @@ export default viteSSR(App, { routes }, async ({ app }) => {
 })
 ```
 
-- Calling your API directly from Vue components using [`Suspense`](https://v3.vuejs.org/guide/migration/suspense.html), and storing the result in the SSR initial state. See a full example with `Suspense` [here](./examples/vue/src/pages/Homepage.vue).
+- Calling your API directly from Vue components using [`Suspense`](https://v3.vuejs.org/guide/migration/suspense.html), and storing the result in the SSR initial state. See a full example with `Suspense` [here](./examples/vue/src/pages/Homepage.vue). If you prefer Axios, there's also an example [here](https://github.com/frandiox/vite-ssr/discussions/66).
 
 ```js
 import { useContext } from 'vite-ssr'
@@ -220,7 +220,7 @@ export default {
 </template>
 ```
 
-- Calling your API directly from Vue components using Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch), and storing the result in the SSR initial state.
+- Calling your API directly from Vue components using Vue's [`serverPrefetch`](https://ssr.vuejs.org/api/#serverprefetch), and storing the result in the SSR initial state. It's also possible to recreate [`asyncData` à la Nuxt.js](https://github.com/frandiox/vite-ssr/discussions/46#discussioncomment-988827).
 
 ```js
 // Main
