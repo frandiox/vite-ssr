@@ -14,104 +14,115 @@ type BuildOptions = {
 export = async ({
   clientOptions = {},
   serverOptions = {},
-}: BuildOptions = {}) => {
-  const viteConfig = await resolveViteConfig()
-  const distDir =
-    viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
+}: BuildOptions = {}) =>
+  new Promise(async (resolve) => {
+    const viteConfig = await resolveViteConfig()
+    const distDir =
+      viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
 
-  let indexHtmlTemplate = ''
+    let indexHtmlTemplate = ''
 
-  const clientBuildOptions = mergeConfig(
-    {
-      build: {
-        outDir: path.resolve(distDir, 'client'),
-        ssrManifest: true,
-      },
-    } as InlineConfig,
-    clientOptions
-  ) as NonNullable<BuildOptions['clientOptions']>
-
-  const serverBuildOptions = mergeConfig(
-    {
-      publicDir: false, // No need to copy public files to SSR directory
-      build: {
-        outDir: path.resolve(distDir, 'server'),
-        // The plugin is already changing the vite-ssr alias to point to the server-entry.
-        // Therefore, here we can just use the same entry point as in the index.html
-        ssr: await getEntryPoint(viteConfig.root),
-        rollupOptions: {
-          plugins: [
-            replace({
-              preventAssignment: true,
-              values: {
-                __VITE_SSR_HTML__: () => buildHtmlDocument(indexHtmlTemplate),
-              },
-            }),
-          ],
+    const clientBuildOptions = mergeConfig(
+      {
+        build: {
+          outDir: path.resolve(distDir, 'client'),
+          ssrManifest: true,
+          emptyOutDir: false,
         },
-      },
-    } as InlineConfig,
-    serverOptions
-  ) as NonNullable<BuildOptions['serverOptions']>
+      } as InlineConfig,
+      clientOptions
+    ) as NonNullable<BuildOptions['clientOptions']>
 
-  const clientResult = await build(clientBuildOptions)
+    const serverBuildOptions = mergeConfig(
+      {
+        publicDir: false, // No need to copy public files to SSR directory
+        build: {
+          outDir: path.resolve(distDir, 'server'),
+          // The plugin is already changing the vite-ssr alias to point to the server-entry.
+          // Therefore, here we can just use the same entry point as in the index.html
+          ssr: await getEntryPoint(viteConfig.root),
+          emptyOutDir: false,
+          rollupOptions: {
+            plugins: [
+              replace({
+                preventAssignment: true,
+                values: {
+                  __VITE_SSR_HTML__: () => buildHtmlDocument(indexHtmlTemplate),
+                },
+              }),
+            ],
+          },
+        },
+      } as InlineConfig,
+      serverOptions
+    ) as NonNullable<BuildOptions['serverOptions']>
 
-  const isWatching = Object.prototype.hasOwnProperty.call(
-    clientResult,
-    '_maxListeners'
-  )
+    const clientResult = await build(clientBuildOptions)
 
-  if (isWatching) {
-    // This is a build watcher
-    const watcher = clientResult as RollupWatcher
+    const isWatching = Object.prototype.hasOwnProperty.call(
+      clientResult,
+      '_maxListeners'
+    )
 
-    // @ts-ignore
-    watcher.on('event', async ({ result }) => {
-      if (result) {
-        // This piece runs everytime there is
-        // an updated frontend bundle.
-        result.close()
+    if (isWatching) {
+      // This is a build watcher
+      const watcher = clientResult as RollupWatcher
+      let resolved = false
 
-        // Re-read the index.html in case it changed.
-        // This content is not included in the virtual bundle.
-        indexHtmlTemplate = await fs.readFile(
-          (clientBuildOptions.build?.outDir as string) + '/index.html',
-          'utf-8'
+      // @ts-ignore
+      watcher.on('event', async ({ result }) => {
+        if (result) {
+          // This piece runs everytime there is
+          // an updated frontend bundle.
+          result.close()
+
+          // Re-read the index.html in case it changed.
+          // This content is not included in the virtual bundle.
+          indexHtmlTemplate = await fs.readFile(
+            (clientBuildOptions.build?.outDir as string) + '/index.html',
+            'utf-8'
+          )
+
+          // Build SSR bundle with the new index.html
+          await build(serverBuildOptions)
+          await generatePackageJson(clientBuildOptions, serverBuildOptions)
+
+          if (!resolved) {
+            resolve(null)
+            resolved = true
+          }
+        }
+      })
+    } else {
+      // This is a normal one-off build
+      const clientOutputs = (
+        Array.isArray(clientResult)
+          ? clientResult
+          : [clientResult as RollupOutput]
+      ).flatMap((result) => result.output)
+
+      // Get the index.html from the resulting bundle.
+      indexHtmlTemplate = (
+        clientOutputs.find(
+          (file) => file.type === 'asset' && file.fileName === 'index.html'
+        ) as OutputAsset
+      )?.source as string
+
+      await build(serverBuildOptions)
+
+      // index.html file is not used in SSR and might be
+      // served by mistake, so let's remove it to avoid issues.
+      await fs
+        .unlink(
+          path.join(clientBuildOptions.build?.outDir as string, 'index.html')
         )
+        .catch(() => null)
 
-        // Build SSR bundle with the new index.html
-        await build(serverBuildOptions)
-        await generatePackageJson(clientBuildOptions, serverBuildOptions)
-      }
-    })
-  } else {
-    // This is a normal one-off build
-    const clientOutputs = (
-      Array.isArray(clientResult)
-        ? clientResult
-        : [clientResult as RollupOutput]
-    ).flatMap((result) => result.output)
+      await generatePackageJson(clientBuildOptions, serverBuildOptions)
 
-    // Get the index.html from the resulting bundle.
-    indexHtmlTemplate = (
-      clientOutputs.find(
-        (file) => file.type === 'asset' && file.fileName === 'index.html'
-      ) as OutputAsset
-    )?.source as string
-
-    await build(serverBuildOptions)
-
-    // index.html file is not used in SSR and might be
-    // served by mistake, so let's remove it to avoid issues.
-    await fs
-      .unlink(
-        path.join(clientBuildOptions.build?.outDir as string, 'index.html')
-      )
-      .catch(() => null)
-
-    await generatePackageJson(clientBuildOptions, serverBuildOptions)
-  }
-}
+      resolve(null)
+    }
+  })
 
 async function generatePackageJson(
   clientBuildOptions: InlineConfig,
