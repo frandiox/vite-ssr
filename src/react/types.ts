@@ -1,4 +1,4 @@
-import type { FunctionComponent, ReactNode } from 'react'
+import type { FunctionComponent, ReactElement, ReactNode } from 'react'
 import type { Router } from './utils'
 import type {
   Meta,
@@ -22,6 +22,10 @@ export type PropsProvider = FunctionComponent<{
   [key: string]: any
 }>
 
+export type Context = SharedContext & {
+  router: Router
+}
+
 export type Options = SharedOptions & {
   routes: RouteRaw[]
   suspenseFallback?: ReactNode
@@ -29,16 +33,35 @@ export type Options = SharedOptions & {
   prepassVisitor?: any
 }
 
-export type Context = SharedContext & {
-  router: Router
+export type SsrOptions = Options & {
+  styleCollector?:
+    | null
+    | ((context: Context) => {
+        collect: (app: ReactElement) => ReactElement
+        toString: (html: string) => string
+        cleanup?: () => void
+      })
+}
+
+export type ClientOptions = Options & {
+  styleCollector?:
+    | null
+    | ((context: Context) => {
+        provide?: (app: ReactElement) => ReactElement
+        cleanup?: () => void
+      })
 }
 
 export type Hook = (params: Context) => any | Promise<any>
 
 export type ClientHandler = (
   App: any,
-  options: Options,
+  options: ClientOptions,
   hook?: Hook
 ) => Promise<void>
 
-export type SsrHandler = (App: any, options: Options, hook?: Hook) => Renderer
+export type SsrHandler = (
+  App: any,
+  options: SsrOptions,
+  hook?: Hook
+) => Renderer

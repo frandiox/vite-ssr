@@ -26,28 +26,6 @@ if (__USE_APOLLO_RENDERER__) {
     .catch(() => null)
 }
 
-let appWrapper = (el: any, ctx: object) => el
-
-// @ts-ignore
-if (__USE_STYLED_COMPONENTS__) {
-  // @ts-ignore
-  import('./styled/styled-components')
-    .then(({ appStyledWrapper }) => {
-      appWrapper = appStyledWrapper
-    })
-    .catch(() => null)
-}
-
-// @ts-ignore
-if (__USE_MATERIAL_UI__) {
-  // @ts-ignore
-  import('./styled/material-ui-core')
-    .then(({ appStyledWrapper }) => {
-      appWrapper = appStyledWrapper
-    })
-    .catch(() => null)
-}
-
 const viteSSR: SsrHandler = function (
   App,
   {
@@ -56,6 +34,7 @@ const viteSSR: SsrHandler = function (
     prepassVisitor,
     PropsProvider,
     pageProps,
+    styleCollector,
     transformState = serializeState,
   },
   hook
@@ -92,22 +71,23 @@ const viteSSR: SsrHandler = function (
 
     const helmetContext: Record<string, Record<string, string>> = {}
 
-    const styledContext = {}
-    const app = appWrapper(
+    let app: ReactElement = React.createElement(
+      HelmetProvider,
+      { context: helmetContext },
       React.createElement(
-        HelmetProvider,
-        { context: helmetContext },
-        React.createElement(
-          StaticRouter,
-          {
-            basename: routeBase,
-            location: fullPath,
-          },
-          provideContext(React.createElement(App, context), context)
-        )
-      ),
-      styledContext
+        StaticRouter,
+        {
+          basename: routeBase,
+          location: fullPath,
+        },
+        provideContext(React.createElement(App, context), context)
+      )
     )
+
+    const styles = styleCollector && (await styleCollector(context))
+    if (styles) {
+      app = styles.collect(app)
+    }
 
     ssrPrepass(app, prepassVisitor)
       .then(() => render(app))
@@ -116,7 +96,10 @@ const viteSSR: SsrHandler = function (
 
     const body = await deferred.promise
 
-    if (isRedirect()) return response
+    if (isRedirect()) {
+      styles && styles.cleanup && styles.cleanup()
+      return response
+    }
 
     const currentRoute = context.router.getCurrentRoute()
     if (currentRoute) {
@@ -132,9 +115,8 @@ const viteSSR: SsrHandler = function (
       ...tags
     } = helmetContext.helmet || {}
 
-    const styleTags: string =
-      // @ts-ignore
-      (styledContext.styles && styledContext.styles()) || ''
+    const styleTags: string = (styles && styles.toString(body)) || ''
+    styles && styles.cleanup && styles.cleanup()
 
     const headTags =
       Object.keys(tags)
