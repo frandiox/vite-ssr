@@ -55,7 +55,7 @@ export const createSSRDevHandler = (
     return await server.transformIndexHtml(url, indexHtml)
   }
 
-  function writeHead(response: ServerResponse, params: WriteResponse) {
+  function writeHead(response: ServerResponse, params: WriteResponse = {}) {
     if (params.status) {
       response.statusCode = params.status
     }
@@ -100,14 +100,15 @@ export const createSSRDevHandler = (
       const url = protocol + '://' + request.headers.host + request.originalUrl
 
       // This context might contain initialState provided by other plugins
-      const context = options.getRenderContext
-        ? await options.getRenderContext({
+      const context =
+        (options.getRenderContext &&
+          (await options.getRenderContext({
             url,
             request,
             response,
             resolvedEntryPoint,
-          })
-        : {}
+          }))) ||
+        {}
 
       // This is used by Vitedge
       writeHead(response, context)
