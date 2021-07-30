@@ -6,7 +6,9 @@
   "exclude": [],
   "include": [
     "./src/vue/*",
+    "./src/vue/**/*",
     "./src/react/*",
+    "./src/react/**/*",
     "./src/utils/*"
   ]
 }
