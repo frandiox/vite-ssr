@@ -52,7 +52,9 @@ export type ClientOptions = Options & {
       })
 }
 
-export type Hook = (params: Context) => any | Promise<any>
+export type HookParams = Context
+
+export type Hook = (params: HookParams) => any | Promise<any>
 
 export type ClientHandler = (
   App: any,

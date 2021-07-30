@@ -34,13 +34,13 @@ type HookResponse = void | {
 
 export type Context = SharedContext
 
-export type Hook = (
-  params: Context & {
-    app: App
-    router: Router
-    initialRoute: RouteLocationNormalized
-  }
-) => HookResponse | Promise<HookResponse>
+export type HookParams = Context & {
+  app: App
+  router: Router
+  initialRoute: RouteLocationNormalized
+}
+
+export type Hook = (params: HookParams) => HookResponse | Promise<HookResponse>
 
 export type ClientHandler = (
   App: Component,

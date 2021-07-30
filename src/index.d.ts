@@ -7,6 +7,7 @@ declare module 'vite-ssr' {
     options: SharedOptions & {
       routes: Array<Record<string, any>>
       routerOptions?: Record<string, any>
+      styleCollector?: (ctx: any) => any
     },
     hook?: (
       params: SharedContext & {
