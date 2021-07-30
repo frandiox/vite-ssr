@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter, useHistory } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
@@ -21,6 +21,7 @@ export const viteSSR: ClientHandler = async function (
     pageProps,
     debug = {},
     transformState = deserializeState,
+    styleCollector,
   },
   hook
 ) {
@@ -52,7 +53,7 @@ export const viteSSR: ClientHandler = async function (
     }),
   } as Context
 
-  const app = React.createElement(
+  let app: ReactElement = React.createElement(
     HelmetProvider,
     {},
     React.createElement(
@@ -66,6 +67,11 @@ export const viteSSR: ClientHandler = async function (
     )
   )
 
+  const styles = styleCollector && (await styleCollector(context))
+  if (styles && styles.provide) {
+    app = styles.provide(app)
+  }
+
   if (hook) {
     await hook(context)
   }
@@ -73,11 +79,7 @@ export const viteSSR: ClientHandler = async function (
   if (debug.mount !== false) {
     const el = document.getElementById('app')
 
-    setTimeout(() => {
-      Array.from(
-        document.querySelectorAll('[data-remove-on-hydration]')
-      ).forEach((el) => el.parentElement && el.parentElement.removeChild(el))
-    })
+    styles && styles.cleanup && styles.cleanup()
 
     // @ts-ignore
     import.meta.env.DEV ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
