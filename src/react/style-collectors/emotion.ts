@@ -35,9 +35,11 @@ async function ssrCollector(context: Context) {
 }
 
 function clientProvider(context: Context) {
+  const cache = getCache()
+
   return {
     provide(app: ReactElement) {
-      return createElement(CacheProvider, { value: getCache() }, app)
+      return createElement(CacheProvider, { value: cache }, app)
     },
   }
 }
