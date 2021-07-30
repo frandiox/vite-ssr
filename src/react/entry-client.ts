@@ -53,6 +53,10 @@ export const viteSSR: ClientHandler = async function (
     }),
   } as Context
 
+  if (hook) {
+    await hook(context)
+  }
+
   let app: ReactElement = React.createElement(
     HelmetProvider,
     {},
@@ -70,10 +74,6 @@ export const viteSSR: ClientHandler = async function (
   const styles = styleCollector && (await styleCollector(context))
   if (styles && styles.provide) {
     app = styles.provide(app)
-  }
-
-  if (hook) {
-    await hook(context)
   }
 
   if (debug.mount !== false) {
