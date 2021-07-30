@@ -84,6 +84,7 @@ The previous handler accepts the following options as its second argument:
 - `routerOptions`: Additional router options like scrollBehavior in [`vue-router`](https://next.router.vuejs.org/guide/advanced/scroll-behavior.html).
 - `transformState`: Modify the state to be serialized or deserialized. See [State serialization](#state-serialization) for more information.
 - `pageProps.passToPage`: Whether each route's `initialState` should be automatically passed to the page components as props.
+- `styleCollector`: Only in React. Mechanism to extract CSS in JS. See [integrations#React-CSS-inJS](#React-CSS-in-JS).
 - `debug.mount`: Pass `false` to prevent mounting the app in the client. You will need to do this manually on your own but it's useful to see differences between SSR and hydration.
 
 </p>
@@ -488,6 +489,25 @@ SPA mode will be slightly faster but the SSR one will have closer behavior to a 
 ## Production
 
 Run `vite-ssr build` for buildling your app. This will create 2 builds (client and server) that you can import and use from your Node backend. See an Express.js example server [here](./examples/node-server/index.js), or a serverless function deployed to Vercel [here](https://github.com/frandiox/vitesse-ssr-template/blob/master/serverless/api/index.js).
+
+## Integrations
+
+Common integrations will be added here:
+
+### React CSS in JS
+
+Use the `styleCollector` option to specify an SSR style collector. `vite-ssr` exports 3 common CSS-in-JS integrations: `styled-components`, `material-ui-core-v4` and `emotion`:
+
+```js
+import viteSSR from 'vite-ssr/react'
+import styleCollector from 'vite-ssr/react/style-collectors/emotion'
+
+export default viteSSR(App, { routes, styleCollector })
+```
+
+You can provide your own by looking at the [implementation](./src/react/style-collectors/) of any of the existing collectors.
+
+Note that you still need to install all the required dependencies from these packages (e.g. `@emotion/server`, `@emotion/react` and `@emotion/cache` when using Emotion).
 
 ## References
 
