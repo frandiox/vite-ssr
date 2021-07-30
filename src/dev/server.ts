@@ -135,27 +135,36 @@ export const createSSRDevHandler = (
   return handleSsrRequest
 }
 
-export default async function createSsrServer(
-  options: SsrOptions & InlineConfig = {}
+export async function createSsrServer(
+  options: InlineConfig & { polyfills?: boolean } = {}
 ) {
   // Enable SSR in the plugin
   process.env.__DEV_MODE_SSR = 'true'
 
   const viteServer = await createViteServer({
     ...options,
-    server: options,
+    server: options.server || { ...options },
   })
 
-  return {
-    async listen(port?: number) {
-      if (!globalThis.fetch) {
-        const fetch = await import('node-fetch')
-        // @ts-ignore
-        globalThis.fetch = fetch.default || fetch
+  if (options.polyfills !== false) {
+    if (!globalThis.fetch) {
+      const fetch = await import('node-fetch')
+      // @ts-ignore
+      globalThis.fetch = fetch.default || fetch
+    }
+  }
+
+  return new Proxy(viteServer, {
+    get(target, prop, receiver) {
+      if (prop === 'listen') {
+        return async (port?: number) => {
+          const server = await target.listen(port)
+          target.config.logger.info('\n -- SSR mode\n')
+          return server
+        }
       }
 
-      await viteServer.listen(port)
-      viteServer.config.logger.info('\n -- SSR mode\n')
+      return Reflect.get(target, prop, receiver)
     },
-  }
+  })
 }

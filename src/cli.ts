@@ -36,7 +36,7 @@ if (command === 'build') {
   command === undefined ||
   command.startsWith('-')
 ) {
-  require('./dev')(options)
+  require('./dev').startServer(options)
 } else {
   console.log(`Command "${command}" not supported`)
 }
