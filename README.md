@@ -509,6 +509,23 @@ You can provide your own by looking at the [implementation](./src/react/style-co
 
 Note that you still need to install all the required dependencies from these packages (e.g. `@emotion/server`, `@emotion/react` and `@emotion/cache` when using Emotion).
 
+## Community contributions
+
+Feel free to submit your projects:
+
+### Templates
+
+- Vue 3, Vercel, Axios. [Link](https://github.com/kadiryazici/vite-ssr-vue3-example/).
+
+### Addons
+
+- `vite-ssr-middleware`: Add route middlewares for `vite-ssr` and Vue, similar to Nuxt. [Link](https://github.com/kadiryazici/vite-ssr-middleware).
+
+### Examples
+
+- Imitating Nuxt's `asyncData` in Vue options API. [Link](https://github.com/frandiox/vite-ssr/discussions/46#discussioncomment-988827).
+- Fetch data from Vue components with composition API hook and Axios. [Link](https://github.com/frandiox/vite-ssr/discussions/66#discussion-3467130).
+
 ## References
 
 The following projects served as learning material to develop this tool:
