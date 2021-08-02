@@ -16,7 +16,7 @@ Vite SSR can be deployed to any Node.js or browser-like environment, including s
 
 > Vite SSR is unopinionated about your API logic so you must bring your own. If you want a more opiniated and fullstack setup with filesystem-based API endpoints and auto-managed edge cache, have a look at [Vitedge](https://github.com/frandiox/vitedge). It wraps Vite SSR and can be deployed to Cloudflare Workers or any Node.js environment.
 
-Start a new SSR project right away using Vue, filesystem routes, page layouts, i18n, icons auto-import and more with [Vitesse SSR template](https://github.com/frandiox/vitesse-ssr-template). See [live demo](https://vitesse-ssr.vercel.app/).
+Start a new SSR project right away with filesystem routes, i18n, icons, markdown and more with [Vitesse (Vue)](https://github.com/frandiox/vitesse-ssr-template) or [Reactesse (React)](https://github.com/frandiox/reactesse-ssr-template). See [live demo](https://vitesse-ssr.vercel.app/).
 
 ## Installation
 
