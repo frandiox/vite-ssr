@@ -1,6 +1,8 @@
 <template>
   <h1>serverPrefetch Test</h1>
-  {{ users }}
+  <address v-for="user in users">
+    {{ user.name }}
+  </address>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +22,7 @@ onMounted(() => {
 
 async function fetchData() {
   const res: Response = await fetch(
-    'https://jsonplaceholder.typicode.com/todos/1'
+    'https://jsonplaceholder.typicode.com/users'
   )
   users.value = (await res.json()) as any
   if (import.meta.env.SSR) {
