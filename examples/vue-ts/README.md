@@ -26,28 +26,18 @@
   * `npm i vite-ssr vue-router @vueuse/head`
   * `npm i -D @vue/server-renderer`
 
-* Update `vite.config.ts`. See the updated sample code.
-
-```ts
-import { defineConfig } from 'vite'
-import viteSSR from 'vite-ssr/plugin'
-import vue from '@vitejs/plugin-vue'
-
-export default defineConfig({
-  plugins: [viteSSR(), vue()],
-})
-```
-
-* Create `./src/route.ts` with the following
-
-```
-
-* Update `./src/main.ts` with the following
+* Update `vite.config.ts`. See [updated vite.cofnig.ts].(https://github.com/thruthesky/vite-ssr/blob/vue-ts/examples/vue-ts/vite.config.ts).
 
 
-* And copy [pages from the example](https://github.com/thruthesky/vite-ssr/tree/master/examples/vue/src/pages) and fix them for Typescript support.
+
+* Create `./src/route.ts` and fill routes. See [updated ./src/route.ts].(https://github.com/thruthesky/vite-ssr/blob/vue-ts/examples/vue-ts/src/route.ts).
+
+* Update `./src/main.ts`. It gets dummy data by an API call. See updated []./src/main.ts](https://github.com/thruthesky/vite-ssr/blob/vue-ts/examples/vue-ts/src/main.ts). 
+
+
+* Create sub pages.
 
 * Create `./src/index.css`
 
-* Add api data at `./public/api/data.json`.
+* Run `npx vite-ssr dev`
 
