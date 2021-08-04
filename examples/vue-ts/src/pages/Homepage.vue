@@ -29,8 +29,6 @@ export default defineComponent({
     // This is provided in main.js
     const initialState: any = inject('initialState')
 
-    console.log('initState; ', initialState)
-
     // Hydrate from initialState, if there's anything
     const homeLocalState = ref(initialState.homeLocalState || null)
 
@@ -54,7 +52,7 @@ export default defineComponent({
     if (!homeLocalState.value) {
       // If there is no data in initial state, you can get it from your own API.
       const res: Response = await fetch(
-        'https://jsonplaceholder.typicode.com/todos/1'
+        'https://jsonplaceholder.typicode.com/users'
       )
       const json = (await res.json()) as any
       homeLocalState.value = json.title + ' ' + new Date().toLocaleString()
