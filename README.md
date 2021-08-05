@@ -550,6 +550,8 @@ Feel free to submit your projects:
 
 - Imitating Nuxt's `asyncData` in Vue options API. [Link](https://github.com/frandiox/vite-ssr/discussions/46#discussioncomment-988827).
 - Fetch data from Vue components with composition API hook and Axios. [Link](https://github.com/frandiox/vite-ssr/discussions/66#discussion-3467130).
+- vite-ssr with Typescript. This example has an API call. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts).
+- vite-ssr with Typescript. This example uses `serverPrefetch`. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts-server-prefetch).
 
 ## References
 
