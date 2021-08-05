@@ -383,7 +383,7 @@ const { html } = await render(url, {
 })
 ```
 
-Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka.
+Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka. If you want to use your own server during development, check [Middleware Mode](#middleware-mode).
 
 ### Editing Response and redirects
 
@@ -485,6 +485,31 @@ There are two ways to run the app locally for development:
 - SSR mode: `vite-ssr dev` command spins up a local SSR server. It supports similar attributes to Vite CLI, e.g. `vite-ssr --port 1337 --open`.
 
 SPA mode will be slightly faster but the SSR one will have closer behavior to a production environment.
+
+### Middleware Mode
+
+If you want to run your own dev server (e.g. Express.js) instead of Vite's default Node + Connect, you can use Vite SSR in middleware mode:
+
+```js
+const express = require('express')
+const { createSsrServer } = require('vite-ssr/dev')
+
+async function createServer() {
+  const app = express()
+
+  // Create vite-ssr server in middleware mode.
+  const viteServer = await createSsrServer({
+    server: { middlewareMode: 'ssr' },
+  })
+
+  // Use vite's connect instance as middleware
+  app.use(viteServer.middlewares)
+
+  app.listen(3000)
+}
+
+createServer()
+```
 
 ## Production
 
