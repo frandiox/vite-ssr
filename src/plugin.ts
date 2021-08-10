@@ -6,6 +6,13 @@ const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
 type ViteSsrPluginOptions = {
+  build?: {
+    /**
+     * Keep the index.html generated in the client build
+     * @default false
+     */
+    keepIndexHtml?: boolean
+  },
   features?: {
     /**
      * Use '@apollo/client' renderer if present
@@ -20,6 +27,7 @@ export = function ViteSsrPlugin(
 ) {
   return {
     name: pluginName,
+    buildOptions: options.build || {},
     config() {
       let isReact = false
 
