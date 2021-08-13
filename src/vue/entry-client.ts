@@ -64,6 +64,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
     initialState: initialState || {},
     writeResponse,
     redirect,
+    router,
   } as Context
 
   provideContext(app, context)

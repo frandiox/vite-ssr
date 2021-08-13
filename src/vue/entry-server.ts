@@ -47,6 +47,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       isClient: false,
       initialState: {},
       redirect,
+      router,
       writeResponse,
       ...extra,
     } as Context

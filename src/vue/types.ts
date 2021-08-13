@@ -32,7 +32,9 @@ type HookResponse = void | {
   head?: HeadClient
 }
 
-export type Context = SharedContext
+export type Context = SharedContext & {
+  router: Router
+}
 
 export type HookParams = Context & {
   app: App
