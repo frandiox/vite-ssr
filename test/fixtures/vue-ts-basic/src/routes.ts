@@ -11,6 +11,11 @@ const routes: RouteRecordRaw[] = [
     path: '/about',
     component: () => import('./pages/about.vue'),
   },
+  {
+    name: 'repos',
+    path: '/repos',
+    component: () => import('./pages/repos.vue'),
+  },
 ]
 
 export default routes

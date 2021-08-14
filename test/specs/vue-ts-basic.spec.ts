@@ -26,4 +26,29 @@ test('/home', async (context) => {
   assert.is(await context.page.textContent('button'), 'Count:1')
 })
 
+test('/repos', async (context) => {
+  // SSR
+  context.page.goto(context.baseUrl + '/repos')
+
+  const html = await (await fetch(context.baseUrl + '/repos')).text()
+  assert.match(html, 'VueJs Org Repos')
+  assert.match(html, 'vue')
+  assert.match(html, 'The official router for Vue.js')
+  assert.match(html, 'The official documentation')
+
+  // SPA take over
+  const selector = 'div[data-test="desc-vue-router"]'
+
+  assert.match(
+    await context.page.textContent(selector),
+    'official router for Vue.js'
+  )
+
+  await context.page.click('button[data-test="remove-vue-router"]')
+
+  const res = await context.page.$$(selector)
+
+  assert.is(res.length, 0)
+})
+
 test.run()
