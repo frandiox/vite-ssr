@@ -5,22 +5,18 @@ import { Browser, chromium, Page } from 'playwright-chromium'
 import serve from '../scripts/serve'
 import { Context } from 'uvu'
 
-let browser: Browser
-let page: Page
 let app: http.Server
 
 export async function setup(context: Context, fixture: string) {
   try {
     const fixturePath = path.resolve('test', 'fixtures', fixture)
 
-    browser = await chromium.launch()
-    const browserContext = await browser.newContext()
-    page = await browserContext.newPage()
+    context.browser = await chromium.launch()
+    context.page = await context.browser.newPage()
 
     const served = await serve(fixturePath)
     if (served) {
       app = served.server
-      context.page = page
       context.baseUrl = served.baseUrl
     }
   } catch (error) {
@@ -31,10 +27,10 @@ export async function setup(context: Context, fixture: string) {
   }
 }
 
-export async function reset() {
+export async function reset(context: Context) {
   try {
-    await page.close()
-    await page.close()
+    await context.page.close()
+    await context.browser.close()
     await app.close()
     // await fs.remove(path.resolve('_temp'))
     console.log('reset done')
