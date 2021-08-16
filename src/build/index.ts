@@ -19,6 +19,9 @@ export = async ({
     const viteConfig = await resolveViteConfig()
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
+    // @ts-ignore
+    const { buildOptions: pluginBuildOptions = {} } = 
+      viteConfig.plugins.find((plugin) => plugin.name === 'vite-ssr') || {}
 
     let indexHtmlTemplate = ''
 
@@ -111,12 +114,15 @@ export = async ({
       await build(serverBuildOptions)
 
       // index.html file is not used in SSR and might be
-      // served by mistake, so let's remove it to avoid issues.
-      await fs
-        .unlink(
-          path.join(clientBuildOptions.build?.outDir as string, 'index.html')
-        )
-        .catch(() => null)
+      // served by mistake.
+      // Let's remove it unless the user overrides this behavior.
+      if (!pluginBuildOptions.keepIndexHtml) { 
+        await fs
+          .unlink(
+            path.join(clientBuildOptions.build?.outDir as string, 'index.html')
+          )
+          .catch(() => null)
+      }
 
       await generatePackageJson(clientBuildOptions, serverBuildOptions)
 

@@ -515,6 +515,29 @@ createServer()
 
 Run `vite-ssr build` for buildling your app. This will create 2 builds (client and server) that you can import and use from your Node backend. See an Express.js example server [here](./examples/node-server/index.js), or a serverless function deployed to Vercel [here](https://github.com/frandiox/vitesse-ssr-template/blob/master/serverless/api/index.js).
 
+<details><summary>Keeping index.html in the client build</summary>
+<p>
+
+In an SSR app, `index.html` is already embedded in the server build, and is thus removed from the client build in order to prevent serving it by mistake. However, if you would like to keep `index.html` in the client build (e.g. when using server side routing to selectively use SSR for a subset of routes), you can set `build.keepIndexHtml` to `true` in the plugin options:
+
+```js
+// vite.config.js
+
+export default {
+  plugins: [
+    viteSSR({
+      build: {
+        keepIndexHtml: true,
+      },
+    }),
+    [...]
+  ],
+}
+```
+
+</p>
+</details>
+
 ## Integrations
 
 Common integrations will be added here:
@@ -550,6 +573,8 @@ Feel free to submit your projects:
 
 - Imitating Nuxt's `asyncData` in Vue options API. [Link](https://github.com/frandiox/vite-ssr/discussions/46#discussioncomment-988827).
 - Fetch data from Vue components with composition API hook and Axios. [Link](https://github.com/frandiox/vite-ssr/discussions/66#discussion-3467130).
+- Vue + TypeScript with API calls. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts).
+- Vue + TypeScript using `serverPrefetch`. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts-server-prefetch).
 
 ## References
 
