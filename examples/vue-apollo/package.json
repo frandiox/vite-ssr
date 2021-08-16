@@ -1,5 +1,5 @@
 {
-  "name": "vue-example",
+  "name": "vue-apollo-example",
   "version": "0.0.0",
   "scripts": {
     "dev": "node ../../node_modules/vite-ssr/cli.js --port 1337 --force",
@@ -8,9 +8,13 @@
     "serve:node": "node ../node-server/index vue"
   },
   "dependencies": {
+    "@apollo/client": "^3.4.7",
     "@vitejs/plugin-vue": "^1.1.4",
+    "@vue/apollo-composable": "^4.0.0-alpha.14",
     "@vue/compiler-sfc": "^3.2.0",
     "@vueuse/head": "^0.5.0",
+    "graphql": "^15.5.1",
+    "graphql-tag": "^2.12.5",
     "vite": "^2.3.2",
     "vue": "^3.2.0",
     "vue-router": "^4.0.0"

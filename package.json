@@ -36,6 +36,7 @@
   "types": "./index.d.ts",
   "workspaces": [
     "examples/vue",
+    "examples/vue-apollo",
     "examples/react",
     "examples/react-apollo"
   ],
