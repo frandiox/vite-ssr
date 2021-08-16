@@ -515,6 +515,29 @@ createServer()
 
 Run `vite-ssr build` for buildling your app. This will create 2 builds (client and server) that you can import and use from your Node backend. See an Express.js example server [here](./examples/node-server/index.js), or a serverless function deployed to Vercel [here](https://github.com/frandiox/vitesse-ssr-template/blob/master/serverless/api/index.js).
 
+<details><summary>Keeping index.html in the client build</summary>
+<p>
+
+In an SSR app, `index.html` is already embedded in the server build, and is thus removed from the client build in order to prevent serving it by mistake. However, if you would like to keep `index.html` in the client build (e.g. when using server side routing to selectively use SSR for a subset of routes), you can set `build.keepIndexHtml` to `true` in the plugin options:
+
+```js
+// vite.config.js
+
+export default {
+  plugins: [
+    viteSSR({
+      build: {
+        keepIndexHtml: true,
+      },
+    }),
+    [...]
+  ],
+}
+```
+
+</p>
+</details>
+
 ## Integrations
 
 Common integrations will be added here:
