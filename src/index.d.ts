@@ -2,7 +2,7 @@
 import type { SharedContext, SharedOptions } from './utils/types'
 
 declare module 'vite-ssr' {
-  const handler: (
+  export default (
     App: any,
     options: SharedOptions & {
       routes: Array<Record<string, any>>
@@ -18,7 +18,6 @@ declare module 'vite-ssr' {
     ) => any
   ) => any
 
-  export default handler
   export const ClientOnly: any
   export const useContext: () => SharedContext
 }
