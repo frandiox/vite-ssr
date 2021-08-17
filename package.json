@@ -100,7 +100,8 @@
     "ts-node": "^10.1.0",
     "typescript": "^4.2.3",
     "uvu": "^0.5.1",
-    "watchlist": "^0.2.3"
+    "watchlist": "^0.2.3",
+    "yorkie": "^2.0.0"
   },
   "gitHooks": {
     "commit-msg": "node scripts/verifyCommit.js"
