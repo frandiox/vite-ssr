@@ -85,7 +85,7 @@ export const createSSRDevHandler = (
     try {
       const template = await getIndexTemplate(request.originalUrl as string)
       const entryPoint =
-        options.ssr || (await getEntryPoint(server.config.root, template))
+        options.ssr || (await getEntryPoint(server.config, template))
 
       let resolvedEntryPoint = await server.ssrLoadModule(resolve(entryPoint))
       resolvedEntryPoint = resolvedEntryPoint.default || resolvedEntryPoint
