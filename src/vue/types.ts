@@ -23,7 +23,7 @@ export type ExtendedRouteNormalized = RouteLocationNormalized & {
   meta?: Meta
 }
 
-export type Options = SharedOptions & {
+export interface Options extends SharedOptions {
   routes: ExtendedRouteRaw[]
   routerOptions?: Omit<RouterOptions, 'routes' | 'history'>
 }
@@ -32,24 +32,22 @@ type HookResponse = void | {
   head?: HeadClient
 }
 
-export type Context = SharedContext
+export interface Context extends SharedContext {}
 
-export type HookParams = Context & {
+export interface HookParams extends Context {
   app: App
   router: Router
   initialRoute: RouteLocationNormalized
 }
 
-export type Hook = (params: HookParams) => HookResponse | Promise<HookResponse>
+export interface Hook {
+  (params: HookParams): HookResponse | Promise<HookResponse>
+}
 
-export type ClientHandler = (
-  App: Component,
-  options: Options,
-  hook?: Hook
-) => Promise<void>
+export interface ClientHandler {
+  (App: Component, options: Options, hook?: Hook): Promise<void>
+}
 
-export type SsrHandler = (
-  App: Component,
-  options: Options,
-  hook?: Hook
-) => Renderer
+export interface SsrHandler {
+  (App: Component, options: Options, hook?: Hook): Renderer
+}

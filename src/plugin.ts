@@ -5,14 +5,14 @@ const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-type ViteSsrPluginOptions = {
+interface ViteSsrPluginOptions {
   build?: {
     /**
      * Keep the index.html generated in the client build
      * @default false
      */
     keepIndexHtml?: boolean
-  },
+  }
   features?: {
     /**
      * Use '@apollo/client' renderer if present
