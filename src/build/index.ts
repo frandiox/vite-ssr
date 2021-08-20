@@ -19,9 +19,7 @@ export = async ({
     const viteConfig = await resolveViteConfig()
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
-    // @ts-ignore
-    const { buildOptions: pluginBuildOptions = {} } = 
-      viteConfig.plugins.find((plugin) => plugin.name === 'vite-ssr') || {}
+    const { build: pluginBuildOptions = {} } = getPluginOptions(viteConfig)
 
     let indexHtmlTemplate = ''
 

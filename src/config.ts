@@ -1,6 +1,29 @@
 import fs from 'fs'
 import path from 'path'
-import { resolveConfig } from 'vite'
+import { resolveConfig, ResolvedConfig } from 'vite'
+
+export type ViteSsrPluginOptions = {
+  build?: {
+    /**
+     * Keep the index.html generated in the client build
+     * @default false
+     */
+    keepIndexHtml?: boolean
+  }
+  features?: {
+    /**
+     * Use '@apollo/client' renderer if present
+     * @default true
+     */
+    reactApolloRenderer?: boolean
+  }
+}
+
+export function getPluginOptions(viteConfig: ResolvedConfig) {
+  return ((
+    viteConfig.plugins.find((plugin) => plugin.name === 'vite-ssr') as any
+  )?.viteSsrOptions || {}) as ViteSsrPluginOptions
+}
 
 export async function resolveViteConfig(mode?: string) {
   return resolveConfig(

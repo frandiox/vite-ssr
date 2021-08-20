@@ -1,33 +1,17 @@
 import type { Plugin } from 'vite'
+import type { ViteSsrPluginOptions } from './config'
 import { createSSRDevHandler, SsrOptions } from './dev/server'
 
 const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-type ViteSsrPluginOptions = {
-  build?: {
-    /**
-     * Keep the index.html generated in the client build
-     * @default false
-     */
-    keepIndexHtml?: boolean
-  },
-  features?: {
-    /**
-     * Use '@apollo/client' renderer if present
-     * @default true
-     */
-    reactApolloRenderer?: boolean
-  }
-}
-
 export = function ViteSsrPlugin(
   options: ViteSsrPluginOptions & SsrOptions = {}
 ) {
   return {
     name: pluginName,
-    buildOptions: options.build || {},
+    viteSsrOptions: options,
     config() {
       let isReact = false
 
