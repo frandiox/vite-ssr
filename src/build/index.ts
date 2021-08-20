@@ -22,9 +22,15 @@ export = async ({
 }: BuildOptions = {}) =>
   new Promise(async (resolve) => {
     const viteConfig = await resolveViteConfig()
+
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
-    const { build: pluginBuildOptions = {} } = getPluginOptions(viteConfig)
+
+    const { input: inputFilePath = '', build: pluginBuildOptions = {} } =
+      getPluginOptions(viteConfig)
+
+    const defaultFilePath = path.resolve(viteConfig.root, INDEX_HTML)
+    const inputFileName = inputFilePath.split('/').pop() || INDEX_HTML
 
     let indexHtmlTemplate = ''
 
@@ -34,6 +40,25 @@ export = async ({
           outDir: path.resolve(distDir, 'client'),
           ssrManifest: true,
           emptyOutDir: false,
+
+          // Custom input path
+          rollupOptions:
+            inputFilePath && inputFilePath !== defaultFilePath
+              ? {
+                  input: inputFilePath,
+                  plugins: [
+                    inputFileName !== INDEX_HTML && {
+                      generateBundle(options, bundle) {
+                        // Rename custom name to index.html
+                        const htmlAsset = bundle[inputFileName]
+                        delete bundle[inputFileName]
+                        htmlAsset.fileName = INDEX_HTML
+                        bundle[INDEX_HTML] = htmlAsset
+                      },
+                    },
+                  ],
+                }
+              : {},
         },
       } as InlineConfig,
       clientOptions

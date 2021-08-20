@@ -7,7 +7,7 @@ import {
   InlineConfig,
   ViteDevServer,
 } from 'vite'
-import { getEntryPoint } from '../config'
+import { getEntryPoint, getPluginOptions } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
 import type { WriteResponse } from '../utils/types'
@@ -48,10 +48,14 @@ export const createSSRDevHandler = (
     ...options,
   }
 
+  const pluginOptions = getPluginOptions(server.config)
   const resolve = (p: string) => path.resolve(server.config.root, p)
   async function getIndexTemplate(url: string) {
     // Template should be fresh in every request
-    const indexHtml = await fs.readFile(resolve('index.html'), 'utf-8')
+    const indexHtml = await fs.readFile(
+      pluginOptions.input || resolve('index.html'),
+      'utf-8'
+    )
     return await server.transformIndexHtml(url, indexHtml)
   }
 

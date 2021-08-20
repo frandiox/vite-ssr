@@ -3,6 +3,11 @@ import path from 'path'
 import { resolveConfig, ResolvedConfig } from 'vite'
 
 export type ViteSsrPluginOptions = {
+  /**
+   * Path to entry index.html
+   * @default '<root>/index.html'
+   */
+  input?: string
   build?: {
     /**
      * Keep the index.html generated in the client build
@@ -45,7 +50,7 @@ export async function getEntryPoint(
 
   if (!indexHtml) {
     indexHtml = await fs.promises.readFile(
-      path.resolve(config.root, INDEX_HTML),
+      getPluginOptions(config).input || path.resolve(config.root, INDEX_HTML),
       'utf-8'
     )
   }
