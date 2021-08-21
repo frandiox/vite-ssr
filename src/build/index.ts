@@ -10,7 +10,12 @@ import {
   BuildOptions,
 } from '../config'
 import { buildHtmlDocument } from './utils'
-import type { RollupOutput, RollupWatcher, OutputAsset } from 'rollup'
+import type {
+  RollupOutput,
+  RollupWatcher,
+  OutputAsset,
+  OutputOptions,
+} from 'rollup'
 
 export = async (inlineBuildOptions: BuildOptions = {}) =>
   new Promise(async (resolve) => {
@@ -172,13 +177,22 @@ async function generatePackageJson(
 ) {
   if (serverBuildOptions.packageJson === false) return
 
-  const ssr = (viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string
-  const format = ((viteConfig.build?.rollupOptions?.output as any)?.format ||
-    (serverBuildOptions.build?.rollupOptions?.output as any)?.format) as string
+  const outputFile = (
+    serverBuildOptions.build?.rollupOptions?.output as OutputOptions
+  )?.file
+
+  const ssrOutput = path.parse(
+    outputFile ||
+      ((viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string)
+  )
+
+  const moduleFormat =
+    (viteConfig.build?.rollupOptions?.output as OutputOptions)?.format ||
+    (serverBuildOptions.build?.rollupOptions?.output as OutputOptions)?.format
 
   const packageJson = {
-    main: path.parse(ssr).name + '.js',
-    type: /^esm?$/i.test(format || '') ? 'module' : 'commonjs',
+    main: outputFile ? ssrOutput.base : ssrOutput.name + '.js',
+    type: /^esm?$/i.test(moduleFormat || '') ? 'module' : 'commonjs',
     ssr: {
       // This can be used later to serve static assets
       assets: (
