@@ -1,6 +1,36 @@
 import fs from 'fs'
 import path from 'path'
-import { resolveConfig } from 'vite'
+import { resolveConfig, ResolvedConfig } from 'vite'
+
+export type ViteSsrPluginOptions = {
+  /**
+   * Path to entry index.html
+   * @default '<root>/index.html'
+   */
+  input?: string
+  build?: {
+    /**
+     * Keep the index.html generated in the client build
+     * @default false
+     */
+    keepIndexHtml?: boolean
+  }
+  features?: {
+    /**
+     * Use '@apollo/client' renderer if present
+     * @default true
+     */
+    reactApolloRenderer?: boolean
+  }
+}
+
+export const INDEX_HTML = 'index.html'
+
+export function getPluginOptions(viteConfig: ResolvedConfig) {
+  return ((
+    viteConfig.plugins.find((plugin) => plugin.name === 'vite-ssr') as any
+  )?.viteSsrOptions || {}) as ViteSsrPluginOptions
+}
 
 export async function resolveViteConfig(mode?: string) {
   return resolveConfig(
@@ -10,15 +40,17 @@ export async function resolveViteConfig(mode?: string) {
   )
 }
 
-export async function getEntryPoint(root?: string, indexHtml?: string) {
-  if (!root) {
-    const config = await resolveViteConfig()
-    root = config.root
+export async function getEntryPoint(
+  config?: ResolvedConfig,
+  indexHtml?: string
+) {
+  if (!config) {
+    config = await resolveViteConfig()
   }
 
   if (!indexHtml) {
     indexHtml = await fs.promises.readFile(
-      path.resolve(root, 'index.html'),
+      getPluginOptions(config).input || path.resolve(config.root, INDEX_HTML),
       'utf-8'
     )
   }
@@ -29,5 +61,5 @@ export async function getEntryPoint(root?: string, indexHtml?: string) {
 
   const entryFile = matches?.[1] || 'src/main'
 
-  return path.join(root, entryFile)
+  return path.join(config.root, entryFile)
 }
