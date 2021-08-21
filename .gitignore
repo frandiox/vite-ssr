@@ -7,3 +7,4 @@ dist-ssr
 _*
 
 **/worker/*
+pnpm-lock.yaml
