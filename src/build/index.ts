@@ -1,4 +1,4 @@
-import { build, InlineConfig, mergeConfig } from 'vite'
+import { build, InlineConfig, ResolvedConfig, mergeConfig } from 'vite'
 import replace from '@rollup/plugin-replace'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -116,7 +116,11 @@ export = async ({
 
           // Build SSR bundle with the new index.html
           await build(serverBuildOptions)
-          await generatePackageJson(clientBuildOptions, serverBuildOptions)
+          await generatePackageJson(
+            viteConfig,
+            clientBuildOptions,
+            serverBuildOptions
+          )
 
           if (!resolved) {
             resolve(null)
@@ -152,25 +156,28 @@ export = async ({
           .catch(() => null)
       }
 
-      await generatePackageJson(clientBuildOptions, serverBuildOptions)
+      await generatePackageJson(
+        viteConfig,
+        clientBuildOptions,
+        serverBuildOptions
+      )
 
       resolve(null)
     }
   })
 
 async function generatePackageJson(
+  viteConfig: ResolvedConfig,
   clientBuildOptions: InlineConfig,
   serverBuildOptions: NonNullable<BuildOptions['serverOptions']>
 ) {
-  const type =
-    // @ts-ignore
-    serverBuildOptions.build?.rollupOptions?.output?.format === 'es'
-      ? 'module'
-      : 'commonjs'
+  const ssr = (viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string
+  const format = ((viteConfig.build?.rollupOptions?.output as any)?.format ||
+    (serverBuildOptions.build?.rollupOptions?.output as any)?.format) as string
 
   const packageJson = {
-    type,
-    main: path.parse(serverBuildOptions.build?.ssr as string).name + '.js',
+    main: path.parse(ssr).name + '.js',
+    type: /^esm?$/i.test(format || '') ? 'module' : 'commonjs',
     ssr: {
       // This can be used later to serve static assets
       assets: (
