@@ -7,19 +7,12 @@ import {
   getPluginOptions,
   INDEX_HTML,
   resolveViteConfig,
+  BuildOptions,
 } from '../config'
 import { buildHtmlDocument } from './utils'
 import type { RollupOutput, RollupWatcher, OutputAsset } from 'rollup'
 
-type BuildOptions = {
-  clientOptions?: InlineConfig
-  serverOptions?: InlineConfig & { packageJson?: Record<string, unknown> }
-}
-
-export = async ({
-  clientOptions = {},
-  serverOptions = {},
-}: BuildOptions = {}) =>
+export = async (inlineBuildOptions: BuildOptions = {}) =>
   new Promise(async (resolve) => {
     const viteConfig = await resolveViteConfig()
 
@@ -61,7 +54,10 @@ export = async ({
               : {},
         },
       } as InlineConfig,
-      clientOptions
+      mergeConfig(
+        pluginBuildOptions.clientOptions || {},
+        inlineBuildOptions.clientOptions || {}
+      )
     ) as NonNullable<BuildOptions['clientOptions']>
 
     const serverBuildOptions = mergeConfig(
@@ -85,7 +81,10 @@ export = async ({
           },
         },
       } as InlineConfig,
-      serverOptions
+      mergeConfig(
+        pluginBuildOptions.serverOptions || {},
+        inlineBuildOptions.serverOptions || {}
+      )
     ) as NonNullable<BuildOptions['serverOptions']>
 
     const clientResult = await build(clientBuildOptions)
@@ -171,6 +170,8 @@ async function generatePackageJson(
   clientBuildOptions: InlineConfig,
   serverBuildOptions: NonNullable<BuildOptions['serverOptions']>
 ) {
+  if (serverBuildOptions.packageJson === false) return
+
   const ssr = (viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string
   const format = ((viteConfig.build?.rollupOptions?.output as any)?.format ||
     (serverBuildOptions.build?.rollupOptions?.output as any)?.format) as string

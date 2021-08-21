@@ -1,6 +1,23 @@
 import fs from 'fs'
 import path from 'path'
-import { resolveConfig, ResolvedConfig } from 'vite'
+import { resolveConfig, ResolvedConfig, InlineConfig } from 'vite'
+
+export interface BuildOptions {
+  /**
+   * Vite options applied only to the client build
+   */
+  clientOptions?: InlineConfig
+  /**
+   * Vite options applied only to the server build
+   */
+  serverOptions?: InlineConfig & {
+    /**
+     * Extra properties to include in the generated server package.json,
+     * or 'false' to avoid generating it.
+     */
+    packageJson?: Record<string, unknown> | false
+  }
+}
 
 export interface ViteSsrPluginOptions {
   /**
@@ -8,7 +25,7 @@ export interface ViteSsrPluginOptions {
    * @default '<root>/index.html'
    */
   input?: string
-  build?: {
+  build?: BuildOptions & {
     /**
      * Keep the index.html generated in the client build
      * @default false
