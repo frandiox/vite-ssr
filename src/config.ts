@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { resolveConfig, ResolvedConfig } from 'vite'
 
-export type ViteSsrPluginOptions = {
+export interface ViteSsrPluginOptions {
   /**
    * Path to entry index.html
    * @default '<root>/index.html'

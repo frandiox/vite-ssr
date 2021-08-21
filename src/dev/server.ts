@@ -28,7 +28,7 @@ function fixEntryPoint(vite: ViteDevServer) {
   }
 }
 
-export type SsrOptions = {
+export interface SsrOptions {
   plugin?: string
   ssr?: string
   getRenderContext?: (params: {

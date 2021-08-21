@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite'
 import type { ViteSsrPluginOptions } from './config'
-import { createSSRDevHandler, SsrOptions } from './dev/server'
+import type { SsrOptions } from './dev/server'
+import { createSSRDevHandler } from './dev/server'
 
 const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
