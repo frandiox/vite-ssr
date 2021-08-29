@@ -23,7 +23,7 @@ Start a new SSR project right away with filesystem routes, i18n, icons, markdown
 Create a normal [Vite](https://vitejs.dev/guide/) project for Vue or React.
 
 ```sh
-yarn create @vitejs/app my-app --template [vue|vue-ts|react|react-ts]
+yarn create vite --template [vue|vue-ts|react|react-ts]
 ```
 
 Then, add `vite-ssr` with your package manager (direct dependency) and your framework router.
