@@ -11,6 +11,7 @@ import { getEntryPoint, getPluginOptions } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
 import type { WriteResponse } from '../utils/types'
+import { logServerError } from './utils'
 
 // This cannot be imported from utils due to ESM <> CJS issues
 const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
@@ -86,8 +87,16 @@ export const createSSRDevHandler = (
 
     fixEntryPoint(server)
 
+    let template: string
+
     try {
-      const template = await getIndexTemplate(request.originalUrl as string)
+      template = await getIndexTemplate(request.originalUrl as string)
+    } catch (error) {
+      logServerError(error, server)
+      return next(error)
+    }
+
+    try {
       const entryPoint =
         options.ssr || (await getEntryPoint(server.config, template))
 
@@ -129,10 +138,11 @@ export const createSSRDevHandler = (
 
       response.setHeader('Content-Type', 'text/html')
       response.end(buildHtmlDocument(template, htmlParts))
-    } catch (e) {
-      server.ssrFixStacktrace(e)
-      console.log(e.stack)
-      next(e)
+    } catch (error) {
+      // Send back template HTML to inject ViteErrorOverlay
+      response.setHeader('Content-Type', 'text/html')
+      response.end(template)
+      logServerError(error, server)
     }
   }
 
