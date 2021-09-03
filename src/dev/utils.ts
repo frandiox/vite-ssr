@@ -28,9 +28,12 @@ export function logServerError(
     error,
   })
 
-  setTimeout(() => {
+  const sendError = () =>
     server.ws.send({ type: 'error', err: prepareError(error) })
-  }, 100) // Wait until browser injects ViteErrorOverlay custom element
+
+  // Wait until browser injects ViteErrorOverlay custom element
+  setTimeout(sendError, 100)
+  setTimeout(sendError, 250)
 }
 
 function prepareError(err: Error | RollupError): ErrorPayload['err'] {
