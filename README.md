@@ -557,6 +557,20 @@ You can provide your own by looking at the [implementation](./src/react/style-co
 
 Note that you still need to install all the required dependencies from these packages (e.g. `@emotion/server`, `@emotion/react` and `@emotion/cache` when using Emotion).
 
+## Custom Typings
+
+You can define your own typings with vite-ssr. To declare custom types, the file mostly needs to `import` or `export` something not to breake other types.
+Example transforming `request` and `response` to types of `express`;
+```ts
+import {Request, Response} from 'express';
+declare module 'vite-ssr/vue' {
+  export interface Context {
+    request: Request,
+    response: Response
+  }
+}
+```
+
 ## Community contributions
 
 Feel free to submit your projects:
