@@ -17,7 +17,8 @@
     "build:clean": "rm -rf dist && mkdir dist",
     "build:copy": "cp README.md LICENSE src/index.d.ts dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
     "build:compile:cjs": "cd src && yarn tsc",
-    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json"
+    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json",
+    "release": "npx bumpp --push --tag --commit \"release: v%s\" && npm publish"
   },
   "repository": {
     "type": "git",
