@@ -1,8 +1,10 @@
 <template>
-  <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
-  <p class="test">Message from server: {{ msg }}</p>
+  <div>
+    <h1>This is the homepage. Server's getProps works: {{ server }}</h1>
+    <p class="test">Message from server: {{ msg }}</p>
 
-  <p>{{ homeLocalState }}</p>
+    <p>{{ homeLocalState }}</p>
+  </div>
 </template>
 
 <script>
