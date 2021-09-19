@@ -3,26 +3,18 @@ import { routes } from './routes'
 import viteSSR from 'vite-ssr'
 import { InMemoryCache } from '@apollo/client'
 
-export default viteSSR(
-  App,
-  {
-    routes,
-    transformState(state, defaultTransformer) {
-      if (import.meta.env.SSR) {
-        state.apolloCache = state.apolloCache.extract()
-      }
+export default viteSSR(App, { routes }, (context) => {
+  // Create a new Apollo cache (once per request)
+  // and make it available in the App function context
+  const cache = new InMemoryCache()
+  context.apolloCache = cache
 
-      return defaultTransformer(state)
-    },
-  },
-  ({ initialState, request }) => {
-    // Custom initialization hook
-    if (import.meta.env.SSR) {
-      initialState.apolloCache = new InMemoryCache()
-    } else {
-      initialState.apolloCache = new InMemoryCache().restore(
-        initialState.apolloCache
-      )
-    }
+  // Sync initialState and Apollo cache
+  if (import.meta.env.SSR) {
+    // Placeholder for the SSR state
+    context.initialState.apolloState = { toJSON: () => cache.extract() }
+  } else {
+    // Use existing state in browser
+    cache.restore(context.initialState.apolloState)
   }
-)
+})

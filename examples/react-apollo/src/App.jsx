@@ -4,7 +4,8 @@ import { Link, Route, Switch } from 'react-router-dom'
 import logo from './logo.svg'
 import { ClientOnly } from 'vite-ssr'
 import { ApolloClient, ApolloProvider, createHttpLink } from '@apollo/client'
-export default function App({ isClient, url, router, initialState, request }) {
+
+export default function App({ isClient, url, router, apolloCache }) {
   const baseUrl = isClient ? '' : url.origin
   const [count, setCount] = useState(0)
 
@@ -14,7 +15,7 @@ export default function App({ isClient, url, router, initialState, request }) {
       credentials: 'same-origin',
     }),
     ssrMode: !isClient,
-    cache: initialState.apolloCache,
+    cache: apolloCache,
     credentials: 'same-origin',
   })
 
