@@ -1,7 +1,6 @@
-import fs from 'fs-extra'
 import http from 'http'
 import path from 'path'
-import { Browser, chromium, Page } from 'playwright-chromium'
+import { chromium } from 'playwright-chromium'
 import serve from '../scripts/serve'
 import { Context } from 'uvu'
 

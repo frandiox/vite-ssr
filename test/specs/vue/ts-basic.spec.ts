@@ -1,15 +1,17 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { setup, reset } from '../setup/per-suite'
+import { setup, reset } from '../../setup/per-suite'
 import fetch from 'node-fetch'
 
+const FIXTURE = 'vue-ts-basic'
+
 test.before(async (context) => {
-  await setup(context, 'vue-ts-basic')
+  await setup(context, FIXTURE)
 })
 
 test.after(reset)
 
-test('/home', async (context) => {
+test(`${FIXTURE}/home`, async (context) => {
   // SSR
   context.page.goto(context.baseUrl + '/')
   assert.is(await context.page.textContent('h1'), 'Home Page')
@@ -26,7 +28,7 @@ test('/home', async (context) => {
   assert.is(await context.page.textContent('button'), 'Count:1')
 })
 
-test('/repos', async (context) => {
+test(`${FIXTURE}/repos`, async (context) => {
   // SSR
   context.page.goto(context.baseUrl + '/repos')
 
