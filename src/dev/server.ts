@@ -92,7 +92,7 @@ export const createSSRDevHandler = (
     try {
       template = await getIndexTemplate(request.originalUrl as string)
     } catch (error) {
-      logServerError(error, server)
+      logServerError(error as Error, server)
       return next(error)
     }
 
@@ -142,7 +142,7 @@ export const createSSRDevHandler = (
       // Send back template HTML to inject ViteErrorOverlay
       response.setHeader('Content-Type', 'text/html')
       response.end(template)
-      logServerError(error, server)
+      logServerError(error as Error, server)
     }
   }
 
