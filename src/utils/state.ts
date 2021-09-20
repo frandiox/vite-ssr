@@ -1,9 +1,9 @@
 // https://github.com/yahoo/serialize-javascript
 const UNSAFE_CHARS_REGEXP = /[<>'\/\u2028\u2029]/g
 const ESCAPED_CHARS = {
+  "'": "\\'",
   '<': '\\u003C',
   '>': '\\u003E',
-  '\'': '\\\'',
   '/': '\\u002F',
   '\u2028': '\\u2028',
   '\u2029': '\\u2029',

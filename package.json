@@ -17,7 +17,8 @@
     "build:clean": "rm -rf dist && mkdir dist",
     "build:copy": "cp README.md LICENSE src/index.d.ts dist/ && sed -e '/\"private\"/d' package.json > dist/package.json",
     "build:compile:cjs": "cd src && yarn tsc",
-    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json"
+    "build:compile:esm": "cd src && yarn tsc --project tsconfig-esm.json",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -98,6 +99,7 @@
     "fs-extra": "^10.0.0",
     "npm-run-all": "^4.1.5",
     "playwright-chromium": "^1.13.1",
+    "prettier": "^2.4.1",
     "ts-node": "^10.1.0",
     "typescript": "^4.2.3",
     "uvu": "^0.5.1",

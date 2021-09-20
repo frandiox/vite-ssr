@@ -8,7 +8,9 @@ export async function useFetchRepos() {
   let state = initialState[name as string] || null
 
   if (!state) {
-    state = await (await fetch('https://api.github.com/orgs/vuejs/repos')).json()
+    state = await (
+      await fetch('https://api.github.com/orgs/vuejs/repos')
+    ).json()
 
     if (import.meta.env.SSR) {
       initialState[name as string] = state
