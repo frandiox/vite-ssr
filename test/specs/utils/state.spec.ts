@@ -1,6 +1,6 @@
 import { test } from 'uvu'
 import * as assert from 'uvu/assert'
-import { serializeState } from '../../../src/utils/state';
+import { serializeState } from '../../../src/utils/state'
 
 test('serializeState', () => {
   // Simple case.
@@ -13,5 +13,10 @@ test('serializeState', () => {
   assert.is(serializeState({ quote: `'` }), `'{"quote":"\\'"}'`)
 
   // Expect angle brackets to be escaped.
-  assert.is(serializeState({ brackets: `< >` }), `'{"brackets":"\\u003C \\u003E"}'`)
-});
+  assert.is(
+    serializeState({ brackets: `< >` }),
+    `'{"brackets":"\\u003C \\u003E"}'`
+  )
+})
+
+test.run()
