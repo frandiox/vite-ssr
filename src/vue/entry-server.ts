@@ -2,12 +2,10 @@ import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
-import { findDependencies, renderPreloadLinks } from '../utils/html'
-import { useSsrResponse } from '../utils/response'
-import { serializeState } from '../utils/state'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-import type { SsrHandler, Context } from './types'
+import { runSsrRenderer } from '../core/entry-server.js'
+import type { SsrHandler } from './types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -19,7 +17,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     base,
     routerOptions = {},
     pageProps = { passToPage: true },
-    transformState = serializeState,
+    ...options
   },
   hook
 ) {
@@ -27,7 +25,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     addPagePropsGetterToRoutes(routes)
   }
 
-  return async function (url, { manifest, preload = false, ...extra } = {}) {
+  return async function (url, rendererOptions = {}) {
     const app = createSSRApp(App)
 
     url = createUrl(url)
@@ -38,82 +36,50 @@ export const viteSSR: SsrHandler = function viteSSR(
       routes: routes as RouteRecordRaw[],
     })
 
-    const { deferred, response, writeResponse, redirect, isRedirect } =
-      useSsrResponse()
-
-    // This can be injected with useSSRContext() in setup functions
-    const context = {
+    return runSsrRenderer(
       url,
-      isClient: false,
-      initialState: {},
-      redirect,
-      writeResponse,
-      ...extra,
-    } as Context
+      options,
+      rendererOptions,
+      async (context, { isRedirect }) => {
+        provideContext(app, context)
 
-    provideContext(app, context)
+        const fullPath = getFullPath(url, routeBase)
 
-    const fullPath = getFullPath(url, routeBase)
+        const { head } =
+          (hook &&
+            (await hook({
+              app,
+              router,
+              initialRoute: router.resolve(fullPath),
+              ...context,
+            }))) ||
+          {}
 
-    const { head } =
-      (hook &&
-        (await hook({
-          app,
-          router,
-          initialRoute: router.resolve(fullPath),
-          ...context,
-        }))) ||
-      {}
+        app.use(router)
+        router.push(fullPath)
 
-    app.use(router)
-    router.push(fullPath)
+        await router.isReady()
 
-    await router.isReady()
+        if (isRedirect()) return {}
 
-    if (isRedirect()) return response
+        Object.assign(
+          context.initialState || {},
+          (router.currentRoute.value.meta || {}).state || {}
+        )
 
-    Object.assign(
-      context.initialState || {},
-      (router.currentRoute.value.meta || {}).state || {}
+        const body = await renderToString(app, context)
+
+        if (isRedirect()) return {}
+
+        let {
+          headTags = '',
+          htmlAttrs = '',
+          bodyAttrs = '',
+        } = head ? renderHeadToString(head) : {}
+
+        return { body, headTags, htmlAttrs, bodyAttrs }
+      }
     )
-
-    renderToString(app, context).then(deferred.resolve).catch(deferred.reject)
-    const body = await deferred.promise
-
-    if (isRedirect()) return response
-
-    let {
-      headTags = '',
-      htmlAttrs = '',
-      bodyAttrs = '',
-    } = head ? renderHeadToString(head) : {}
-
-    const dependencies = manifest
-      ? // @ts-ignore
-        findDependencies(context.modules, manifest)
-      : []
-
-    if (preload && dependencies.length > 0) {
-      headTags += renderPreloadLinks(dependencies)
-    }
-
-    const initialState = await transformState(
-      context.initialState || {},
-      serializeState
-    )
-
-    return {
-      // This string is replaced at build time
-      // and injects all the previous variables.
-      html: `__VITE_SSR_HTML__`,
-      htmlAttrs,
-      headTags,
-      body,
-      bodyAttrs,
-      initialState,
-      dependencies,
-      ...response,
-    }
   }
 }
 
