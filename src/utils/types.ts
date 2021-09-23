@@ -56,13 +56,14 @@ export interface Rendered extends WriteResponse {
   dependencies: string[]
 }
 
+export interface RendererOptions {
+  manifest?: Record<string, string[]>
+  preload?: boolean
+  [key: string]: any
+}
+
 export interface Renderer {
-  (
-    url: string | URL,
-    options?: {
-      manifest?: Record<string, string[]>
-      preload?: boolean
-      [key: string]: any
-    }
-  ): Promise<Rendered | WriteResponse>
+  (url: string | URL, options?: RendererOptions): Promise<
+    Rendered | WriteResponse
+  >
 }
