@@ -1,21 +1,25 @@
 import type { ServerResponse } from 'http'
 import type { IncomingMessage } from 'connect'
 
-export type Meta = {
+export interface Meta {
   propsGetter?: boolean | string
   state?: Record<string, any> | null
   [key: string]: any
 }
 
-export type Base = (params: { url: Location | URL }) => string
+export interface Base {
+  (params: { url: Location | URL }): string
+}
 
-export type State = Record<string, any>
+export interface State {
+  [key: string]: any
+}
 
-export type PagePropsOptions = {
+export interface PagePropsOptions {
   passToPage?: boolean
 }
 
-export type SharedOptions = {
+export interface SharedOptions {
   base?: Base
   debug?: { mount?: boolean }
   pageProps?: PagePropsOptions
@@ -25,7 +29,7 @@ export type SharedOptions = {
   ) => any | Promise<any>
 }
 
-export type SharedContext = {
+export interface SharedContext {
   url: URL | Location
   isClient: boolean
   initialState: Record<string, any>
@@ -36,13 +40,13 @@ export type SharedContext = {
   [key: string]: any
 }
 
-export type WriteResponse = {
+export interface WriteResponse {
   status?: number
   statusText?: string
   headers?: Record<string, string>
 }
 
-export type Rendered = WriteResponse & {
+export interface Rendered extends WriteResponse {
   html: string
   htmlAttrs: string
   headTags: string
@@ -52,11 +56,13 @@ export type Rendered = WriteResponse & {
   dependencies: string[]
 }
 
-export type Renderer = (
-  url: string | URL,
-  options?: {
-    manifest?: Record<string, string[]>
-    preload?: boolean
-    [key: string]: any
-  }
-) => Promise<Rendered | WriteResponse>
+export interface Renderer {
+  (
+    url: string | URL,
+    options?: {
+      manifest?: Record<string, string[]>
+      preload?: boolean
+      [key: string]: any
+    }
+  ): Promise<Rendered | WriteResponse>
+}

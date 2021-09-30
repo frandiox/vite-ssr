@@ -1,24 +1,34 @@
-import { build, InlineConfig, mergeConfig } from 'vite'
+import { build, InlineConfig, ResolvedConfig, mergeConfig } from 'vite'
 import replace from '@rollup/plugin-replace'
 import { promises as fs } from 'fs'
 import path from 'path'
-import { getEntryPoint, resolveViteConfig } from '../config'
+import {
+  getEntryPoint,
+  getPluginOptions,
+  INDEX_HTML,
+  resolveViteConfig,
+  BuildOptions,
+} from '../config'
 import { buildHtmlDocument } from './utils'
-import type { RollupOutput, RollupWatcher, OutputAsset } from 'rollup'
+import type {
+  RollupOutput,
+  RollupWatcher,
+  OutputAsset,
+  OutputOptions,
+} from 'rollup'
 
-type BuildOptions = {
-  clientOptions?: InlineConfig
-  serverOptions?: InlineConfig & { packageJson?: Record<string, unknown> }
-}
-
-export = async ({
-  clientOptions = {},
-  serverOptions = {},
-}: BuildOptions = {}) =>
+export = async (inlineBuildOptions: BuildOptions = {}) =>
   new Promise(async (resolve) => {
     const viteConfig = await resolveViteConfig()
+
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
+
+    const { input: inputFilePath = '', build: pluginBuildOptions = {} } =
+      getPluginOptions(viteConfig)
+
+    const defaultFilePath = path.resolve(viteConfig.root, INDEX_HTML)
+    const inputFileName = inputFilePath.split('/').pop() || INDEX_HTML
 
     let indexHtmlTemplate = ''
 
@@ -28,9 +38,31 @@ export = async ({
           outDir: path.resolve(distDir, 'client'),
           ssrManifest: true,
           emptyOutDir: false,
+
+          // Custom input path
+          rollupOptions:
+            inputFilePath && inputFilePath !== defaultFilePath
+              ? {
+                  input: inputFilePath,
+                  plugins: [
+                    inputFileName !== INDEX_HTML && {
+                      generateBundle(options, bundle) {
+                        // Rename custom name to index.html
+                        const htmlAsset = bundle[inputFileName]
+                        delete bundle[inputFileName]
+                        htmlAsset.fileName = INDEX_HTML
+                        bundle[INDEX_HTML] = htmlAsset
+                      },
+                    },
+                  ],
+                }
+              : {},
         },
       } as InlineConfig,
-      clientOptions
+      mergeConfig(
+        pluginBuildOptions.clientOptions || {},
+        inlineBuildOptions.clientOptions || {}
+      )
     ) as NonNullable<BuildOptions['clientOptions']>
 
     const serverBuildOptions = mergeConfig(
@@ -40,7 +72,7 @@ export = async ({
           outDir: path.resolve(distDir, 'server'),
           // The plugin is already changing the vite-ssr alias to point to the server-entry.
           // Therefore, here we can just use the same entry point as in the index.html
-          ssr: await getEntryPoint(viteConfig.root),
+          ssr: await getEntryPoint(viteConfig),
           emptyOutDir: false,
           rollupOptions: {
             plugins: [
@@ -54,7 +86,10 @@ export = async ({
           },
         },
       } as InlineConfig,
-      serverOptions
+      mergeConfig(
+        pluginBuildOptions.serverOptions || {},
+        inlineBuildOptions.serverOptions || {}
+      )
     ) as NonNullable<BuildOptions['serverOptions']>
 
     const clientResult = await build(clientBuildOptions)
@@ -79,13 +114,17 @@ export = async ({
           // Re-read the index.html in case it changed.
           // This content is not included in the virtual bundle.
           indexHtmlTemplate = await fs.readFile(
-            (clientBuildOptions.build?.outDir as string) + '/index.html',
+            (clientBuildOptions.build?.outDir as string) + `/${INDEX_HTML}`,
             'utf-8'
           )
 
           // Build SSR bundle with the new index.html
           await build(serverBuildOptions)
-          await generatePackageJson(clientBuildOptions, serverBuildOptions)
+          await generatePackageJson(
+            viteConfig,
+            clientBuildOptions,
+            serverBuildOptions
+          )
 
           if (!resolved) {
             resolve(null)
@@ -104,39 +143,56 @@ export = async ({
       // Get the index.html from the resulting bundle.
       indexHtmlTemplate = (
         clientOutputs.find(
-          (file) => file.type === 'asset' && file.fileName === 'index.html'
+          (file) => file.type === 'asset' && file.fileName === INDEX_HTML
         ) as OutputAsset
       )?.source as string
 
       await build(serverBuildOptions)
 
       // index.html file is not used in SSR and might be
-      // served by mistake, so let's remove it to avoid issues.
-      await fs
-        .unlink(
-          path.join(clientBuildOptions.build?.outDir as string, 'index.html')
-        )
-        .catch(() => null)
+      // served by mistake.
+      // Let's remove it unless the user overrides this behavior.
+      if (!pluginBuildOptions.keepIndexHtml) {
+        await fs
+          .unlink(
+            path.join(clientBuildOptions.build?.outDir as string, 'index.html')
+          )
+          .catch(() => null)
+      }
 
-      await generatePackageJson(clientBuildOptions, serverBuildOptions)
+      await generatePackageJson(
+        viteConfig,
+        clientBuildOptions,
+        serverBuildOptions
+      )
 
       resolve(null)
     }
   })
 
 async function generatePackageJson(
+  viteConfig: ResolvedConfig,
   clientBuildOptions: InlineConfig,
   serverBuildOptions: NonNullable<BuildOptions['serverOptions']>
 ) {
-  const type =
-    // @ts-ignore
-    serverBuildOptions.build?.rollupOptions?.output?.format === 'es'
-      ? 'module'
-      : 'commonjs'
+  if (serverBuildOptions.packageJson === false) return
+
+  const outputFile = (
+    serverBuildOptions.build?.rollupOptions?.output as OutputOptions
+  )?.file
+
+  const ssrOutput = path.parse(
+    outputFile ||
+      ((viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string)
+  )
+
+  const moduleFormat =
+    (viteConfig.build?.rollupOptions?.output as OutputOptions)?.format ||
+    (serverBuildOptions.build?.rollupOptions?.output as OutputOptions)?.format
 
   const packageJson = {
-    type,
-    main: path.parse(serverBuildOptions.build?.ssr as string).name + '.js',
+    main: outputFile ? ssrOutput.base : ssrOutput.name + '.js',
+    type: /^esm?$/i.test(moduleFormat || '') ? 'module' : 'commonjs',
     ssr: {
       // This can be used later to serve static assets
       assets: (

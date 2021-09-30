@@ -23,7 +23,7 @@ Start a new SSR project right away with filesystem routes, i18n, icons, markdown
 Create a normal [Vite](https://vitejs.dev/guide/) project for Vue or React.
 
 ```sh
-yarn create @vitejs/app my-app --template [vue|vue-ts|react|react-ts]
+yarn create vite --template [vue|vue-ts|react|react-ts]
 ```
 
 Then, add `vite-ssr` with your package manager (direct dependency) and your framework router.
@@ -383,7 +383,7 @@ const { html } = await render(url, {
 })
 ```
 
-Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka.
+Beware that, in development, Vite uses plain Node.js + Connect for middleware. Therefore, the `request` and `response` objects might differ from your production environment if you use any server framework such as Fastify, Express.js or Polka. If you want to use your own server during development, check [Middleware Mode](#middleware-mode).
 
 ### Editing Response and redirects
 
@@ -486,9 +486,57 @@ There are two ways to run the app locally for development:
 
 SPA mode will be slightly faster but the SSR one will have closer behavior to a production environment.
 
+### Middleware Mode
+
+If you want to run your own dev server (e.g. Express.js) instead of Vite's default Node + Connect, you can use Vite SSR in middleware mode:
+
+```js
+const express = require('express')
+const { createSsrServer } = require('vite-ssr/dev')
+
+async function createServer() {
+  const app = express()
+
+  // Create vite-ssr server in middleware mode.
+  const viteServer = await createSsrServer({
+    server: { middlewareMode: 'ssr' },
+  })
+
+  // Use vite's connect instance as middleware
+  app.use(viteServer.middlewares)
+
+  app.listen(3000)
+}
+
+createServer()
+```
+
 ## Production
 
 Run `vite-ssr build` for buildling your app. This will create 2 builds (client and server) that you can import and use from your Node backend. See an Express.js example server [here](./examples/node-server/index.js), or a serverless function deployed to Vercel [here](https://github.com/frandiox/vitesse-ssr-template/blob/master/serverless/api/index.js).
+
+<details><summary>Keeping index.html in the client build</summary>
+<p>
+
+In an SSR app, `index.html` is already embedded in the server build, and is thus removed from the client build in order to prevent serving it by mistake. However, if you would like to keep `index.html` in the client build (e.g. when using server side routing to selectively use SSR for a subset of routes), you can set `build.keepIndexHtml` to `true` in the plugin options:
+
+```js
+// vite.config.js
+
+export default {
+  plugins: [
+    viteSSR({
+      build: {
+        keepIndexHtml: true,
+      },
+    }),
+    [...]
+  ],
+}
+```
+
+</p>
+</details>
 
 ## Integrations
 
@@ -509,6 +557,22 @@ You can provide your own by looking at the [implementation](./src/react/style-co
 
 Note that you still need to install all the required dependencies from these packages (e.g. `@emotion/server`, `@emotion/react` and `@emotion/cache` when using Emotion).
 
+## Custom Typings
+
+You can define your own typings with `vite-ssr`. To declare custom types, the file mostly needs to `import` or `export` something not to break other types.
+Example transforming `request` and `response` to types of `express`:
+
+```ts
+import { Request, Response } from 'express'
+
+declare module 'vite-ssr/vue' {
+  export interface Context {
+    request: Request
+    response: Response
+  }
+}
+```
+
 ## Community contributions
 
 Feel free to submit your projects:
@@ -525,6 +589,8 @@ Feel free to submit your projects:
 
 - Imitating Nuxt's `asyncData` in Vue options API. [Link](https://github.com/frandiox/vite-ssr/discussions/46#discussioncomment-988827).
 - Fetch data from Vue components with composition API hook and Axios. [Link](https://github.com/frandiox/vite-ssr/discussions/66#discussion-3467130).
+- Vue + TypeScript with API calls. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts).
+- Vue + TypeScript using `serverPrefetch`. [Link](https://github.com/thruthesky/vite-ssr/tree/vue-ts/examples/vue-ts-server-prefetch).
 
 ## References
 

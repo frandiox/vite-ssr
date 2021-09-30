@@ -1,16 +1,14 @@
 // This is a generic mix of framework types
-import type { SharedContext, SharedOptions } from './utils/types'
-
 declare module 'vite-ssr' {
-  const handler: (
+  export const viteSSR: (
     App: any,
-    options: SharedOptions & {
+    options: import('./utils/types').SharedOptions & {
       routes: Array<Record<string, any>>
       routerOptions?: Record<string, any>
       styleCollector?: (ctx: any) => any
     },
     hook?: (
-      params: SharedContext & {
+      params: import('./utils/types').SharedContext & {
         app: any
         router: any
         initialRoute: any
@@ -18,7 +16,7 @@ declare module 'vite-ssr' {
     ) => any
   ) => any
 
-  export default handler
+  export default viteSSR
   export const ClientOnly: any
-  export const useContext: () => SharedContext
+  export const useContext: () => import('./utils/types').SharedContext
 }

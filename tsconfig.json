@@ -19,14 +19,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false,
-    "removeComments": false,
+    "removeComments": false
   },
-  "include": [
-    "./src",
-  ],
-  "exclude": [
-    "./src/vue/*",
-    "./src/react/*",
-    "./src/utils/*"
-  ]
+  "include": ["./src"],
+  "exclude": ["./src/vue/*", "./src/react/*", "./src/utils/*"]
 }
