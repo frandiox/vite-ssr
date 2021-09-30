@@ -7,10 +7,11 @@ import {
   InlineConfig,
   ViteDevServer,
 } from 'vite'
-import { getEntryPoint } from '../config'
+import { getEntryPoint, getPluginOptions } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
 import type { WriteResponse } from '../utils/types'
+import { logServerError } from './utils'
 
 // This cannot be imported from utils due to ESM <> CJS issues
 const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
@@ -28,7 +29,7 @@ function fixEntryPoint(vite: ViteDevServer) {
   }
 }
 
-export type SsrOptions = {
+export interface SsrOptions {
   plugin?: string
   ssr?: string
   getRenderContext?: (params: {
@@ -48,10 +49,14 @@ export const createSSRDevHandler = (
     ...options,
   }
 
+  const pluginOptions = getPluginOptions(server.config)
   const resolve = (p: string) => path.resolve(server.config.root, p)
   async function getIndexTemplate(url: string) {
     // Template should be fresh in every request
-    const indexHtml = await fs.readFile(resolve('index.html'), 'utf-8')
+    const indexHtml = await fs.readFile(
+      pluginOptions.input || resolve('index.html'),
+      'utf-8'
+    )
     return await server.transformIndexHtml(url, indexHtml)
   }
 
@@ -82,10 +87,18 @@ export const createSSRDevHandler = (
 
     fixEntryPoint(server)
 
+    let template: string
+
     try {
-      const template = await getIndexTemplate(request.originalUrl as string)
+      template = await getIndexTemplate(request.originalUrl as string)
+    } catch (error) {
+      logServerError(error as Error, server)
+      return next(error)
+    }
+
+    try {
       const entryPoint =
-        options.ssr || (await getEntryPoint(server.config.root, template))
+        options.ssr || (await getEntryPoint(server.config, template))
 
       let resolvedEntryPoint = await server.ssrLoadModule(resolve(entryPoint))
       resolvedEntryPoint = resolvedEntryPoint.default || resolvedEntryPoint
@@ -125,10 +138,11 @@ export const createSSRDevHandler = (
 
       response.setHeader('Content-Type', 'text/html')
       response.end(buildHtmlDocument(template, htmlParts))
-    } catch (e) {
-      server.ssrFixStacktrace(e)
-      console.log(e.stack)
-      next(e)
+    } catch (error) {
+      // Send back template HTML to inject ViteErrorOverlay
+      response.setHeader('Content-Type', 'text/html')
+      response.end(template)
+      logServerError(error as Error, server)
     }
   }
 

@@ -15,7 +15,7 @@ export function buildHtmlDocument(template: string, parts = defaultHtmlParts) {
     .replace('<body', `<body ${parts.bodyAttrs} `)
     .replace('</head>', `${parts.headTags}\n</head>`)
     .replace(
-      '<div id="app"></div>',
-      `<div id="app" data-server-rendered="true">${parts.body}</div>\n\n<script>window.__INITIAL_STATE__=${parts.initialState}</script>`
+      /<div id="app"([\s\w\-"'=[\]]*)><\/div>/,
+      `<div id="app" data-server-rendered="true"$1>${parts.body}</div>\n\n  <script>window.__INITIAL_STATE__=${parts.initialState}</script>`
     )
 }

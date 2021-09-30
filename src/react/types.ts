@@ -7,7 +7,7 @@ import type {
   SharedOptions,
 } from '../utils/types'
 
-export type RouteRaw = {
+export interface RouteRaw {
   name?: string
   path: string
   component: any
@@ -16,24 +16,25 @@ export type RouteRaw = {
   [key: string]: any
 }
 
-export type PropsProvider = FunctionComponent<{
-  from?: RouteRaw
-  to: RouteRaw
-  [key: string]: any
-}>
+export interface PropsProvider
+  extends FunctionComponent<{
+    from?: RouteRaw
+    to: RouteRaw
+    [key: string]: any
+  }> {}
 
-export type Context = SharedContext & {
+export interface Context extends SharedContext {
   router: Router
 }
 
-export type Options = SharedOptions & {
+export interface Options extends SharedOptions {
   routes: RouteRaw[]
   suspenseFallback?: ReactNode
   PropsProvider?: PropsProvider
   prepassVisitor?: any
 }
 
-export type SsrOptions = Options & {
+export interface ServerOptions extends Options {
   styleCollector?:
     | null
     | ((context: Context) => {
@@ -43,7 +44,7 @@ export type SsrOptions = Options & {
       })
 }
 
-export type ClientOptions = Options & {
+export interface ClientOptions extends Options {
   styleCollector?:
     | null
     | ((context: Context) => {
@@ -52,18 +53,16 @@ export type ClientOptions = Options & {
       })
 }
 
-export type HookParams = Context
+export interface HookParams extends Context {}
 
-export type Hook = (params: HookParams) => any | Promise<any>
+export interface Hook {
+  (params: HookParams): any | Promise<any>
+}
 
-export type ClientHandler = (
-  App: any,
-  options: ClientOptions,
-  hook?: Hook
-) => Promise<void>
+export interface ClientHandler {
+  (App: any, options: ClientOptions, hook?: Hook): Promise<void>
+}
 
-export type SsrHandler = (
-  App: any,
-  options: SsrOptions,
-  hook?: Hook
-) => Renderer
+export interface SsrHandler {
+  (App: any, options: ServerOptions, hook?: Hook): Renderer
+}
