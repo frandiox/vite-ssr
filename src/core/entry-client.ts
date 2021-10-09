@@ -1,17 +1,21 @@
 import { deserializeState } from '../utils/state'
 import { useClientRedirect } from '../utils/response'
-import type { ClientHandler, Context } from './types'
+import type { ClientHandler, Context, Options } from './types'
 
-export const viteSSR: ClientHandler = async function viteSSR(
-  App,
-  {
+export const viteSSR: ClientHandler = async function viteSSR(options, hook) {
+  if (!hook && typeof options === 'function') {
+    hook = options
+    options = {}
+  }
+
+  const {
     url = window.location,
     transformState = deserializeState,
     spaRedirect = (location: string) => {
       window.location.href = location
     },
-  } = {}
-) {
+  } = (options || {}) as Options
+
   // Deserialize the state included in the DOM
   const initialState = await transformState(
     // @ts-ignore
@@ -31,7 +35,9 @@ export const viteSSR: ClientHandler = async function viteSSR(
   } as Context
 
   // Main hook / component
-  await App(context)
+  hook && (await hook(context))
+
+  return context
 }
 
 export default viteSSR

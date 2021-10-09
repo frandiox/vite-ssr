@@ -21,9 +21,12 @@ export interface SsrRenderer {
 }
 
 export interface SsrHandler {
-  (App: SsrRenderer, options?: Options): Renderer
+  (p1: SsrRenderer | Options, p2?: SsrRenderer): Renderer
 }
 
+export interface ClientHook {
+  (context: Context): void
+}
 export interface ClientHandler {
-  (App: (context: Context) => void, options?: Options): Promise<void>
+  (p1: ClientHook | Options, p2?: ClientHook): Promise<Context>
 }
