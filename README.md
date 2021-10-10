@@ -44,12 +44,12 @@ Add Vite SSR plugin to your Vite config file (see [`vite.config.js`](./examples/
 // vite.config.js
 import vue from '@vitejs/plugin-vue'
 import viteSSR from 'vite-ssr/plugin.js'
-// import reactRefresh from '@vitejs/plugin-react-refresh'
+// import react from '@vitejs/plugin-react'
 
 export default {
   plugins: [
     viteSSR(),
-    vue(), // reactRefresh()
+    vue(), // react()
   ],
 }
 ```

@@ -1,12 +1,12 @@
 const { defineConfig } = require('vite')
-const reactRefresh = require('@vitejs/plugin-react-refresh')
+const react = require('@vitejs/plugin-react')
 const viteSSR = require('vite-ssr/plugin')
 const api = require('../node-server/api')
 
 module.exports = defineConfig({
   plugins: [
     viteSSR(),
-    reactRefresh(),
+    react(),
     {
       // Mock API during development
       configureServer({ middlewares }) {

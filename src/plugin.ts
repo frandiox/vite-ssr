@@ -7,19 +7,21 @@ const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
+let lib: 'core' | 'vue' | 'react'
+
 export = function ViteSsrPlugin(
   options: ViteSsrPluginOptions & SsrOptions = {}
 ) {
   return {
     name: pluginName,
     viteSsrOptions: options,
-    config() {
-      let isReact = false
+    config(config) {
+      const plugins = config.plugins as Plugin[]
+      const isVue = hasPlugin(plugins, 'vite:vue')
+      const isReact =
+        hasPlugin(plugins, 'vite:react') || hasPlugin(plugins, 'react-refresh')
 
-      try {
-        require.resolve('@vitejs/plugin-react-refresh')
-        isReact = true
-      } catch (error) {}
+      lib = isVue ? 'vue' : isReact ? 'react' : 'core'
 
       const detectedFeats = {
         ...(isReact && detectReactConfigFeatures(options.features)),
@@ -34,19 +36,12 @@ export = function ViteSsrPlugin(
       }
     },
     configResolved: (config) => {
-      let lib = '/vue' // default
-
-      if (
-        config.plugins.findIndex((plugin) => plugin.name === 'react-refresh') >=
-        0
-      ) {
-        lib = '/react'
-      }
+      const libPath = `/${lib}`
 
       config.resolve.alias.push({
-        find: /^vite-ssr(\/vue|\/react)?$/,
+        find: /^vite-ssr(\/core|\/vue|\/react)?$/,
         replacement:
-          pluginName + lib + (config.build.ssr ? entryServer : entryClient),
+          pluginName + libPath + (config.build.ssr ? entryServer : entryClient),
         // @ts-ignore
         _viteSSR: true,
       })
@@ -55,8 +50,8 @@ export = function ViteSsrPlugin(
       config.optimizeDeps = config.optimizeDeps || {}
       config.optimizeDeps.include = config.optimizeDeps.include || []
       config.optimizeDeps.include.push(
-        pluginName + lib + entryClient,
-        pluginName + lib + entryServer
+        pluginName + libPath + entryClient,
+        pluginName + libPath + entryServer
       )
     },
     async configureServer(server) {
@@ -68,6 +63,19 @@ export = function ViteSsrPlugin(
   } as Plugin
 }
 
+function hasPlugin(plugins: Plugin[] | Plugin[][] = [], name: string): boolean {
+  return !!plugins.flat().find((plugin) => (plugin.name || '').startsWith(name))
+}
+
+function hasDependency(dependency: string) {
+  try {
+    require.resolve(dependency)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
 function detectReactConfigFeatures(
   features: ViteSsrPluginOptions['features'] = {}
 ) {
@@ -76,10 +84,9 @@ function detectReactConfigFeatures(
 
   // TODO use virtual modules for feature-detection
 
-  try {
-    require.resolve('@apollo/client/react/ssr')
+  if (hasDependency('@apollo/client/react/ssr')) {
     useApolloRenderer = features.reactApolloRenderer !== false
-  } catch (error) {
+  } else {
     external.push('@apollo/client')
   }
 

@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/connect": "^3.4.35",
     "@types/node": "^16.4.7",
-    "@vitejs/plugin-react-refresh": "^1.1.0",
+    "@vitejs/plugin-react": "^1.0.2",
     "typescript": "^4.3.2",
     "vite": "^2.5.0"
   }
