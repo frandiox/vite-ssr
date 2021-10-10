@@ -6,8 +6,14 @@ test('serializeState', () => {
   // Simple case.
   assert.is(serializeState({}), `'{}'`)
 
-  // Expect double quotes not to be needlessly escaped.
+  // Expect JSON double quotes not to be needlessly escaped.
   assert.is(serializeState({ hello: 'world' }), `'{"hello":"world"}'`)
+
+  // Expect inner double quotes to be escaped
+  assert.is(
+    serializeState({ hello: 'inner " quote' }),
+    `'{"hello":"inner \\\\" quote"}'`
+  )
 
   // Expect single quotes to be escaped.
   assert.is(serializeState({ quote: `'` }), `'{"quote":"\\'"}'`)

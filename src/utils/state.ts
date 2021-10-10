@@ -1,7 +1,6 @@
 // https://github.com/yahoo/serialize-javascript
-const UNSAFE_CHARS_REGEXP = /[<>'\/\u2028\u2029]/g
+const UNSAFE_CHARS_REGEXP = /[<>\/\u2028\u2029]/g
 const ESCAPED_CHARS = {
-  "'": "\\'",
   '<': '\\u003C',
   '>': '\\u003E',
   '/': '\\u002F',
@@ -15,11 +14,21 @@ function escapeUnsafeChars(unsafeChar: string) {
 
 export function serializeState(state: any) {
   try {
-    // Wrap the serialized JSON in quotes so that it's parsed by the browser as a string for better performance.
-    return `'${JSON.stringify(state || {}).replace(
-      UNSAFE_CHARS_REGEXP,
-      escapeUnsafeChars
-    )}'`
+    // -- Example:
+    // Input object: { hello: 'w\'or"ld  -  <script>' }
+    // Output string: '{"hello":"w\'or\\"ld  -  \u003Cscript\u003E"}'
+
+    state = JSON.stringify(state || {})
+      // Escape unsafe chars.
+      .replace(UNSAFE_CHARS_REGEXP, escapeUnsafeChars)
+      // Escape single quotes.
+      .replace(/(?<!\\)'/g, "\\'")
+      // Duplicate the escape char for already escaped double quotes.
+      .replace(/(?<!\\)\\"/g, '\\\\"')
+
+    // Wrap the serialized JSON in quotes so that it's parsed
+    // by the browser as a string for better performance.
+    return `'${state}'`
   } catch (error) {
     console.error('[SSR] On state serialization -', error, state)
     return '{}'
