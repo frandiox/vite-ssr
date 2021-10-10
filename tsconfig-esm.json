@@ -9,6 +9,8 @@
     "./src/vue/**/*",
     "./src/react/*",
     "./src/react/**/*",
+    "./src/vanilla/*",
+    "./src/vanilla/**/*",
     "./src/utils/*"
   ]
 }

@@ -1,8 +1,7 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import createClientContext from '../core/entry-client.js'
 import { getFullPath, withoutSuffix } from '../utils/route'
-import { deserializeState } from '../utils/state'
-import { useClientRedirect } from '../utils/response'
 import { addPagePropsGetterToRoutes } from './utils'
 import type { ClientHandler, Context } from './types'
 
@@ -17,7 +16,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
     routerOptions = {},
     pageProps = { passToPage: true },
     debug = {},
-    transformState = deserializeState,
+    ...options
   },
   hook
 ) {
@@ -35,38 +34,24 @@ export const viteSSR: ClientHandler = async function viteSSR(
     routes: routes as RouteRecordRaw[],
   })
 
-  const initialState = await transformState(
-    // @ts-ignore
-    window.__INITIAL_STATE__,
-    deserializeState
-  )
+  const context: Context = await createClientContext({
+    ...options,
+    url,
+    spaRedirect: (location) => router.push(location),
+  })
+
+  provideContext(app, context)
 
   let entryRoutePath: string | undefined
   let isFirstRoute = true
-  router.beforeEach((to, from, next) => {
+  router.beforeEach((to) => {
     if (isFirstRoute || (entryRoutePath && entryRoutePath === to.path)) {
       // The first route is rendered in the server and its state is provided globally.
       isFirstRoute = false
       entryRoutePath = to.path
-      to.meta.state = initialState
+      to.meta.state = context.initialState
     }
-
-    next()
   })
-
-  const { redirect, writeResponse } = useClientRedirect((location) =>
-    router.push(location)
-  )
-
-  const context = {
-    url,
-    isClient: true,
-    initialState: initialState || {},
-    writeResponse,
-    redirect,
-  } as Context
-
-  provideContext(app, context)
 
   if (hook) {
     await hook({

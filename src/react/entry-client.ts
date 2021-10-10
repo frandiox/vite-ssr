@@ -1,10 +1,9 @@
 import React, { ReactElement } from 'react'
 import ReactDOM from 'react-dom'
+import createClientContext from '../core/entry-client.js'
 import { BrowserRouter, useHistory } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
-import { deserializeState } from '../utils/state'
-import { useClientRedirect } from '../utils/response'
 import { createRouter } from './utils'
 import type { ClientHandler, Context } from './types'
 
@@ -20,38 +19,31 @@ export const viteSSR: ClientHandler = async function (
     PropsProvider,
     pageProps,
     debug = {},
-    transformState = deserializeState,
     styleCollector,
+    ...options
   },
   hook
 ) {
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
-  const initialState = await transformState(
-    // @ts-ignore
-    window.__INITIAL_STATE__ || null,
-    deserializeState
-  )
 
-  const { redirect, writeResponse } = useClientRedirect((location) => {
-    const { push } = useHistory()
-    React.useEffect(() => push(location), [push])
+  const ctx = await createClientContext({
+    ...options,
+    url,
+    spaRedirect: (location) => {
+      const { push } = useHistory()
+      React.useEffect(() => push(location), [push])
+    },
   })
 
-  const context = {
-    url,
-    initialState: initialState || {},
-    isClient: true,
-    redirect,
-    writeResponse,
-    router: createRouter({
-      routes,
-      base,
-      initialState,
-      pagePropsOptions: pageProps,
-      PropsProvider,
-    }),
-  } as Context
+  const context = ctx as Context
+  context.router = createRouter({
+    routes,
+    base,
+    initialState: context.initialState,
+    pagePropsOptions: pageProps,
+    PropsProvider,
+  })
 
   if (hook) {
     await hook(context)

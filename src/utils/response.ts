@@ -4,14 +4,14 @@ import type { WriteResponse } from './types'
 const isRedirect = ({ status = 0 }) => status >= 300 && status < 400
 
 export function useSsrResponse() {
-  const deferred = defer<string>()
+  const deferred = defer<WriteResponse>()
   let response = {} as WriteResponse
 
   const writeResponse = (params: WriteResponse) => {
     Object.assign(response, params)
     if (isRedirect(params)) {
       // Stop waiting for rendering when redirecting
-      deferred.resolve('')
+      deferred.resolve(response)
     }
   }
 

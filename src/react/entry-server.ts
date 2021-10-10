@@ -3,10 +3,9 @@ import ssrPrepass from 'react-ssr-prepass'
 import { renderToString } from 'react-dom/server.js'
 import { StaticRouter } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
-import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
-import { serializeState } from '../utils/state'
+import { getFullPath, withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
-import { useSsrResponse } from '../utils/response'
+import coreViteSSR from '../core/entry-server.js'
 import type { Context, SsrHandler } from './types'
 
 import { provideContext } from './components.js'
@@ -35,40 +34,28 @@ const viteSSR: SsrHandler = function (
     PropsProvider,
     pageProps,
     styleCollector,
-    transformState = serializeState,
+    ...options
   },
   hook
 ) {
-  return async function (url, { manifest, preload = false, ...extra } = {}) {
-    url = createUrl(url)
-    const routeBase = base && withoutSuffix(base({ url }), '/')
-    const fullPath = getFullPath(url, routeBase)
-
-    const { deferred, response, writeResponse, redirect, isRedirect } =
-      useSsrResponse()
-
-    const context = {
-      url,
-      isClient: false,
-      initialState: {},
-      redirect,
-      writeResponse,
-      ...extra,
-      router: createRouter({
-        routes,
-        base,
-        initialState: extra.initialState || null,
-        pagePropsOptions: pageProps,
-        PropsProvider,
-      }),
-    } as Context
+  return coreViteSSR(options, async (ctx, { isRedirect, ...extra }) => {
+    const context = ctx as Context
+    context.router = createRouter({
+      routes,
+      base,
+      initialState: (extra.initialState as Record<string, unknown>) || null,
+      pagePropsOptions: pageProps,
+      PropsProvider,
+    })
 
     if (hook) {
       context.initialState = (await hook(context)) || context.initialState
     }
 
-    if (isRedirect()) return response
+    if (isRedirect()) return {}
 
+    const routeBase = base && withoutSuffix(base(context), '/')
+    const fullPath = getFullPath(context.url, routeBase)
     const helmetContext: Record<string, Record<string, string>> = {}
 
     let app: ReactElement = React.createElement(
@@ -76,10 +63,7 @@ const viteSSR: SsrHandler = function (
       { context: helmetContext },
       React.createElement(
         StaticRouter,
-        {
-          basename: routeBase,
-          location: fullPath,
-        },
+        { basename: routeBase, location: fullPath },
         provideContext(React.createElement(App, context), context)
       )
     )
@@ -89,16 +73,12 @@ const viteSSR: SsrHandler = function (
       app = styles.collect(app)
     }
 
-    ssrPrepass(app, prepassVisitor)
-      .then(() => render(app))
-      .then(deferred.resolve)
-      .catch(deferred.reject)
-
-    const body = await deferred.promise
+    await ssrPrepass(app, prepassVisitor)
+    const body = await render(app)
 
     if (isRedirect()) {
       styles && styles.cleanup && styles.cleanup()
-      return response
+      return {}
     }
 
     const currentRoute = context.router.getCurrentRoute()
@@ -125,24 +105,8 @@ const viteSSR: SsrHandler = function (
       '\n' +
       styleTags
 
-    const initialState = await transformState(
-      context.initialState || {},
-      serializeState
-    )
-
-    return {
-      // This string is replaced at build time
-      // and injects all the previous variables.
-      html: `__VITE_SSR_HTML__`,
-      htmlAttrs,
-      headTags,
-      body,
-      bodyAttrs,
-      initialState,
-      dependencies: [], // React does not populate the manifest context :(
-      ...response,
-    }
-  }
+    return { body, headTags, htmlAttrs, bodyAttrs }
+  })
 }
 
 export default viteSSR

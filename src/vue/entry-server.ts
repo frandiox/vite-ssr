@@ -1,13 +1,11 @@
 import { createSSRApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
-import { createUrl, getFullPath, withoutSuffix } from '../utils/route'
-import { findDependencies, renderPreloadLinks } from '../utils/html'
-import { useSsrResponse } from '../utils/response'
-import { serializeState } from '../utils/state'
+import { getFullPath, withoutSuffix } from '../utils/route'
 import { addPagePropsGetterToRoutes } from './utils'
 import { renderHeadToString } from '@vueuse/head'
-import type { SsrHandler, Context } from './types'
+import coreViteSSR from '../core/entry-server.js'
+import type { SsrHandler } from './types'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -19,7 +17,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     base,
     routerOptions = {},
     pageProps = { passToPage: true },
-    transformState = serializeState,
+    ...options
   },
   hook
 ) {
@@ -27,33 +25,23 @@ export const viteSSR: SsrHandler = function viteSSR(
     addPagePropsGetterToRoutes(routes)
   }
 
-  return async function (url, { manifest, preload = false, ...extra } = {}) {
+  return coreViteSSR(options, async (context, { isRedirect, ...extra }) => {
     const app = createSSRApp(App)
 
-    url = createUrl(url)
-    const routeBase = base && withoutSuffix(base({ url }), '/')
+    const routeBase = base && withoutSuffix(base(context), '/')
     const router = createRouter({
       ...routerOptions,
       history: createMemoryHistory(routeBase),
       routes: routes as RouteRecordRaw[],
     })
 
-    const { deferred, response, writeResponse, redirect, isRedirect } =
-      useSsrResponse()
-
-    // This can be injected with useSSRContext() in setup functions
-    const context = {
-      url,
-      isClient: false,
-      initialState: {},
-      redirect,
-      writeResponse,
-      ...extra,
-    } as Context
+    router.beforeEach((to) => {
+      to.meta.state = extra.initialState || null
+    })
 
     provideContext(app, context)
 
-    const fullPath = getFullPath(url, routeBase)
+    const fullPath = getFullPath(context.url, routeBase)
 
     const { head } =
       (hook &&
@@ -70,51 +58,25 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     await router.isReady()
 
-    if (isRedirect()) return response
+    if (isRedirect()) return {}
 
     Object.assign(
       context.initialState || {},
       (router.currentRoute.value.meta || {}).state || {}
     )
 
-    renderToString(app, context).then(deferred.resolve).catch(deferred.reject)
-    const body = await deferred.promise
+    const body = await renderToString(app, context)
 
-    if (isRedirect()) return response
+    if (isRedirect()) return {}
 
-    let {
+    const {
       headTags = '',
       htmlAttrs = '',
       bodyAttrs = '',
     } = head ? renderHeadToString(head) : {}
 
-    const dependencies = manifest
-      ? // @ts-ignore
-        findDependencies(context.modules, manifest)
-      : []
-
-    if (preload && dependencies.length > 0) {
-      headTags += renderPreloadLinks(dependencies)
-    }
-
-    const initialState = await transformState(
-      context.initialState || {},
-      serializeState
-    )
-
-    return {
-      // This string is replaced at build time
-      // and injects all the previous variables.
-      html: `__VITE_SSR_HTML__`,
-      htmlAttrs,
-      headTags,
-      body,
-      bodyAttrs,
-      initialState,
-      dependencies,
-      ...response,
-    }
-  }
+    return { body, headTags, htmlAttrs, bodyAttrs }
+  })
 }
 
 export default viteSSR

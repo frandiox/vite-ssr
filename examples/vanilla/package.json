@@ -1,0 +1,13 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "node ../../node_modules/vite-ssr/cli.js --port 1337 --force --ssr src/entry-server.js",
+    "dev:spa": "vite --port 1337 --force",
+    "build": "rm -rf dist && node ../../node_modules/vite-ssr/cli.js build",
+    "serve:node": "node ../node-server/index vue"
+  },
+  "dependencies": {
+    "vite": "^2.5.0"
+  }
+}
