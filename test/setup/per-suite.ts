@@ -32,7 +32,6 @@ export async function reset(context: Context) {
     await context.browser.close()
     await app.close()
     // await fs.remove(path.resolve('_temp'))
-    console.log('reset done')
   } catch (error) {
     console.error(error)
   }
