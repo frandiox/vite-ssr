@@ -25,7 +25,7 @@ export const viteSSR: SsrHandler = function viteSSR(
     addPagePropsGetterToRoutes(routes)
   }
 
-  return coreViteSSR(options, async (context, { isRedirect }) => {
+  return coreViteSSR(options, async (context, { isRedirect, ...extra }) => {
     const app = createSSRApp(App)
 
     const routeBase = base && withoutSuffix(base(context), '/')
@@ -33,6 +33,10 @@ export const viteSSR: SsrHandler = function viteSSR(
       ...routerOptions,
       history: createMemoryHistory(routeBase),
       routes: routes as RouteRecordRaw[],
+    })
+
+    router.beforeEach((to) => {
+      to.meta.state = extra.initialState || null
     })
 
     provideContext(app, context)

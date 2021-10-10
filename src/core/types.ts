@@ -15,9 +15,10 @@ export interface SSRPageDescriptor {
 }
 
 export interface SsrRenderer {
-  (context: Context, utils: { isRedirect: () => boolean }):
-    | SSRPageDescriptor
-    | Promise<SSRPageDescriptor>
+  (
+    context: Context,
+    utils: { isRedirect: () => boolean; [key: string]: unknown }
+  ): SSRPageDescriptor | Promise<SSRPageDescriptor>
 }
 
 export interface SsrHandler {

@@ -26,7 +26,7 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
 
     // Wait for either rendering finished or redirection detected
     const payload = await Promise.race([
-      renderer(context, { isRedirect }), // Resolves when rendering to string is done
+      renderer(context, { ...extra, isRedirect }), // Resolves when rendering to string is done
       deferred.promise, // Resolves when 'redirect' is called
     ])
 
