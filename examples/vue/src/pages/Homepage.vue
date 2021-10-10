@@ -10,6 +10,7 @@
 <script>
 import { defineComponent, inject, ref } from 'vue'
 import { useHead } from '@vueuse/head'
+import { useContext } from 'vite-ssr/vue'
 
 export default defineComponent({
   name: 'Homepage',
@@ -28,8 +29,7 @@ export default defineComponent({
     },
   },
   async setup() {
-    // This is provided in main.js
-    const initialState = inject('initialState')
+    const { initialState } = useContext()
 
     // Hydrate from initialState, if there's anything
     const homeLocalState = ref(initialState.homeLocalState || null)

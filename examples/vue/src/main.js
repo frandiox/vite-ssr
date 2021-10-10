@@ -13,12 +13,6 @@ export default viteSSR(
 
     app.component(ClientOnly.name, ClientOnly)
 
-    // The 'initialState' is hydrated in the browser and can be used to
-    // pass it to Vuex, for example, if you prefer to rely on stores rather than page props.
-    // In the server, 'initialState' is an empty object that can be mutated. It can be
-    // passed to Vuex, or provide it to child components (see Homepage for an example).
-    app.provide('initialState', initialState)
-
     // Before each route navigation we request the data needed for showing the page.
     router.beforeEach(async (to, from, next) => {
       if (!!to.meta.state) {
