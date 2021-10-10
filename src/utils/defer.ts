@@ -1,6 +1,6 @@
 export function defer<T = unknown>() {
   const deferred = { status: 'pending' } as {
-    promise: Promise<any>
+    promise: Promise<T>
     status: 'pending' | 'resolved' | 'rejected'
     resolve: (value: T) => void
     reject: (reason?: any) => void

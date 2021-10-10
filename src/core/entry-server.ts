@@ -2,7 +2,13 @@ import { createUrl } from '../utils/route'
 import { useSsrResponse } from '../utils/response'
 import { serializeState } from '../utils/state'
 import { findDependencies, renderPreloadLinks } from '../utils/html'
-import type { SsrHandler, SsrRenderer, Context, Options } from './types'
+import type {
+  SsrHandler,
+  SsrRenderer,
+  Context,
+  Options,
+  SSRPageDescriptor,
+} from './types'
 
 export const viteSSR: SsrHandler = function viteSSR(options, hook) {
   const renderer: SsrRenderer = hook || (options as SsrRenderer)
@@ -34,7 +40,12 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
     if (isRedirect()) return response
 
     // Not a redirect: get the HTML parts returned by the renderer and continue
-    let { headTags = '', htmlAttrs = '', bodyAttrs = '', body = '' } = payload
+    let {
+      headTags = '',
+      htmlAttrs = '',
+      bodyAttrs = '',
+      body = '',
+    } = payload as SSRPageDescriptor
 
     // If a manifest is provided and the current framework is able to add
     // modules to the context (e.g. Vue) while rendering, collect the dependencies.
