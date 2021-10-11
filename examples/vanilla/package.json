@@ -4,8 +4,8 @@
   "scripts": {
     "dev": "node ../../node_modules/vite-ssr/cli.js --port 1337 --force --ssr src/entry-server.js",
     "dev:spa": "vite --port 1337 --force",
-    "build": "rm -rf dist && node ../../node_modules/vite-ssr/cli.js build",
-    "serve:node": "node ../node-server/index vue"
+    "build": "rm -rf dist && node ../../node_modules/vite-ssr/cli.js build --ssr src/entry-server.js",
+    "serve:node": "node ../node-server/index vanilla"
   },
   "dependencies": {
     "vite": "2.6.x"
