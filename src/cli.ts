@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 
+// @ts-ignore
+if (!globalThis.__ssr_start_time) {
+  const { performance } = require('perf_hooks')
+  // @ts-ignore
+  globalThis.__ssr_start_time = performance.now()
+}
+
 const [, , ...args] = process.argv
 
 const options = {} as Record<string, any>

@@ -1,12 +1,14 @@
 import type { ServerResponse } from 'http'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { performance } from 'perf_hooks'
 import connect, { NextHandleFunction } from 'connect'
 import {
   createServer as createViteServer,
   InlineConfig,
   ViteDevServer,
 } from 'vite'
+import chalk from 'chalk'
 import { getEntryPoint, getPluginOptions } from '../config'
 import { buildHtmlDocument } from '../build/utils'
 
@@ -168,12 +170,20 @@ export async function createSsrServer(
     }
   }
 
+  const isMiddlewareMode =
+    // @ts-ignore
+    options?.middlewareMode || options?.server?.middlewareMode
+
   return new Proxy(viteServer, {
     get(target, prop, receiver) {
       if (prop === 'listen') {
         return async (port?: number) => {
           const server = await target.listen(port)
-          target.config.logger.info('\n -- SSR mode\n')
+
+          if (!isMiddlewareMode) {
+            printServerInfo(server)
+          }
+
           return server
         }
       }
@@ -181,4 +191,33 @@ export async function createSsrServer(
       return Reflect.get(target, prop, receiver)
     },
   })
+}
+
+export function printServerInfo(server: ViteDevServer) {
+  const info = server.config.logger.info
+
+  let ssrReadyMessage = '\n -- SSR mode'
+
+  if (Object.prototype.hasOwnProperty.call(server, 'printUrls')) {
+    info(
+      chalk.cyan(`\n  vite v${require('vite/package.json').version}`) +
+        chalk.green(` dev server running at:\n`),
+      { clear: !server.config.logger.hasWarned }
+    )
+
+    // @ts-ignore
+    server.printUrls()
+
+    // @ts-ignore
+    if (globalThis.__ssr_start_time) {
+      ssrReadyMessage += chalk.cyan(
+        ` ready in ${Math.round(
+          // @ts-ignore
+          performance.now() - globalThis.__ssr_start_time
+        )}ms.`
+      )
+    }
+  }
+
+  info(ssrReadyMessage + '\n')
 }

@@ -8,6 +8,6 @@
     "serve:node": "node ../node-server/index vue"
   },
   "dependencies": {
-    "vite": "^2.5.0"
+    "vite": "2.6.x"
   }
 }
