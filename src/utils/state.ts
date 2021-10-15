@@ -19,12 +19,12 @@ export function serializeState(state: any) {
     // Output string: '{"hello":"w\'or\\"ld  -  \u003Cscript\u003E"}'
 
     state = JSON.stringify(state || {})
-      // Escape unsafe chars.
-      .replace(UNSAFE_CHARS_REGEXP, escapeUnsafeChars)
-      // Escape single quotes.
+      // 1. Duplicate the escape char (\) for already escaped characters (e.g. \n or \").
+      .replace(/(?<!\\)\\(.)/g, '\\\\$1')
+      // 2. Escape existing single quotes to allow wrapping the whole thing in '...'.
       .replace(/(?<!\\)'/g, "\\'")
-      // Duplicate the escape char for already escaped double quotes.
-      .replace(/(?<!\\)\\"/g, '\\\\"')
+      // 3. Escape unsafe chars.
+      .replace(UNSAFE_CHARS_REGEXP, escapeUnsafeChars)
 
     // Wrap the serialized JSON in quotes so that it's parsed
     // by the browser as a string for better performance.

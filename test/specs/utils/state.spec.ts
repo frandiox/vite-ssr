@@ -9,10 +9,10 @@ test('serializeState', () => {
   // Expect JSON double quotes not to be needlessly escaped.
   assert.is(serializeState({ hello: 'world' }), `'{"hello":"world"}'`)
 
-  // Expect inner double quotes to be escaped
+  // Expect inner double quotes and other characters to be correctly escaped
   assert.is(
-    serializeState({ hello: 'inner " quote' }),
-    `'{"hello":"inner \\\\" quote"}'`
+    serializeState({ 'he\nllo': 'inner " quote' }),
+    `'{"he\\\\nllo":"inner \\\\" quote"}'`
   )
 
   // Expect single quotes to be escaped.
