@@ -1,7 +1,11 @@
 import { createUrl } from '../utils/route'
 import { useSsrResponse } from '../utils/response'
 import { serializeState } from '../utils/state'
-import { findDependencies, renderPreloadLinks } from '../utils/html'
+import {
+  buildHtmlDocument,
+  findDependencies,
+  renderPreloadLinks,
+} from '../utils/html'
 import type {
   SsrHandler,
   SsrRenderer,
@@ -14,7 +18,10 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
   const renderer: SsrRenderer = hook || (options as SsrRenderer)
   const { transformState = serializeState } = options as Options
 
-  return async function (url, { manifest, preload = false, ...extra } = {}) {
+  return async function (
+    url,
+    { manifest, preload = false, template = `__VITE_SSR_HTML__`, ...extra } = {}
+  ) {
     url = createUrl(url)
 
     // Server redirect utilities
@@ -40,12 +47,20 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
     if (isRedirect()) return response
 
     // Not a redirect: get the HTML parts returned by the renderer and continue
-    let {
-      headTags = '',
-      htmlAttrs = '',
-      bodyAttrs = '',
-      body = '',
-    } = payload as SSRPageDescriptor
+    const htmlParts = {
+      headTags: '',
+      htmlAttrs: '',
+      bodyAttrs: '',
+      body: '',
+
+      ...(payload as SSRPageDescriptor),
+
+      // Serialize the state to include it in the DOM
+      initialState: await transformState(
+        context.initialState || {},
+        serializeState
+      ),
+    }
 
     // If a manifest is provided and the current framework is able to add
     // modules to the context (e.g. Vue) while rendering, collect the dependencies.
@@ -55,24 +70,12 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
       : []
 
     if (preload && dependencies.length > 0) {
-      headTags += renderPreloadLinks(dependencies)
+      htmlParts.headTags += renderPreloadLinks(dependencies)
     }
 
-    // Serialize the state to include it in the DOM
-    const initialState = await transformState(
-      context.initialState || {},
-      serializeState
-    )
-
     return {
-      // This string is replaced at build time
-      // and injects all the previous variables.
-      html: `__VITE_SSR_HTML__`,
-      htmlAttrs,
-      headTags,
-      body,
-      bodyAttrs,
-      initialState,
+      html: buildHtmlDocument(template, htmlParts),
+      ...htmlParts,
       dependencies,
       ...response,
     }

@@ -26,3 +26,27 @@ export function renderPreloadLinks(files: string[]) {
 
   return link
 }
+
+export function buildHtmlDocument(
+  template: string,
+  parts: {
+    htmlAttrs?: string
+    bodyAttrs?: string
+    headTags?: string
+    body?: string
+    initialState?: string
+  }
+) {
+  return template
+    .replace('<html', `<html ${parts.htmlAttrs} `)
+    .replace('<body', `<body ${parts.bodyAttrs} `)
+    .replace('</head>', `${parts.headTags}\n</head>`)
+    .replace(
+      /<div id="app"([\s\w\-"'=[\]]*)><\/div>/,
+      `<div id="app" data-server-rendered="true"$1>${
+        parts.body
+      }</div>\n\n  <script>window.__INITIAL_STATE__=${
+        parts.initialState || "'{}'"
+      }</script>`
+    )
+}

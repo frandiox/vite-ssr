@@ -9,7 +9,6 @@ import {
   resolveViteConfig,
   BuildOptions,
 } from '../config'
-import { buildHtmlDocument } from './utils'
 import type {
   RollupOutput,
   RollupWatcher,
@@ -79,7 +78,7 @@ export = async (inlineBuildOptions: BuildOptions = {}) =>
               replace({
                 preventAssignment: true,
                 values: {
-                  __VITE_SSR_HTML__: () => buildHtmlDocument(indexHtmlTemplate),
+                  __VITE_SSR_HTML__: () => indexHtmlTemplate,
                 },
               }),
             ],

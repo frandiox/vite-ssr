@@ -10,7 +10,6 @@ import {
 } from 'vite'
 import chalk from 'chalk'
 import { getEntryPoint, getPluginOptions } from '../config'
-import { buildHtmlDocument } from '../build/utils'
 
 import type { WriteResponse } from '../utils/types'
 import { logServerError } from './utils'
@@ -131,15 +130,20 @@ export const createSSRDevHandler = (
         return response.end()
       }
 
-      const htmlParts = await render(url, { request, response, ...context })
+      const result = await render(url, {
+        request,
+        response,
+        template,
+        ...context,
+      })
 
-      writeHead(response, htmlParts)
-      if (isRedirect(htmlParts)) {
+      writeHead(response, result)
+      if (isRedirect(result)) {
         return response.end()
       }
 
       response.setHeader('Content-Type', 'text/html')
-      response.end(buildHtmlDocument(template, htmlParts))
+      response.end(result.html)
     } catch (error) {
       // Send back template HTML to inject ViteErrorOverlay
       response.setHeader('Content-Type', 'text/html')

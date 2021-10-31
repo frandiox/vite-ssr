@@ -57,8 +57,12 @@ export interface Rendered extends WriteResponse {
 }
 
 export interface RendererOptions {
+  /* Client manifest. Required for preloading. */
   manifest?: Record<string, string[]>
+  /* Add prelaod link tags for JS and CSS assets */
   preload?: boolean
+  /* Override index.html template */
+  template?: string
   [key: string]: any
 }
 
