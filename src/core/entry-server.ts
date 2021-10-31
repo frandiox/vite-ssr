@@ -14,13 +14,27 @@ import type {
   SSRPageDescriptor,
 } from './types'
 
+const getEmptyHtmlParts = () => ({
+  headTags: '',
+  htmlAttrs: '',
+  bodyAttrs: '',
+  body: '',
+  initialState: undefined as any,
+  dependencies: [] as string[],
+})
+
 export const viteSSR: SsrHandler = function viteSSR(options, hook) {
   const renderer: SsrRenderer = hook || (options as SsrRenderer)
   const { transformState = serializeState } = options as Options
 
   return async function (
     url,
-    { manifest, preload = false, template = `__VITE_SSR_HTML__`, ...extra } = {}
+    {
+      manifest,
+      preload = false,
+      template = `__VITE_SSR_HTML__`, // This string is transformed at build time
+      ...extra
+    } = {}
   ) {
     url = createUrl(url)
 
@@ -48,11 +62,7 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
 
     // Not a redirect: get the HTML parts returned by the renderer and continue
     const htmlParts = {
-      headTags: '',
-      htmlAttrs: '',
-      bodyAttrs: '',
-      body: '',
-
+      ...getEmptyHtmlParts(),
       ...(payload as SSRPageDescriptor),
 
       // Serialize the state to include it in the DOM
@@ -64,19 +74,17 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
 
     // If a manifest is provided and the current framework is able to add
     // modules to the context (e.g. Vue) while rendering, collect the dependencies.
-    const dependencies = manifest
-      ? // @ts-ignore
-        findDependencies(context.modules, manifest)
-      : []
+    if (manifest) {
+      htmlParts.dependencies = findDependencies(context.modules, manifest)
 
-    if (preload && dependencies.length > 0) {
-      htmlParts.headTags += renderPreloadLinks(dependencies)
+      if (preload && htmlParts.dependencies.length > 0) {
+        htmlParts.headTags += renderPreloadLinks(htmlParts.dependencies)
+      }
     }
 
     return {
       html: buildHtmlDocument(template, htmlParts),
       ...htmlParts,
-      dependencies,
       ...response,
     }
   }
