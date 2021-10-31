@@ -11,9 +11,7 @@ export const viteSSR: ClientHandler = async function viteSSR(options, hook) {
   const {
     url = window.location,
     transformState = deserializeState,
-    spaRedirect = (location: string) => {
-      window.location.href = location
-    },
+    spaRedirect,
   } = (options || {}) as Options
 
   // Deserialize the state included in the DOM

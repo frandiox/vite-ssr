@@ -25,16 +25,18 @@ export function useSsrResponse() {
   }
 }
 
-export function useClientRedirect(spaRedirect: (location: string) => void) {
+const externalRedirect = (location: string) => {
+  window.location.href = location
+}
+
+export function useClientRedirect(spaRedirect = externalRedirect) {
   return {
     writeResponse: () =>
       console.warn('[SSR] Do not call writeResponse in browser'),
     redirect: (location: string, status?: number) => {
-      if (location.startsWith('/')) {
-        return spaRedirect(location)
-      } else {
-        window.location.href = location
-      }
+      return location.startsWith('/')
+        ? spaRedirect(location)
+        : externalRedirect(location)
     },
   }
 }
