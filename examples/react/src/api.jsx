@@ -16,7 +16,7 @@ function getPageProps({ baseUrl, name, path } = {}) {
 }
 
 export function PropsProvider({ baseUrl, route, children: Page }) {
-  if (!route.meta.state) {
+  if (!route.meta.state || Object.keys(route.meta.state).length === 0) {
     const promise = getPageProps({ baseUrl, ...route }).then((state) => {
       route.meta.state = state
     })

@@ -32,10 +32,15 @@ export const viteSSR: SsrHandler = function viteSSR(options, hook) {
     {
       manifest,
       preload = false,
+      skip = false,
       template = `__VITE_SSR_HTML__`, // This string is transformed at build time
       ...extra
     } = {}
   ) {
+    if (skip) {
+      return { html: template, ...getEmptyHtmlParts() }
+    }
+
     url = createUrl(url)
 
     // Server redirect utilities

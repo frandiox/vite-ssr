@@ -63,6 +63,8 @@ export interface RendererOptions {
   preload?: boolean
   /* Override index.html template */
   template?: string
+  /* Skip SSR and only return the default index.html */
+  skip?: boolean
   [key: string]: any
 }
 

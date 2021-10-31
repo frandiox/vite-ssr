@@ -15,7 +15,7 @@ export default viteSSR(
 
     // Before each route navigation we request the data needed for showing the page.
     router.beforeEach(async (to, from, next) => {
-      if (!!to.meta.state) {
+      if (!!to.meta.state && Object.keys(to.meta.state).length > 0) {
         // This route has state already (from server) so it can be reused.
         // State is always empty in SPA development, but present in SSR development.
         return next()
