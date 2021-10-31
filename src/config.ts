@@ -32,6 +32,7 @@ export interface ViteSsrPluginOptions {
      */
     keepIndexHtml?: boolean
   }
+  excludeSsrComponents?: Array<RegExp>
   features?: {
     /**
      * Use '@apollo/client' renderer if present

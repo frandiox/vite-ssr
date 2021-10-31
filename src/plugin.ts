@@ -7,70 +7,99 @@ const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
 const entryClient = '/entry-client'
 
-let lib: 'core' | 'vue' | 'react'
-
 export = function ViteSsrPlugin(
   options: ViteSsrPluginOptions & SsrOptions = {}
 ) {
-  return {
-    name: pluginName,
-    viteSsrOptions: options,
-    config(config, env) {
-      const plugins = config.plugins as Plugin[]
-      const isVue = hasPlugin(plugins, 'vite:vue')
-      const isReact =
-        hasPlugin(plugins, 'vite:react') || hasPlugin(plugins, 'react-refresh')
+  let lib: 'core' | 'vue' | 'react'
 
-      lib = isVue ? 'vue' : isReact ? 'react' : 'core'
+  const plugins = [
+    {
+      name: pluginName,
+      viteSsrOptions: options,
+      config(config, env) {
+        const plugins = config.plugins as Plugin[]
+        const isVue = hasPlugin(plugins, 'vite:vue')
+        const isReact =
+          hasPlugin(plugins, 'vite:react') ||
+          hasPlugin(plugins, 'react-refresh')
 
-      const detectedFeats = {
-        ...(isReact && detectReactConfigFeatures(options.features)),
-      }
+        lib = isVue ? 'vue' : isReact ? 'react' : 'core'
 
-      return {
-        ...detectedFeats,
-        define: {
-          ...detectedFeats.define,
-          // Vite 2.6.0 bug: use this
-          // instead of import.meta.env.DEV
-          __DEV__: env.mode !== 'production',
-        },
-        ssr: {
-          ...detectedFeats.ssr,
-          noExternal: [pluginName],
-        },
-      }
-    },
-    configResolved: (config) => {
-      const libPath = `/${lib}`
+        const detectedFeats = {
+          ...(isReact && detectReactConfigFeatures(options.features)),
+        }
 
-      config.resolve.alias.push({
-        find: /^vite-ssr(\/core|\/vue|\/react)?$/,
-        replacement:
-          pluginName + libPath + (config.build.ssr ? entryServer : entryClient),
+        return {
+          ...detectedFeats,
+          define: {
+            ...detectedFeats.define,
+            // Vite 2.6.0 bug: use this
+            // instead of import.meta.env.DEV
+            __DEV__: env.mode !== 'production',
+          },
+          ssr: {
+            ...detectedFeats.ssr,
+            noExternal: [pluginName],
+          },
+        }
+      },
+      configResolved: (config) => {
+        const libPath = `/${lib}`
+
+        config.resolve.alias.push({
+          find: /^vite-ssr(\/core|\/vue|\/react)?$/,
+          replacement:
+            pluginName +
+            libPath +
+            (config.build.ssr ? entryServer : entryClient),
+          // @ts-ignore
+          _viteSSR: true,
+        })
+
         // @ts-ignore
-        _viteSSR: true,
-      })
+        config.optimizeDeps = config.optimizeDeps || {}
+        config.optimizeDeps.include = config.optimizeDeps.include || []
+        config.optimizeDeps.include.push(
+          pluginName + libPath + entryClient,
+          pluginName + libPath + entryServer
+        )
 
-      // @ts-ignore
-      config.optimizeDeps = config.optimizeDeps || {}
-      config.optimizeDeps.include = config.optimizeDeps.include || []
-      config.optimizeDeps.include.push(
-        pluginName + libPath + entryClient,
-        pluginName + libPath + entryServer
-      )
+        if (lib === 'react') {
+          fixReactDeps(config, libPath)
+        }
+      },
+      async configureServer(server) {
+        if (process.env.__DEV_MODE_SSR) {
+          const handler = createSSRDevHandler(server, options)
+          return () => server.middlewares.use(handler)
+        }
+      },
+    },
+  ] as Array<Plugin & Record<string, any>>
 
-      if (lib === 'react') {
-        fixReactDeps(config, libPath)
-      }
-    },
-    async configureServer(server) {
-      if (process.env.__DEV_MODE_SSR) {
-        const handler = createSSRDevHandler(server, options)
-        return () => server.middlewares.use(handler)
-      }
-    },
-  } as Plugin
+  if ((options.excludeSsrComponents || []).length > 0) {
+    plugins.push({
+      name: pluginName + '-exclude-components',
+      enforce: 'pre',
+      resolveId(source, importer, ...rest) {
+        // @ts-ignore
+        const ssr = rest[1] || rest[0]?.ssr // API changed in Vite 2.7 https://github.com/vitejs/vite/pull/5294
+
+        if (
+          ssr &&
+          options.excludeSsrComponents!.some((re) => re.test(source))
+        ) {
+          return this.resolve(
+            `${pluginName}/${lib}/ssr-component-mock`,
+            importer,
+            { skipSelf: true }
+          )
+        }
+      },
+    })
+  }
+
+  return plugins
 }
 
 function hasPlugin(plugins: Plugin[] | Plugin[][] = [], name: string): boolean {
