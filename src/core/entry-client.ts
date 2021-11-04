@@ -1,4 +1,4 @@
-import { deserializeState } from '../utils/state'
+import { deserializeState } from '../utils/deserialize-state'
 import { useClientRedirect } from '../utils/response'
 import type { ClientHandler, Context, Options } from './types'
 
