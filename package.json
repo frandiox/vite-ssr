@@ -83,8 +83,7 @@
     "chalk": "^4.1.2",
     "connect": "^3.7.0",
     "node-fetch": "^2.6.1",
-    "react-ssr-prepass": "^1.4.0",
-    "strip-ansi": "^6.0.0"
+    "react-ssr-prepass": "^1.4.0"
   },
   "devDependencies": {
     "@types/connect": "^3.4.34",

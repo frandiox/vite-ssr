@@ -12,7 +12,6 @@ import chalk from 'chalk'
 import { getEntryPoint, getPluginOptions } from '../config'
 
 import type { WriteResponse } from '../utils/types'
-import { logServerError } from './utils'
 
 // This cannot be imported from utils due to ESM <> CJS issues
 const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
@@ -93,7 +92,7 @@ export const createSSRDevHandler = (
     try {
       template = await getIndexTemplate(request.originalUrl as string)
     } catch (error) {
-      logServerError(error as Error, server)
+      server.ssrFixStacktrace(error as Error)
       return next(error)
     }
 
@@ -148,7 +147,11 @@ export const createSSRDevHandler = (
       // Send back template HTML to inject ViteErrorOverlay
       response.setHeader('Content-Type', 'text/html')
       response.end(template)
-      logServerError(error as Error, server)
+
+      // Wait until browser injects ViteErrorOverlay
+      // custom element from the previous template
+      setTimeout(() => next(error), 250)
+      server.ssrFixStacktrace(error as Error)
     }
   }
 
