@@ -72,7 +72,7 @@ That's right, in Vite SSR **there's only 1 single entry file** by default 🎉. 
 
 If you need conditional logic that should only run in either client or server, use Vite's `import.meta.env.SSR` boolean variable and the tree-shaking will do the rest.
 
-The third argument is Vite SSR's main hook, which runs only once at the start. It it receives the SSR context and can be used to initialize the app or setup anything like state management or other plugins. See an example of [Vue + Pinia here](https://pinia.esm.dev/ssr/#state-hydration). In React, the same SSR Context is passed to the main App function/component as props.
+The third argument is Vite SSR's main hook, which runs only once at the start. It receives the SSR context and can be used to initialize the app or setup anything like state management or other plugins. See an example of [Vue + Pinia here](https://pinia.esm.dev/ssr/#state-hydration). In React, the same SSR Context is passed to the main App function/component as props.
 
 <details><summary>Available options</summary>
 <p>
