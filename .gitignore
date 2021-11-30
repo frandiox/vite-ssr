@@ -5,6 +5,7 @@ dist
 dist-ssr
 *.local
 _*
+!__tests__
 
 **/worker/*
 pnpm-lock.yaml
