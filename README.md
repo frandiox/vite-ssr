@@ -36,6 +36,8 @@ yarn add vite-ssr vue@3 vue-router@4 @vueuse/head
 yarn add vite-ssr react@16 react-router-dom@5
 ```
 
+Make sure that `index.html` contains a root element with id `app`: `<div id="app"></div>` (or change the default container id in plugin options: `options.containerId`).
+
 ## Usage
 
 Add Vite SSR plugin to your Vite config file (see [`vite.config.js`](./examples/vue/vite.config.js) for a full example).

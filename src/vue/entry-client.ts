@@ -67,7 +67,8 @@ export const viteSSR: ClientHandler = async function viteSSR(
   if (debug.mount !== false) {
     // this will hydrate the app
     await router.isReady()
-    app.mount('#app', true)
+    // @ts-ignore
+    app.mount(`#${__CONTAINER_ID__}`, true)
     // it is possible to debug differences of SSR / Hydrated app state
     // by adding a timeout between rendering the SSR version and hydrating it later
     // window.setTimeout(() => {

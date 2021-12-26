@@ -69,7 +69,8 @@ export const viteSSR: ClientHandler = async function (
   }
 
   if (debug.mount !== false) {
-    const el = document.getElementById('app')
+    // @ts-ignore
+    const el = document.getElementById(__CONTAINER_ID__)
 
     styles && styles.cleanup && styles.cleanup()
 

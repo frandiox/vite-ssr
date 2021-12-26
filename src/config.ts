@@ -25,6 +25,10 @@ export interface ViteSsrPluginOptions {
    * @default '<root>/index.html'
    */
   input?: string
+  /**
+   * ID of the app container in index.html. Defaults to "app".
+   */
+  containerId?: string
   build?: BuildOptions & {
     /**
      * Keep the index.html generated in the client build
