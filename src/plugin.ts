@@ -41,6 +41,14 @@ export = function ViteSsrPlugin(
             ...detectedFeats.ssr,
             noExternal: [pluginName],
           },
+          server:
+            // Avoid displaying 'localhost' in terminal in MacOS:
+            // https://github.com/vitejs/vite/issues/5605
+            process.platform === 'darwin'
+              ? {
+                  host: config.server?.host || '127.0.0.1',
+                }
+              : undefined,
         }
       },
       configResolved: (config) => {
