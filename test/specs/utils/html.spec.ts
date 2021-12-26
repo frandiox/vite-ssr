@@ -24,11 +24,11 @@ function normalizeWhitespaces(string: string) {
 test('Build HTML doc', () => {
   // Simple case.
   const result = buildHtmlDocument(indexHtml, {
-    body: '<div>body</div>',
+    body: '<div>give me $1</div>',
     bodyAttrs: 'data-body',
     headTags: '<meta charset="UTF-8" />',
     htmlAttrs: 'data-html',
-    initialState: `'${JSON.stringify({ something: true })}'`,
+    initialState: `'${JSON.stringify({ something: 'another $1' })}'`,
   })
 
   assert.is(
@@ -40,9 +40,9 @@ test('Build HTML doc', () => {
           <meta charset="UTF-8" />
         </head>
         <body data-body >
-          <div id="app" data-server-rendered="true" extra-attribute><div>body</div></div>
+          <div id="app" data-server-rendered="true" extra-attribute><div>give me $1</div></div>
       
-          <script>window.__INITIAL_STATE__='{"something":true}'</script>
+          <script>window.__INITIAL_STATE__='{"something":"another $1"}'</script>
           <script type="module" src="/src/main.js"></script>
         </body>
       </html>

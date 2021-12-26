@@ -69,10 +69,13 @@ export function buildHtmlDocument(
 
   return template.replace(
     containerRE,
-    `<div id="${containerId}" data-server-rendered="true"$1>${
-      body || ''
-    }</div>\n\n  <script>window.__INITIAL_STATE__=${
-      initialState || "'{}'"
-    }</script>`
+    // Use function parameter here to avoid replacing `$1` in body or initialState.
+    // https://github.com/frandiox/vite-ssr/issues/123
+    (_, d1) =>
+      `<div id="${containerId}" data-server-rendered="true"${d1 || ''}>${
+        body || ''
+      }</div>\n\n  <script>window.__INITIAL_STATE__=${
+        initialState || "'{}'"
+      }</script>`
   )
 }
