@@ -1,4 +1,4 @@
-import { createSSRApp } from 'vue'
+import { createApp } from 'vue'
 import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
@@ -26,7 +26,7 @@ export const viteSSR: SsrHandler = function viteSSR(
   }
 
   return coreViteSSR(options, async (context, { isRedirect, ...extra }) => {
-    const app = createSSRApp(App)
+    const app = createApp(App)
 
     const routeBase = base && withoutSuffix(base(context), '/')
     const router = createRouter({
