@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import { createSSRApp } from 'vue'
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import createClientContext from '../core/entry-client.js'
 import { getFullPath, withoutSuffix } from '../utils/route'
@@ -24,7 +24,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
     addPagePropsGetterToRoutes(routes)
   }
 
-  const app = createApp(App)
+  const app = createSSRApp(App)
 
   const url = window.location
   const routeBase = base && withoutSuffix(base({ url }), '/')
