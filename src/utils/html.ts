@@ -31,19 +31,20 @@ export function renderPreloadLinks(files: string[]) {
 const containerId = __CONTAINER_ID__ as string
 
 const containerRE = new RegExp(
-  // @ts-ignore
   `<div id="${containerId}"([\\s\\w\\-"'=[\\]]*)><\\/div>`
 )
 
+type DocParts = {
+  htmlAttrs?: string
+  bodyAttrs?: string
+  headTags?: string
+  body?: string
+  initialState?: string
+}
+
 export function buildHtmlDocument(
   template: string,
-  parts: {
-    htmlAttrs?: string
-    bodyAttrs?: string
-    headTags?: string
-    body?: string
-    initialState?: string
-  }
+  { htmlAttrs, bodyAttrs, headTags, body, initialState }: DocParts
 ) {
   // @ts-ignore
   if (__DEV__) {
@@ -54,16 +55,24 @@ export function buildHtmlDocument(
     }
   }
 
-  return template
-    .replace('<html', `<html ${parts.htmlAttrs} `)
-    .replace('<body', `<body ${parts.bodyAttrs} `)
-    .replace('</head>', `${parts.headTags}\n</head>`)
-    .replace(
-      containerRE,
-      `<div id="${containerId}" data-server-rendered="true"$1>${
-        parts.body
-      }</div>\n\n  <script>window.__INITIAL_STATE__=${
-        parts.initialState || "'{}'"
-      }</script>`
-    )
+  if (htmlAttrs) {
+    template = template.replace('<html', `<html ${htmlAttrs} `)
+  }
+
+  if (bodyAttrs) {
+    template = template.replace('<body', `<body ${bodyAttrs} `)
+  }
+
+  if (headTags) {
+    template = template.replace('</head>', `\n${headTags}\n</head>`)
+  }
+
+  return template.replace(
+    containerRE,
+    `<div id="${containerId}" data-server-rendered="true"$1>${
+      body || ''
+    }</div>\n\n  <script>window.__INITIAL_STATE__=${
+      initialState || "'{}'"
+    }</script>`
+  )
 }
