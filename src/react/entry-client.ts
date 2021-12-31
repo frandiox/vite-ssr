@@ -24,7 +24,7 @@ export const viteSSR: ClientHandler = async function (
   },
   hook
 ) {
-  const url = window.location
+  const url = new URL(window.location.href)
   const routeBase = base && withoutSuffix(base({ url }), '/')
 
   const ctx = await createClientContext({

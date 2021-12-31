@@ -26,7 +26,7 @@ export const viteSSR: ClientHandler = async function viteSSR(
 
   const app = createSSRApp(App)
 
-  const url = window.location
+  const url = new URL(window.location.href)
   const routeBase = base && withoutSuffix(base({ url }), '/')
   const router = createRouter({
     ...routerOptions,

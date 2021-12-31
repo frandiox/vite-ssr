@@ -9,7 +9,7 @@ export const viteSSR: ClientHandler = async function viteSSR(options, hook) {
   }
 
   const {
-    url = window.location,
+    url = new URL(window.location.href),
     transformState = deserializeState,
     spaRedirect,
   } = (options || {}) as Options

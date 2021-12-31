@@ -1,7 +1,7 @@
 import type { Renderer, SharedContext, SharedOptions } from '../utils/types'
 
 export interface Options extends Pick<SharedOptions, 'transformState'> {
-  url?: string | Location | URL
+  url?: string | URL
   spaRedirect?: (location: string) => void
 }
 
