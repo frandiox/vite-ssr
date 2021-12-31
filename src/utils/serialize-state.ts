@@ -20,9 +20,11 @@ export function serializeState(state: any) {
 
     state = JSON.stringify(state || {})
       // 1. Duplicate the escape char (\) for already escaped characters (e.g. \n or \").
-      .replace(/(?<!\\)\\(.)/g, '\\\\$1')
+      .replace(/\\/g, String.raw`\\`)
       // 2. Escape existing single quotes to allow wrapping the whole thing in '...'.
-      .replace(/(?<!\\)'/g, "\\'")
+      // Because we are doing the JSON.stringify ourselves (i.e., we're not taking a JSON string as a parameter, in
+      // which case we wouldn't know if there is redundant escaping), it's safe to use a regular expression for this.
+      .replace(/'/g, String.raw`\'`)
       // 3. Escape unsafe chars.
       .replace(UNSAFE_CHARS_REGEXP, escapeUnsafeChars)
 
