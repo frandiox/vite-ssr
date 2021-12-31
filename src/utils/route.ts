@@ -12,38 +12,27 @@ export function withSuffix(string: string, suffix: string) {
   return string.endsWith(suffix) ? string : string + suffix
 }
 export function withoutSuffix(string: string, suffix: string) {
-  return string.endsWith(suffix)
-    ? string.slice(0, -1 * suffix.length)
-    : string + suffix
+  return string.endsWith(suffix) ? string.slice(0, -1 * suffix.length) : string
 }
 
-export function createUrl(urlLike: string | URL) {
-  if (urlLike instanceof URL) {
-    return urlLike
-  }
-
-  if (!(urlLike || '').includes('://')) {
+export function createUrl(urlLike: string | URL | Location) {
+  if (typeof urlLike === 'string' && !(urlLike || '').includes('://')) {
     urlLike = 'http://e.g' + withPrefix(urlLike, S)
   }
 
-  return new URL(urlLike)
-}
-
-export function joinPaths(...paths: string[]) {
-  return paths.reduce((acc, path) => acc + path, '').replace(/\/\//g, S)
+  return new URL(urlLike.toString())
 }
 
 export function getFullPath(url: string | URL | Location, routeBase?: string) {
-  url = typeof url === 'string' ? createUrl(url) : url
+  url = createUrl(url)
+  url.pathname = withSuffix(url.pathname, S)
   let fullPath = withoutPrefix(url.href, url.origin)
 
   if (routeBase) {
-    const parts = fullPath.split(S)
-    if (parts[1] === routeBase.replace(/\//g, '')) {
-      parts.splice(1, 1)
+    routeBase = withSuffix(withPrefix(routeBase, S), S)
+    if (fullPath.indexOf(routeBase) === 0) {
+      fullPath = withPrefix(fullPath.replace(routeBase, ''), S)
     }
-
-    fullPath = parts.join(S)
   }
 
   return fullPath
