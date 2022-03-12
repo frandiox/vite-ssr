@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import ReactDOM from 'react-dom'
 import createClientContext from '../core/entry-client.js'
-import { BrowserRouter, useHistory } from 'react-router-dom'
+import { BrowserRouter, useNavigate } from 'react-router-dom'
 import { HelmetProvider } from 'react-helmet-async'
 import { withoutSuffix } from '../utils/route'
 import { createRouter } from './utils'
@@ -31,8 +31,8 @@ export const viteSSR: ClientHandler = async function (
     ...options,
     url,
     spaRedirect: (location) => {
-      const { push } = useHistory()
-      React.useEffect(() => push(location), [push])
+      const navigate = useNavigate()
+      React.useEffect(() => navigate(location), [navigate])
     },
   })
 
@@ -53,6 +53,7 @@ export const viteSSR: ClientHandler = async function (
     HelmetProvider,
     {},
     React.createElement(
+      // @ts-ignore
       BrowserRouter,
       { basename: routeBase },
       React.createElement(
