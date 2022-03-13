@@ -35,15 +35,15 @@ test(`${FIXTURE}/repos`, async (context) => {
   const html = await (await fetch(context.baseUrl + '/repos')).text()
   assert.match(html, 'VueJs Org Repos')
   assert.match(html, 'vue')
-  assert.match(html, 'The official router for Vue.js')
-  assert.match(html, 'The official documentation')
+  assert.match(html, 'official router for Vue')
+  assert.match(html, 'Documentation for')
 
   // SPA take over
   const selector = 'div[data-test="desc-vue-router"]'
 
   assert.match(
     await context.page.textContent(selector),
-    'official router for Vue.js'
+    'official router for Vue'
   )
 
   await context.page.click('button[data-test="remove-vue-router"]')
