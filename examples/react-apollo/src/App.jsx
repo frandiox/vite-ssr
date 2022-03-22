@@ -48,7 +48,7 @@ export default function App({ isClient, url, router, apolloCache }) {
             <Route
               key={route.path}
               path={route.path}
-              element={route.component}
+              element={<route.component />}
             />
           ))}
         </Routes>

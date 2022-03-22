@@ -73,6 +73,10 @@ export function createRouter({
 
     if (Array.isArray(originalRoute.routes)) {
       augmentedRoute.routes = originalRoute.routes.map(augmentRoute)
+
+      // Nested routes compatibility with React Router 6
+      // @ts-ignore
+      augmentedRoute.children = augmentedRoute.routes
     }
 
     return augmentedRoute

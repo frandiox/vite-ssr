@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { renderRoutes } from 'react-router-config'
+import { Link, Routes, Route } from 'react-router-dom'
 import { Context } from 'vite-ssr/react'
 
 export default function ({ router }: Context) {
@@ -17,7 +16,15 @@ export default function ({ router }: Context) {
         <button onClick={() => setCount(count + 1)}>Count:{count}</button>
       </div>
 
-      {renderRoutes(router.routes)}
+      <Routes>
+        {router.routes.map((route) => (
+          <Route
+            key={route.path}
+            path={route.path}
+            element={<route.component route={route} />}
+          />
+        ))}
+      </Routes>
     </>
   )
 }

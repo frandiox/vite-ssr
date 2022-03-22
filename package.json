@@ -102,8 +102,6 @@
     "@types/node-fetch": "^2.5.9",
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.13",
-    "@types/react-router-config": "^5.0.6",
-    "@types/react-router-dom": "^5.3.3",
     "execa": "^5.1.1",
     "express": "^4.17.1",
     "fs-extra": "^10.0.0",

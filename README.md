@@ -299,7 +299,7 @@ function App({ router }) {
   // Use it to render routes and save initial state.
 
   return (
-    <Switch>
+    <Routes>
       {router.routes.map((route) => {
         if (!route.meta.state) {
           // Call custom API and return a promise
@@ -313,12 +313,12 @@ function App({ router }) {
         }
 
         return (
-          <Route key={route.path} path={route.path}>
+          <Route key={route.path} path={route.path} element={
             <route.component props={...route.meta.state} />
-          </Route>
+          } />
         )
       })}
-    </Switch>
+    </Routes>
   )
 }
 ```
