@@ -1,6 +1,6 @@
 import './App.css'
 import React, { useState } from 'react'
-import { Link, Route, Switch } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import logo from './logo.svg'
 import { ClientOnly } from 'vite-ssr'
 
@@ -31,15 +31,17 @@ export default function App({ isClient, url, router, request }) {
           </ul>
         </nav>
       </header>
-      <Switch>
+      <Routes>
         {router.routes.map((route) => {
           return (
-            <Route key={route.path} path={route.path}>
-              <route.component route={route} baseUrl={baseUrl} />
-            </Route>
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<route.component route={route} baseUrl={baseUrl} />}
+            />
           )
         })}
-      </Switch>
+      </Routes>
 
       <ClientOnly>
         <div>This text only renders in client side</div>

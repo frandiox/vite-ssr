@@ -1,6 +1,6 @@
 import './App.css'
 import React, { useState } from 'react'
-import { Link, Route, Switch } from 'react-router-dom'
+import { Link, Route, Routes } from 'react-router-dom'
 import logo from './logo.svg'
 import { ClientOnly } from 'vite-ssr'
 import { ApolloClient, ApolloProvider, createHttpLink } from '@apollo/client'
@@ -43,15 +43,15 @@ export default function App({ isClient, url, router, apolloCache }) {
             </ul>
           </nav>
         </header>
-        <Switch>
+        <Routes>
           {router.routes.map((route) => (
             <Route
               key={route.path}
               path={route.path}
-              component={route.component}
+              element={route.component}
             />
           ))}
-        </Switch>
+        </Routes>
 
         <ClientOnly>
           <div>This text only renders in client side</div>
