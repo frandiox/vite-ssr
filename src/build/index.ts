@@ -16,9 +16,9 @@ import type {
   OutputOptions,
 } from 'rollup'
 
-export = async (inlineBuildOptions: BuildOptions = {}) =>
+export = async (inlineBuildOptions: BuildOptions = {}, _viteConfig?: ResolvedConfig) =>
   new Promise(async (resolve) => {
-    const viteConfig = await resolveViteConfig()
+    const viteConfig = _viteConfig || await resolveViteConfig()
 
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
