@@ -16,7 +16,7 @@ import type {
   OutputOptions,
 } from 'rollup'
 
-export = async (inlineBuildOptions: BuildOptions = {}, _viteConfig?: any) =>
+export = async (inlineBuildOptions: BuildOptions = {}, _viteConfig?: ResolvedConfig) =>
   new Promise(async (resolve) => {
     const viteConfig = _viteConfig || await resolveViteConfig()
 
