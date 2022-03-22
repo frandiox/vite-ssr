@@ -2,6 +2,7 @@ import type { Plugin, UserConfig } from 'vite'
 import type { ViteSsrPluginOptions } from './config'
 import type { SsrOptions } from './dev/server'
 import { createSSRDevHandler } from './dev/server'
+import { normalizePath } from 'vite'
 
 const pluginName = 'vite-ssr'
 const entryServer = '/entry-server'
@@ -10,11 +11,14 @@ const entryClient = '/entry-client'
 export = function ViteSsrPlugin(
   options: ViteSsrPluginOptions & SsrOptions = {}
 ) {
-  let lib: 'core' | 'vue' | 'react'
+  let detectedLib: 'core' | 'vue' | 'react'
+  const nameToMatch = options.plugin || pluginName
+  const autoEntryRE = new RegExp(`${nameToMatch}(\/core|\/vue|\/react)?$`)
 
   const plugins = [
     {
       name: pluginName,
+      enforce: 'pre',
       viteSsrOptions: options,
       config(config, env) {
         const plugins = config.plugins as Plugin[]
@@ -23,7 +27,7 @@ export = function ViteSsrPlugin(
           hasPlugin(plugins, 'vite:react') ||
           hasPlugin(plugins, 'react-refresh')
 
-        lib = isVue ? 'vue' : isReact ? 'react' : 'core'
+        detectedLib = isVue ? 'vue' : isReact ? 'react' : 'core'
 
         const detectedFeats = {
           ...(isReact && detectReactConfigFeatures(options.features)),
@@ -53,27 +57,17 @@ export = function ViteSsrPlugin(
         }
       },
       configResolved: (config) => {
-        const libPath = `/${lib}`
-
-        config.resolve.alias.push({
-          find: /^vite-ssr(\/core|\/vue|\/react)?$/,
-          replacement:
-            pluginName +
-            libPath +
-            (config.build.ssr ? entryServer : entryClient),
-          // @ts-ignore
-          _viteSSR: true,
-        })
+        const libPath = `/${detectedLib}`
 
         // @ts-ignore
         config.optimizeDeps = config.optimizeDeps || {}
         config.optimizeDeps.include = config.optimizeDeps.include || []
         config.optimizeDeps.include.push(
-          pluginName + libPath + entryClient,
-          pluginName + libPath + entryServer
+          nameToMatch + libPath + entryClient,
+          nameToMatch + libPath + entryServer
         )
 
-        if (lib === 'react') {
+        if (detectedLib === 'react') {
           fixReactDeps(config, libPath)
         }
       },
@@ -81,6 +75,31 @@ export = function ViteSsrPlugin(
         if (process.env.__DEV_MODE_SSR) {
           const handler = createSSRDevHandler(server, options)
           return () => server.middlewares.use(handler)
+        }
+      },
+
+      // Implement auto-entry using virtual modules:
+      resolveId(source, importer, options) {
+        if (source.includes(nameToMatch)) {
+          source = normalizePath(source)
+          if (autoEntryRE.test(source)) {
+            return `virtual:${source}/index.js`
+          }
+        }
+      },
+      load(id, options) {
+        if (id.startsWith(`virtual:${nameToMatch}`)) {
+          id = normalizePath(id)
+          let [, lib = ''] = id.split('/')
+          if (lib === 'index.js') {
+            lib = detectedLib
+          }
+
+          const libPath = `'${nameToMatch}/${lib}/entry-${
+            options?.ssr ? 'server' : 'client'
+          }'`
+
+          return `export * from ${libPath}; export { default } from ${libPath}`
         }
       },
     },
@@ -99,7 +118,7 @@ export = function ViteSsrPlugin(
           options.excludeSsrComponents!.some((re) => re.test(source))
         ) {
           return this.resolve(
-            `${pluginName}/${lib}/ssr-component-mock`,
+            `${pluginName}/${detectedLib}/ssr-component-mock`,
             importer,
             { skipSelf: true }
           )

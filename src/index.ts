@@ -1,3 +1,6 @@
+// This file is overwritten by the plugin to
+// redirect to a specific implementation.
+
 // This is a generic mix of framework types
 declare module 'vite-ssr' {
   export const viteSSR: (
