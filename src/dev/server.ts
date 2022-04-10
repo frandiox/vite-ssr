@@ -16,19 +16,6 @@ import type { WriteResponse } from '../utils/types'
 // This cannot be imported from utils due to ESM <> CJS issues
 const isRedirect = ({ status = 0 } = {}) => status >= 300 && status < 400
 
-function fixEntryPoint(vite: ViteDevServer) {
-  // The plugin is redirecting to the entry-client for the SPA,
-  // but we need to reach the entry-server here. This trick
-  // replaces the plugin behavior in the config and seems
-  // to keep the entry-client for the SPA.
-  for (const alias of vite.config.resolve.alias || []) {
-    // @ts-ignore
-    if (alias._viteSSR === true) {
-      alias.replacement = alias.replacement.replace('client', 'server')
-    }
-  }
-}
-
 export interface SsrOptions {
   plugin?: string
   ssr?: string
@@ -84,8 +71,6 @@ export const createSSRDevHandler = (
     if (request.method !== 'GET' || request.originalUrl === '/favicon.ico') {
       return next()
     }
-
-    fixEntryPoint(server)
 
     let template: string
 
