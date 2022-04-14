@@ -53,6 +53,7 @@ server.get('*', async (request, response) => {
     // initialState: { ... } // <- This would also be available
   })
 
+  response.type('html')
   response.writeHead(status || 200, statusText || headers, headers)
   response.end(html)
 })
