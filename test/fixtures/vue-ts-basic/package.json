@@ -14,10 +14,10 @@
   "devDependencies": {
     "@types/connect": "^3.4.35",
     "@types/node": "^16.4.7",
-    "@vitejs/plugin-vue": "^2.0.1",
+    "@vitejs/plugin-vue": "^4.0.0",
     "@vue/compiler-sfc": "^3.2.26",
     "typescript": "^4.3.2",
-    "vite": "2.9.x",
+    "vite": "4.0.x",
     "vue-tsc": "^0.0.24"
   }
 }
