@@ -31,8 +31,17 @@ export const createSSRDevHandler = (
   server: ViteDevServer,
   options: SsrOptions = {}
 ) => {
+  // Fix, because newer versions of vite's inlineConfig contains "ssr" property which type is object
+  let { ssr, ...otherOptions } = server.config.inlineConfig as InlineConfig & {
+    ssr?: InlineConfig['ssr'] | string
+  }
+
+  if (typeof ssr != 'string') {
+    ssr = undefined
+  }
+
   options = {
-    ...server.config.inlineConfig, // CLI flags
+    ...{ ssr, ...otherOptions }, // CLI flags
     ...options,
   }
 
