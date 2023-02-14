@@ -34,6 +34,8 @@ test(`${FIXTURE}/repos`, async (context) => {
   // SSR
   context.page.goto(context.baseUrl + '/repos')
 
+  assert.is(await context.page.textContent('h1'), 'VueJs Org Repos')
+
   const html = await (await fetch(context.baseUrl + '/repos')).text()
   assert.match(html, 'VueJs Org Repos')
   assert.match(html, 'vue')
