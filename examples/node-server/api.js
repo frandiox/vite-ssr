@@ -1,6 +1,7 @@
 // Example API
 
-const { buildSchema, graphql } = require('graphql')
+// By default it tries to import from /index.mjs
+const { buildSchema, graphql } = require('graphql/index.js')
 
 const schema = buildSchema(`
   type Hello {
