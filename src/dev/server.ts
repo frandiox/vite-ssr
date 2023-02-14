@@ -152,11 +152,17 @@ export const createSSRDevHandler = (
   return handleSsrRequest
 }
 
-export async function createSsrServer(
-  options: InlineConfig & { polyfills?: boolean } = {}
-) {
+export async function createSsrServer({
+  force,
+  ...options
+}: InlineConfig & { polyfills?: boolean; force?: boolean } = {}) {
   // Enable SSR in the plugin
   process.env.__DEV_MODE_SSR = 'true'
+
+  if (force) {
+    options.optimizeDeps ??= {}
+    options.optimizeDeps.force = force
+  }
 
   const viteServer = await createViteServer({
     ...options,
