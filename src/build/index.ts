@@ -16,9 +16,12 @@ import type {
   OutputOptions,
 } from 'rollup'
 
-export = async (inlineBuildOptions: BuildOptions = {}, _viteConfig?: ResolvedConfig) =>
+export = async (
+  inlineBuildOptions: BuildOptions = {},
+  _viteConfig?: ResolvedConfig
+) =>
   new Promise(async (resolve) => {
-    const viteConfig = _viteConfig || await resolveViteConfig()
+    const viteConfig = _viteConfig || (await resolveViteConfig())
 
     const distDir =
       viteConfig.build?.outDir ?? path.resolve(process.cwd(), 'dist')
@@ -185,13 +188,21 @@ async function generatePackageJson(
       ((viteConfig.build?.ssr || serverBuildOptions.build?.ssr) as string)
   )
 
+  // Rollup options have priority over `viteConfig.ssr.format`
   const moduleFormat =
     (viteConfig.build?.rollupOptions?.output as OutputOptions)?.format ||
-    (serverBuildOptions.build?.rollupOptions?.output as OutputOptions)?.format
+    (serverBuildOptions.build?.rollupOptions?.output as OutputOptions)
+      ?.format ||
+    viteConfig.ssr?.format
+
+  const isESM = !moduleFormat || moduleFormat === 'es' || moduleFormat === 'esm'
 
   const packageJson = {
-    main: outputFile ? ssrOutput.base : ssrOutput.name + '.js',
-    type: /^esm?$/i.test(moduleFormat || '') ? 'module' : 'commonjs',
+    // Vite 3+ adds '.mjs' extension to ESM files
+    main: outputFile
+      ? ssrOutput.base
+      : ssrOutput.name + (isESM ? '.mjs' : '.js'),
+    type: isESM ? 'module' : 'commonjs',
     ssr: {
       // This can be used later to serve static assets
       assets: (
