@@ -10,6 +10,7 @@ module.exports = defineConfig({
       strict: false,
     },
   },
+  ssr: { format: 'cjs' },
   plugins: [
     viteSSR(),
     vue(),
