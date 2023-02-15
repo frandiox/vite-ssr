@@ -4,6 +4,7 @@ const viteSSR = require('vite-ssr/plugin')
 
 // https://vitejs.dev/config/
 module.exports = defineConfig({
+  ssr: { format: 'cjs' },
   plugins: [
     viteSSR({
       features: {

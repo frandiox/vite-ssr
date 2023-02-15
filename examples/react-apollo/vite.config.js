@@ -4,6 +4,7 @@ const viteSSR = require('vite-ssr/plugin')
 const api = require('../node-server/api')
 
 module.exports = defineConfig({
+  ssr: { format: 'cjs' },
   plugins: [
     viteSSR(),
     react(),
