@@ -3,7 +3,7 @@ import viteSSR from 'vite-ssr/core/entry-server'
 import { html } from './utils'
 
 // These are pages following a custom format:
-const pageModules = import.meta.globEager('./pages/**/*.js')
+const pageModules = import.meta.glob('./pages/**/*.js', { eager: true })
 
 // Simple server-only router (i.e. this is not an SPA!):
 const serverRouter = new Map()
