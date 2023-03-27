@@ -13,7 +13,7 @@ test.after(reset)
 
 test(`${FIXTURE}/home`, async (context) => {
   // SSR
-  context.page.goto(context.baseUrl + '/')
+  await context.page.goto(context.baseUrl + '/')
   assert.is(await context.page.textContent('h1'), 'Home Page')
 
   const homeHtml = await (await fetch(context.baseUrl + '/')).text()
@@ -30,8 +30,7 @@ test(`${FIXTURE}/home`, async (context) => {
 
 test(`${FIXTURE}/repos`, async (context) => {
   // SSR
-  context.page.goto(context.baseUrl + '/repos')
-
+  await context.page.goto(context.baseUrl + '/repos')
   assert.is(await context.page.textContent('h1'), 'VueJs Org Repos')
 
   const html = await (await fetch(context.baseUrl + '/repos')).text()

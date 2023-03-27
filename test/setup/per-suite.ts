@@ -30,7 +30,17 @@ export async function reset(context: Context) {
   try {
     await context.page.close()
     await context.browser.close()
-    await app.close()
+    await new Promise<void>((resolve, reject) => {
+      app.close((err) => {
+        if (err) {
+          reject(err);
+
+          return;
+        }
+
+        return resolve();
+      })
+    })
     // await fs.remove(path.resolve('_temp'))
   } catch (error) {
     console.error(error)
