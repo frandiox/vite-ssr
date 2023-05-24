@@ -1,5 +1,5 @@
 {
-  "name": "test-vue-ts-basic",
+  "name": "test-vue-ts-head-v1",
   "version": "0.0.0",
   "scripts": {
     "dev": "node ./node_modules/vite-ssr/cli.js --port 1337 --force",
@@ -7,7 +7,7 @@
     "serve": "node server"
   },
   "dependencies": {
-    "@vueuse/head": "^0.6.0",
+    "@vueuse/head": "^1.0.0",
     "vue": "^3.2.26",
     "vue-router": "^4.0.12"
   },

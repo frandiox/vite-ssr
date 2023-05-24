@@ -1,5 +1,5 @@
 {
-  "name": "test-vue-ts-basic",
+  "name": "test-vue-ts-head-v0",
   "version": "0.0.0",
   "scripts": {
     "dev": "node ./node_modules/vite-ssr/cli.js --port 1337 --force",
