@@ -38,6 +38,10 @@ yarn add vite-ssr react@16 react-router-dom@5
 
 Make sure that `index.html` contains a root element with id `app`: `<div id="app"></div>` (or change the default container id in plugin options: `options.containerId`).
 
+### Vue Body Teleports
+
+Make sure that `index.html` contains a root element with id `body-teleports`: `<div id="body-teleports"></div>` (or change the default body teleports id in plugin options: `options.bodyTeleportsId`).
+
 ## Usage
 
 Add Vite SSR plugin to your Vite config file (see [`vite.config.js`](./examples/vue/vite.config.js) for a full example).
