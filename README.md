@@ -30,7 +30,7 @@ Then, add `vite-ssr` with your package manager (direct dependency) and your fram
 
 ```sh
 # For Vue
-yarn add vite-ssr vue@3 vue-router@4 @vueuse/head
+yarn add vite-ssr vue@3 vue-router@4 @vueuse/head@^0.9.0
 
 # For React
 yarn add vite-ssr react@16 react-router-dom@5
