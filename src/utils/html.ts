@@ -29,6 +29,7 @@ export function renderPreloadLinks(files: string[]) {
 
 // @ts-ignore
 const containerId = __CONTAINER_ID__ as string
+// @ts-ignore
 const bodyTeleportsId = __BODY_TELEPORTS_ID__ as string
 
 const containerRE = new RegExp(
