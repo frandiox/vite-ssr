@@ -29,6 +29,7 @@ export interface ViteSsrPluginOptions {
    * ID of the app container in index.html. Defaults to "app".
    */
   containerId?: string
+  bodyTeleportsId?: string
   build?: BuildOptions & {
     /**
      * Keep the index.html generated in the client build

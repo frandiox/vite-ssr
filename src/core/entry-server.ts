@@ -18,6 +18,8 @@ const getEmptyHtmlParts = () => ({
   headTags: '',
   htmlAttrs: '',
   bodyAttrs: '',
+  bodyPrepend: '',
+  bodyTeleports: '',
   body: '',
   initialState: undefined as any,
   dependencies: [] as string[],

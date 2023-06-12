@@ -67,6 +67,8 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     const body = await renderToString(app, context)
 
+    const bodyTeleports = context.teleports ? context.teleports[__BODY_TELEPORTS_ID__] : null
+
     if (isRedirect()) return {}
 
     const {
@@ -75,7 +77,7 @@ export const viteSSR: SsrHandler = function viteSSR(
       bodyAttrs = '',
     } = head ? renderHeadToString(head) : {}
 
-    return { body, headTags, htmlAttrs, bodyAttrs }
+    return { body, headTags, htmlAttrs, bodyAttrs, bodyTeleports }
   })
 }
 
