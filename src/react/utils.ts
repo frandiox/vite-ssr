@@ -2,11 +2,7 @@ import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { createUrl, getFullPath } from '../utils/route'
 import type { Base, Meta, PagePropsOptions, State } from '../utils/types'
-import type {
-  AugmentedRoute,
-  PropsProvider as PropsProviderType,
-  RouteRaw,
-} from './types'
+import type { PropsProvider as PropsProviderType, RouteRaw } from './types'
 
 type RouterOptions = {
   base?: Base
@@ -31,7 +27,7 @@ export function createRouter({
       state: null,
     }
 
-    const augmentedRoute: AugmentedRoute = {
+    const augmentedRoute: RouteRaw = {
       ...originalRoute,
       meta,
       component: (props: Record<string, any>) => {

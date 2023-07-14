@@ -17,8 +17,6 @@ export interface RouteRaw {
   [key: string]: any
 }
 
-export interface AugmentedRoute extends RouteRaw {}
-
 export interface PropsProvider
   extends FunctionComponent<{
     from?: RouteRaw
