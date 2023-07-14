@@ -61,7 +61,7 @@ const viteSSR: SsrHandler = function (
       HelmetProvider,
       { context: helmetContext },
       React.createElement(
-        StaticRouter,
+        typeof StaticRouter,
         { basename: routeBase, location: fullPath },
         provideContext(React.createElement(App, context), context)
       )

@@ -25,3 +25,6 @@ pnpm-lock.yaml
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Ignore log files like yarn-error.log
+*.log

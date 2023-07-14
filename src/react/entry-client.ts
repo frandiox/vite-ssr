@@ -53,7 +53,7 @@ export const viteSSR: ClientHandler = async function (
     HelmetProvider,
     {},
     React.createElement(
-      BrowserRouter,
+      typeof BrowserRouter,
       { basename: routeBase },
       React.createElement(
         React.Suspense,
