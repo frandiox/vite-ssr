@@ -1,11 +1,11 @@
 import type { FunctionComponent, ReactElement, ReactNode } from 'react'
-import type { Router } from './utils'
 import type {
   Meta,
   Renderer,
   SharedContext,
   SharedOptions,
 } from '../utils/types'
+import type { Router } from './utils'
 
 export interface RouteRaw {
   name?: string
@@ -13,6 +13,7 @@ export interface RouteRaw {
   component: any
   meta?: Meta
   routes?: RouteRaw[]
+  children?: RouteRaw[]
   [key: string]: any
 }
 
