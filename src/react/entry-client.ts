@@ -1,7 +1,11 @@
 import React, { ReactElement } from 'react'
 import { createRoot, hydrateRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
-import { BrowserRouter, useNavigate } from 'react-router-dom'
+import {
+  BrowserRouter,
+  BrowserRouterProps,
+  useNavigate,
+} from 'react-router-dom'
 import createClientContext from '../core/entry-client.js'
 import { withoutSuffix } from '../utils/route'
 import type { ClientHandler, Context } from './types'
@@ -53,7 +57,7 @@ export const viteSSR: ClientHandler = async function (
     HelmetProvider,
     {},
     React.createElement(
-      typeof BrowserRouter,
+      BrowserRouter as React.FunctionComponent<BrowserRouterProps>,
       { basename: routeBase },
       React.createElement(
         React.Suspense,

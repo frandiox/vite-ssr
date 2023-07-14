@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 import { HelmetProvider } from 'react-helmet-async'
-import { StaticRouter } from 'react-router-dom/server'
+import { StaticRouter, StaticRouterProps } from 'react-router-dom/server'
 import ssrPrepass from 'react-ssr-prepass'
 import coreViteSSR from '../core/entry-server.js'
 import { getFullPath, withoutSuffix } from '../utils/route'
@@ -61,7 +61,7 @@ const viteSSR: SsrHandler = function (
       HelmetProvider,
       { context: helmetContext },
       React.createElement(
-        typeof StaticRouter,
+        StaticRouter as React.FunctionComponent<StaticRouterProps>,
         { basename: routeBase, location: fullPath },
         provideContext(React.createElement(App, context), context)
       )
