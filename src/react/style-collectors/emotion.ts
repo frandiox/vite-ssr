@@ -13,8 +13,11 @@ async function ssrCollector(context: Context) {
   // A subdependency of this dependency calls Buffer on import,
   // so it must be imported only in Node environment.
   // https://github.com/emotion-js/emotion/issues/2446
-  let createEmotionServer = await import('@emotion/server/create-instance')
-  createEmotionServer = createEmotionServer.default || createEmotionServer
+  const createEmotionServerImport = await import(
+    '@emotion/server/create-instance'
+  )
+  const createEmotionServer =
+    createEmotionServerImport.default || createEmotionServerImport
 
   const cache = getCache()
   const { extractCriticalToChunks, constructStyleTagsFromChunks } =
