@@ -1,9 +1,12 @@
 import React from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getFullPath } from '../utils/route'
-import { createUrl } from '../utils/route'
-import type { RouteRaw, PropsProvider as PropsProviderType } from './types'
-import type { Base, Meta, State, PagePropsOptions } from '../utils/types'
+import { createUrl, getFullPath } from '../utils/route'
+import type { Base, Meta, PagePropsOptions, State } from '../utils/types'
+import type {
+  AugmentedRoute,
+  PropsProvider as PropsProviderType,
+  RouteRaw,
+} from './types'
 
 type RouterOptions = {
   base?: Base
@@ -28,7 +31,7 @@ export function createRouter({
       state: null,
     }
 
-    const augmentedRoute = {
+    const augmentedRoute: AugmentedRoute = {
       ...originalRoute,
       meta,
       component: (props: Record<string, any>) => {
@@ -43,7 +46,6 @@ export function createRouter({
           hash,
           search,
           params: useParams(),
-          // @ts-ignore -- This should be in ES2019 ??
           query: Object.fromEntries(url.searchParams),
           fullPath: getFullPath(url, routeBase),
         }
@@ -75,7 +77,6 @@ export function createRouter({
       augmentedRoute.routes = originalRoute.routes.map(augmentRoute)
 
       // Nested routes compatibility with React Router 6
-      // @ts-ignore
       augmentedRoute.children = augmentedRoute.routes
     }
 

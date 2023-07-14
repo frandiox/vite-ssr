@@ -1,7 +1,6 @@
+import { ServerStyleSheets } from '@material-ui/core/styles'
 import type { ReactElement } from 'react'
 import type { Context } from '../types'
-// @ts-ignore
-import { ServerStyleSheets } from '@material-ui/core/styles'
 
 const key = 'jss-server-side'
 
@@ -10,13 +9,11 @@ function ssrCollector(context: Context) {
 
   return {
     collect(app: ReactElement) {
-      //@ts-ignore
       return sheet.collect(app)
     },
     toString() {
       let css = sheet.toString()
 
-      // @ts-ignore
       if (import.meta.env.PROD) {
         css = css.replace(/\s{2,}/gm, ' ')
       }
@@ -37,5 +34,4 @@ function clientProvider(context: Context) {
   }
 }
 
-// @ts-ignore
 export default import.meta.env.SSR ? ssrCollector : clientProvider

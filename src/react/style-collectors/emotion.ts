@@ -1,9 +1,7 @@
-import type { Context } from '../types'
-import { createElement, ReactElement } from 'react'
-// @ts-ignore
 import createCache from '@emotion/cache'
-// @ts-ignore
 import { CacheProvider } from '@emotion/react'
+import { createElement, ReactElement } from 'react'
+import type { Context } from '../types'
 
 function getCache() {
   const cache = createCache({ key: 'css' })
@@ -15,8 +13,7 @@ async function ssrCollector(context: Context) {
   // A subdependency of this dependency calls Buffer on import,
   // so it must be imported only in Node environment.
   // https://github.com/emotion-js/emotion/issues/2446
-  // @ts-ignore
-  let createEmotionServer: any = await import('@emotion/server/create-instance')
+  let createEmotionServer = await import('@emotion/server/create-instance')
   createEmotionServer = createEmotionServer.default || createEmotionServer
 
   const cache = getCache()
@@ -44,5 +41,4 @@ function clientProvider(context: Context) {
   }
 }
 
-// @ts-ignore
 export default import.meta.env.SSR ? ssrCollector : clientProvider

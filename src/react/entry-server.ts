@@ -1,24 +1,22 @@
 import React, { ReactElement } from 'react'
-import ssrPrepass from 'react-ssr-prepass'
 import { renderToString } from 'react-dom/server'
-import { StaticRouter } from 'react-router-dom/server'
 import { HelmetProvider } from 'react-helmet-async'
-import { getFullPath, withoutSuffix } from '../utils/route'
-import { createRouter } from './utils'
+import { StaticRouter } from 'react-router-dom/server'
+import ssrPrepass from 'react-ssr-prepass'
 import coreViteSSR from '../core/entry-server.js'
+import { getFullPath, withoutSuffix } from '../utils/route'
 import type { Context, SsrHandler } from './types'
+import { createRouter } from './utils'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
 
 let render: (component: ReactElement) => string | Promise<string> =
-  renderToString as (component: ReactElement) => string
+  renderToString
 
-// @ts-ignore
 if (__USE_APOLLO_RENDERER__) {
   // Apollo does not support Suspense so it needs its own
   // renderer in order to await for async queries.
-  // @ts-ignore
   import('@apollo/client/react/ssr')
     .then(({ renderToStringWithData }) => {
       render = renderToStringWithData
@@ -63,7 +61,6 @@ const viteSSR: SsrHandler = function (
       HelmetProvider,
       { context: helmetContext },
       React.createElement(
-        // @ts-ignore
         StaticRouter,
         { basename: routeBase, location: fullPath },
         provideContext(React.createElement(App, context), context)

@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react'
-import ReactDOM from 'react-dom'
-import createClientContext from '../core/entry-client.js'
-import { BrowserRouter, useNavigate } from 'react-router-dom'
+import { createRoot, hydrateRoot } from 'react-dom/client'
 import { HelmetProvider } from 'react-helmet-async'
+import { BrowserRouter, useNavigate } from 'react-router-dom'
+import createClientContext from '../core/entry-client.js'
 import { withoutSuffix } from '../utils/route'
-import { createRouter } from './utils'
 import type { ClientHandler, Context } from './types'
+import { createRouter } from './utils'
 
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
@@ -53,7 +53,6 @@ export const viteSSR: ClientHandler = async function (
     HelmetProvider,
     {},
     React.createElement(
-      // @ts-ignore
       BrowserRouter,
       { basename: routeBase },
       React.createElement(
@@ -70,13 +69,17 @@ export const viteSSR: ClientHandler = async function (
   }
 
   if (debug.mount !== false) {
-    // @ts-ignore
     const el = document.getElementById(__CONTAINER_ID__)
+    if (el) {
+      styles && styles.cleanup && styles.cleanup()
 
-    styles && styles.cleanup && styles.cleanup()
-
-    // @ts-ignore
-    __DEV__ ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
+      if (__DEV__) {
+        const root = createRoot(el)
+        root.render(app)
+      } else {
+        hydrateRoot(el, app)
+      }
+    }
   }
 }
 
