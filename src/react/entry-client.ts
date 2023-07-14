@@ -73,16 +73,15 @@ export const viteSSR: ClientHandler = async function (
   }
 
   if (debug.mount !== false) {
-    const el = document.getElementById(__CONTAINER_ID__)
-    if (el) {
-      styles && styles.cleanup && styles.cleanup()
+    const el = document.getElementById(__CONTAINER_ID__)!
 
-      if (__DEV__) {
-        const root = createRoot(el)
-        root.render(app)
-      } else {
-        hydrateRoot(el, app)
-      }
+    styles && styles.cleanup && styles.cleanup()
+
+    if (__DEV__) {
+      const root = createRoot(el)
+      root.render(app)
+    } else {
+      hydrateRoot(el, app)
     }
   }
 }
