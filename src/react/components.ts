@@ -7,10 +7,13 @@ import {
   ReactElement,
   createContext as reactCreateContext,
   useContext as reactUseContext,
+  PropsWithChildren,
 } from 'react'
 import type { Context } from './types'
 
-export const ClientOnly: FunctionComponent = ({ children }) => {
+export const ClientOnly: FunctionComponent<PropsWithChildren> = ({
+  children,
+}) => {
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true))
 

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 import ssrPrepass from 'react-ssr-prepass'
-import { renderToString } from 'react-dom/server.js'
+import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import { HelmetProvider } from 'react-helmet-async'
 import { getFullPath, withoutSuffix } from '../utils/route'
@@ -11,7 +11,8 @@ import type { Context, SsrHandler } from './types'
 import { provideContext } from './components.js'
 export { ClientOnly, useContext } from './components.js'
 
-let render: (element: ReactElement) => string | Promise<string> = renderToString
+let render: (component: ReactElement) => string | Promise<string> =
+  renderToString as (component: ReactElement) => string
 
 // @ts-ignore
 if (__USE_APOLLO_RENDERER__) {
