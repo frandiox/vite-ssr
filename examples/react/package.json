@@ -8,8 +8,8 @@
     "serve:node": "node ../node-server/index react"
   },
   "dependencies": {
-    "react": "^17.0.0",
-    "react-dom": "^17.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-helmet-async": "^1.0.9",
     "react-router-dom": "^6.2.2"
   },
