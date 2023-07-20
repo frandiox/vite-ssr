@@ -38,13 +38,15 @@ type DocParts = {
   htmlAttrs?: string
   bodyAttrs?: string
   headTags?: string
+  bodyTags?: string
+  bodyTagsOpen?: string
   body?: string
   initialState?: string
 }
 
 export function buildHtmlDocument(
   template: string,
-  { htmlAttrs, bodyAttrs, headTags, body, initialState }: DocParts
+  { body, initialState, htmlAttrs, bodyAttrs, ...tags }: DocParts
 ) {
   // @ts-ignore
   if (__DEV__) {
@@ -63,9 +65,9 @@ export function buildHtmlDocument(
     template = template.replace('<body', `<body ${bodyAttrs} `)
   }
 
-  if (headTags) {
-    template = template.replace('</head>', `\n${headTags}\n</head>`)
-  }
+  Object.entries(tags).forEach(([key, value]) => {
+    template = template.replace(`<!--${key}-->`, value)
+  })
 
   return template.replace(
     containerRE,

@@ -166,7 +166,7 @@ export async function createSsrServer({
 
   const viteServer = await createViteServer({
     ...options,
-    server: options.server || { ...options },
+    server: options.server,
   })
 
   if (options.polyfills !== false) {

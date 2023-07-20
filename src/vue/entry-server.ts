@@ -3,7 +3,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createRouter, createMemoryHistory, RouteRecordRaw } from 'vue-router'
 import { getFullPath, withoutSuffix } from '../utils/route'
 import { addPagePropsGetterToRoutes } from './utils'
-import { renderHeadToString } from '@vueuse/head'
+import { renderSSRHead } from '@unhead/ssr'
 import coreViteSSR from '../core/entry-server.js'
 import type { SsrHandler } from './types'
 
@@ -69,13 +69,12 @@ export const viteSSR: SsrHandler = function viteSSR(
 
     if (isRedirect()) return {}
 
-    const {
-      headTags = '',
-      htmlAttrs = '',
-      bodyAttrs = '',
-    } = head ? renderHeadToString(head) : {}
+    const headPayload = head ? await renderSSRHead(head) : {}
 
-    return { body, headTags, htmlAttrs, bodyAttrs }
+    return {
+      body,
+      ...headPayload,
+    }
   })
 }
 

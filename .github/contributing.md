@@ -13,7 +13,7 @@ Make sure you use Node >= 14 first.
 1. Clone the project.
 2. Run `yarn` at the root to install all the dependencies.
 3. Run `yarn dev` at the root to start compiling the TS source and make it available to the examples folder.
-4. Move to any directory under `examples/` (vue/react/react-apollo/etc) and run `yarn dev` (or `yarn dev:spa`).
+4. Move to any directory under `examples/` (vue/etc) and run `yarn dev` (or `yarn dev:spa`).
 5. Run `yarn build && yarn serve:node` in any example to test a production build.
 
 Adding new dependencies might require restarting the active processes.

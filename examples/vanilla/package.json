@@ -8,6 +8,6 @@
     "serve:node": "node ../node-server/index vanilla"
   },
   "dependencies": {
-    "vite": "4.1.x"
+    "vite": "^4.4.4"
   }
 }

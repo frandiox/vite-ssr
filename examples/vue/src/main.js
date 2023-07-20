@@ -2,14 +2,13 @@ import './index.css'
 import App from './App.vue'
 import routes from './routes'
 import viteSSR, { ClientOnly } from 'vite-ssr'
-import { createHead } from '@vueuse/head'
+import { createHead } from 'unhead'
 
 export default viteSSR(
   App,
   { routes },
   ({ app, router, isClient, url, initialState, initialRoute, request }) => {
     const head = createHead()
-    app.use(head)
 
     app.component(ClientOnly.name, ClientOnly)
 

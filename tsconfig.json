@@ -22,5 +22,5 @@
     "removeComments": false
   },
   "include": ["./src"],
-  "exclude": ["./src/vue/*", "./src/react/*", "./src/utils/*"]
+  "exclude": ["./src/vue/*", "./src/utils/*"]
 }

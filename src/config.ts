@@ -37,13 +37,6 @@ export interface ViteSsrPluginOptions {
     keepIndexHtml?: boolean
   }
   excludeSsrComponents?: Array<RegExp>
-  features?: {
-    /**
-     * Use '@apollo/client' renderer if present
-     * @default true
-     */
-    reactApolloRenderer?: boolean
-  }
 }
 
 export const INDEX_HTML = 'index.html'

@@ -9,7 +9,7 @@
 
 <script>
 import { defineComponent, inject, ref } from 'vue'
-import { useHead } from '@vueuse/head'
+import { useHead } from 'unhead'
 import { useContext } from 'vite-ssr/vue'
 
 export default defineComponent({
@@ -47,6 +47,7 @@ export default defineComponent({
         {
           type: 'application/ld+json',
           children: JSON.stringify({ something: true }),
+          tagPosition: 'bodyOpen',
         },
       ],
     })

@@ -27,8 +27,7 @@
   "keywords": [
     "vite",
     "ssr",
-    "vue",
-    "react"
+    "vue"
   ],
   "author": "Fran Dios",
   "license": "MIT",
@@ -40,30 +39,21 @@
   "types": "./index.d.ts",
   "workspaces": [
     "examples/vue",
-    "examples/react",
-    "examples/react-apollo",
     "test/fixtures/*"
   ],
   "peerDependencies": {
-    "@vitejs/plugin-react": "^3.0.0",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@vueuse/head": "0.x",
-    "react": "^17",
-    "react-dom": "^17",
-    "react-helmet-async": "^1.0.0",
-    "react-router-dom": "^6",
+    "@unhead/ssr": "^1.1.32",
+    "@vitejs/plugin-vue": "^4.2.3",
+    "unhead": "^1.1.32",
     "vite": "^4.0.0",
-    "vue": "^3.2.26",
-    "vue-router": "^4.0.0"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
   },
   "peerDependenciesMeta": {
-    "@vitejs/plugin-react": {
+    "@unhead/ssr": {
       "optional": true
     },
     "@vitejs/plugin-vue": {
-      "optional": true
-    },
-    "@vueuse/head": {
       "optional": true
     },
     "vue": {
@@ -72,16 +62,7 @@
     "vue-router": {
       "optional": true
     },
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "react-helmet-async": {
-      "optional": true
-    },
-    "react-router-dom": {
+    "unhead": {
       "optional": true
     }
   },
@@ -90,9 +71,7 @@
     "@vue/server-renderer": "^3.2.26",
     "chalk": "^4.1.2",
     "connect": "^3.7.0",
-    "node-fetch": "^2.6.1",
-    "react-router-dom": "^6.2.2",
-    "react-ssr-prepass": "^1.4.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@types/connect": "^3.4.34",
@@ -100,8 +79,6 @@
     "@types/fs-extra": "^9.0.12",
     "@types/node": "^16.4.7",
     "@types/node-fetch": "^2.5.9",
-    "@types/react": "^17.0.40",
-    "@types/react-dom": "^17.0.13",
     "execa": "^5.1.1",
     "express": "^4.17.1",
     "fs-extra": "^10.0.0",
@@ -113,8 +90,5 @@
     "uvu": "^0.5.1",
     "watchlist": "^0.2.3",
     "yorkie": "^2.0.0"
-  },
-  "gitHooks": {
-    "commit-msg": "node scripts/verifyCommit.js"
   }
 }

@@ -6,10 +6,14 @@ import { buildHtmlDocument } from '../../../src/utils/html'
 const indexHtml = `
 <!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <!--headTags-->
+  </head>
   <body>
+    <!--bodyTagsOpen-->
     <div id="app" extra-attribute></div>
     <script type="module" src="/src/main.js"></script>
+    <!--bodyTags-->
   </body>
 </html>
 `
@@ -28,6 +32,8 @@ test('Build HTML doc', () => {
     bodyAttrs: 'data-body',
     headTags: '<meta charset="UTF-8" />',
     htmlAttrs: 'data-html',
+    bodyTags: '<script type="application/ld+json">{"@id": "2"}</script>',
+    bodyTagsOpen: '<script type="application/ld+json">{"@id": "1"}</script>',
     initialState: `'${JSON.stringify({ something: 'another $1' })}'`,
   })
 
@@ -40,10 +46,12 @@ test('Build HTML doc', () => {
           <meta charset="UTF-8" />
         </head>
         <body data-body >
+          <script type="application/ld+json">{"@id": "1"}</script>
           <div id="app" data-server-rendered="true" extra-attribute><div>give me $1</div></div>
-      
+
           <script>window.__INITIAL_STATE__='{"something":"another $1"}'</script>
           <script type="module" src="/src/main.js"></script>
+          <script type="application/ld+json">{"@id": "2"}</script>
         </body>
       </html>
     `)

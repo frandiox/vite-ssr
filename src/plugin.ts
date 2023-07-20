@@ -11,9 +11,9 @@ const entryClient = '/entry-client'
 export = function ViteSsrPlugin(
   options: ViteSsrPluginOptions & SsrOptions = {}
 ) {
-  let detectedLib: 'core' | 'vue' | 'react'
+  let detectedLib: 'core' | 'vue'
   const nameToMatch = options.plugin || pluginName
-  const autoEntryRE = new RegExp(`${nameToMatch}(\/core|\/vue|\/react)?$`)
+  const autoEntryRE = new RegExp(`${nameToMatch}(\/core|\/vue)?$`)
 
   const plugins = [
     {
@@ -23,27 +23,17 @@ export = function ViteSsrPlugin(
       config(config, env) {
         const plugins = config.plugins as Plugin[]
         const isVue = hasPlugin(plugins, 'vite:vue')
-        const isReact =
-          hasPlugin(plugins, 'vite:react') ||
-          hasPlugin(plugins, 'react-refresh')
 
-        detectedLib = isVue ? 'vue' : isReact ? 'react' : 'core'
-
-        const detectedFeats = {
-          ...(isReact && detectReactConfigFeatures(options.features)),
-        }
+        detectedLib = isVue ? 'vue' : 'core'
 
         return {
-          ...detectedFeats,
           define: {
-            ...detectedFeats.define,
             __CONTAINER_ID__: JSON.stringify(options.containerId || 'app'),
             // Vite 2.6.0 bug: use this
             // instead of import.meta.env.DEV
             __DEV__: env.mode !== 'production',
           },
           ssr: {
-            ...detectedFeats.ssr,
             noExternal: [pluginName],
           },
           server:
@@ -66,10 +56,6 @@ export = function ViteSsrPlugin(
           nameToMatch + libPath + entryClient,
           nameToMatch + libPath + entryServer
         )
-
-        if (detectedLib === 'react') {
-          fixReactDeps(config, libPath)
-        }
       },
       async configureServer(server) {
         if (process.env.__DEV_MODE_SSR) {
@@ -132,74 +118,4 @@ export = function ViteSsrPlugin(
 
 function hasPlugin(plugins: Plugin[] | Plugin[][] = [], name: string): boolean {
   return !!plugins.flat().find((plugin) => (plugin.name || '').startsWith(name))
-}
-
-function hasDependency(dependency: string) {
-  try {
-    require.resolve(dependency)
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-function detectReactConfigFeatures(
-  features: ViteSsrPluginOptions['features'] = {}
-) {
-  const external = []
-  let useApolloRenderer
-
-  // TODO use virtual modules for feature-detection
-
-  if (hasDependency('@apollo/client/react/ssr')) {
-    useApolloRenderer = features.reactApolloRenderer !== false
-  } else {
-    external.push('@apollo/client')
-  }
-
-  return {
-    ssr: { external },
-    define: {
-      __USE_APOLLO_RENDERER__: !!useApolloRenderer,
-    },
-  }
-}
-
-// FIXME
-// Vite 2.6.0 introduced a bug where `import.meta` is not populated
-// correctly in optimized dependencies. At the same time, all the
-// subdependencies in Style Collectors must be optimized.
-function fixReactDeps(
-  config: Pick<UserConfig, 'optimizeDeps' | 'root'>,
-  libPath: string
-) {
-  const styleCollectorDeps = {
-    'styled-components': ['styled-components'],
-    'material-ui-core-v4': ['@material-ui/core/styles'],
-    emotion: ['@emotion/cache', '@emotion/react'],
-  } as const
-
-  const styleCollectors = Object.keys(styleCollectorDeps).filter((sc) => {
-    try {
-      require.resolve(sc)
-      return true
-    } catch (error) {
-      return false
-    }
-  })
-
-  if (config.optimizeDeps) {
-    config.optimizeDeps.include?.push(
-      ...styleCollectors.flatMap(
-        (sc) => styleCollectorDeps[sc as keyof typeof styleCollectorDeps]
-      )
-    )
-
-    config.optimizeDeps.exclude = config.optimizeDeps.exclude || []
-    config.optimizeDeps.exclude.push(
-      ...styleCollectors.map(
-        (sc) => pluginName + libPath + '/style-collectors/' + sc
-      )
-    )
-  }
 }
