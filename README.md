@@ -425,7 +425,7 @@ Use your framework's utilities to handle head tags and attributes for html and b
 Install [`unhead`](https://github.com/unjs/unhead) as follows:
 
 ```bash
-yarn add unhead @unhead/vue @unhead/ssr
+yarn add unhead @unhead/vue @unhead/ssr @unhead/addons
 ```
 
 ```js
