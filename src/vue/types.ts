@@ -29,7 +29,7 @@ export interface Options extends SharedOptions {
 }
 
 type HookResponse = void | {
-  head?: Unhead
+  head?: Unhead<any>
 }
 
 export interface Context extends SharedContext {}
