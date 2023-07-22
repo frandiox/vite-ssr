@@ -438,7 +438,7 @@ export default defineConfig(
   plugins: [
     viteSSR(),
     UnheadVite(),
-	Vue(),
+    Vue(),
     // ...
   ]
 )
