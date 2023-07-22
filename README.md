@@ -428,9 +428,9 @@ Install [`unhead`](https://github.com/unjs/unhead) as follows:
 yarn add unhead @unhead/vue @unhead/ssr
 ```
 
-```js {}[vite.config.js]
+```js
 import viteSSR from 'vite-ssr/plugin'
-import  UnheadVite from '@unhead/addons/vite'
+import UnheadVite from '@unhead/addons/vite'
 
 export default defineConfig(
   plugins: [
