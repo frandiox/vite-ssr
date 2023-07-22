@@ -48,6 +48,7 @@
     "@vitejs/plugin-react": "^3.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "unhead": "^1.1.32",
+    "@unhead/addons": "^1.1.32",
     "@unhead/ssr": "^1.1.32",
     "@unhead/vue": "^1.1.32",
     "react": "^17",
@@ -66,6 +67,9 @@
       "optional": true
     },
     "unhead": {
+      "optional": true
+    },
+    "@unhead/addons": {
       "optional": true
     },
     "@unhead/ssr": {
