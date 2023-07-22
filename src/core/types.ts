@@ -8,11 +8,11 @@ export interface Options extends Pick<SharedOptions, 'transformState'> {
 export interface Context extends SharedContext {}
 
 export interface SSRPageDescriptor {
-  headTags?: string;
-  bodyTags?: string;
-  bodyTagsOpen?: string;
-  htmlAttrs?: string;
-  bodyAttrs?: string;
+  headTags?: string
+  bodyTags?: string
+  bodyTagsOpen?: string
+  htmlAttrs?: string
+  bodyAttrs?: string
   body?: string
 }
 

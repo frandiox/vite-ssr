@@ -34,23 +34,29 @@ const containerRE = new RegExp(
   `<div id="${containerId}"([\\s\\w\\-"'=[\\]]*)><\\/div>`
 )
 
-const bodyTagsOpenRE = new RegExp(
-    `(${containerRE.source})`
-)
+const bodyTagsOpenRE = new RegExp(`(${containerRE.source})`)
 
 type DocParts = {
-  headTags?: string;
-  bodyTags?: string;
-  bodyTagsOpen?: string;
-  htmlAttrs?: string;
-  bodyAttrs?: string;
+  headTags?: string
+  bodyTags?: string
+  bodyTagsOpen?: string
+  htmlAttrs?: string
+  bodyAttrs?: string
   body?: string
   initialState?: string
 }
 
 export function buildHtmlDocument(
   template: string,
-  { headTags, bodyTags, bodyTagsOpen, htmlAttrs, bodyAttrs, body, initialState }: DocParts
+  {
+    headTags,
+    bodyTags,
+    bodyTagsOpen,
+    htmlAttrs,
+    bodyAttrs,
+    body,
+    initialState,
+  }: DocParts
 ) {
   // @ts-ignore
   if (__DEV__) {

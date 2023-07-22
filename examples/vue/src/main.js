@@ -7,8 +7,8 @@ import { createHead } from '@unhead/vue'
 export default viteSSR(
   App,
   {
-      routes,
-      debug: {mount: false}
+    routes,
+    // debug: { mount: false },
   },
   ({ app, router, isClient, url, initialState, initialRoute, request }) => {
     const head = createHead()

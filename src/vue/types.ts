@@ -5,7 +5,7 @@ import type {
   RouterOptions,
   Router,
 } from 'vue-router'
-import type { Unhead } from '@unhead/schema';
+import type { Unhead } from '@unhead/schema'
 import type {
   Meta,
   Renderer,
