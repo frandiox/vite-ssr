@@ -9,7 +9,7 @@
 
 <script>
 import { defineComponent, inject, ref } from 'vue'
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 import { useContext } from 'vite-ssr/vue'
 
 export default defineComponent({

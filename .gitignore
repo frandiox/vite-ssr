@@ -8,3 +8,5 @@ _*
 
 **/worker/*
 pnpm-lock.yaml
+.yarn
+.yarnrc.yml
