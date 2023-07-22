@@ -429,13 +429,16 @@ yarn add unhead @unhead/vue @unhead/ssr @unhead/addons
 ```
 
 ```js
+import { defineConfig } from 'vite'
 import viteSSR from 'vite-ssr/plugin'
 import UnheadVite from '@unhead/addons/vite'
+import Vue from '@vitejs/plugin-vue'
 
 export default defineConfig(
   plugins: [
     viteSSR(),
     UnheadVite(),
+	Vue(),
     // ...
   ]
 )
