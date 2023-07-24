@@ -34,17 +34,29 @@ const containerRE = new RegExp(
   `<div id="${containerId}"([\\s\\w\\-"'=[\\]]*)><\\/div>`
 )
 
+const bodyTagsOpenRE = new RegExp(`(${containerRE.source})`)
+
 type DocParts = {
+  headTags?: string
+  bodyTags?: string
+  bodyTagsOpen?: string
   htmlAttrs?: string
   bodyAttrs?: string
-  headTags?: string
   body?: string
   initialState?: string
 }
 
 export function buildHtmlDocument(
   template: string,
-  { htmlAttrs, bodyAttrs, headTags, body, initialState }: DocParts
+  {
+    headTags,
+    bodyTags,
+    bodyTagsOpen,
+    htmlAttrs,
+    bodyAttrs,
+    body,
+    initialState,
+  }: DocParts
 ) {
   // @ts-ignore
   if (__DEV__) {
@@ -59,8 +71,16 @@ export function buildHtmlDocument(
     template = template.replace('<html', `<html ${htmlAttrs} `)
   }
 
+  if (bodyTagsOpen) {
+    template = template.replace(bodyTagsOpenRE, `${bodyTagsOpen} $1`)
+  }
+
   if (bodyAttrs) {
     template = template.replace('<body', `<body ${bodyAttrs} `)
+  }
+
+  if (bodyTags) {
+    template = template.replace('</body>', `${bodyTags}</body>`)
   }
 
   if (headTags) {
