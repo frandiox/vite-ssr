@@ -47,7 +47,7 @@ export function buildHtmlDocument(
   { htmlAttrs, bodyAttrs, headTags, body, initialState }: DocParts
 ) {
   // @ts-ignore
-  if (__DEV__) {
+  if (__VITE_SSR_DEV__) {
     if (template.indexOf(`id="${containerId}"`) === -1) {
       console.warn(
         `[SSR] Container with id "${containerId}" was not found in index.html`

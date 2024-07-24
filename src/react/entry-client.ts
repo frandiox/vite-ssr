@@ -76,7 +76,7 @@ export const viteSSR: ClientHandler = async function (
     styles && styles.cleanup && styles.cleanup()
 
     // @ts-ignore
-    __DEV__ ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
+    __VITE_SSR_DEV__ ? ReactDOM.render(app, el) : ReactDOM.hydrate(app, el)
   }
 }
 
