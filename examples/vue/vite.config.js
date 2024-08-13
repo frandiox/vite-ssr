@@ -2,6 +2,7 @@ const { defineConfig } = require('vite')
 const viteSSR = require('vite-ssr/plugin')
 const vue = require('@vitejs/plugin-vue')
 const api = require('../node-server/api')
+const UnheadVite = require('@unhead/addons/vite')
 
 module.exports = defineConfig({
   server: {
@@ -13,6 +14,7 @@ module.exports = defineConfig({
   ssr: { format: 'cjs' },
   plugins: [
     viteSSR(),
+    UnheadVite(),
     vue(),
     {
       // Mock API during development

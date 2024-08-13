@@ -422,10 +422,30 @@ Use your framework's utilities to handle head tags and attributes for html and b
 <details><summary>Vue Head</summary>
 <p>
 
-Install [`@vueuse/head`](https://github.com/vueuse/head) as follows:
+Install [`unhead`](https://github.com/unjs/unhead) as follows:
+
+```bash
+yarn add unhead @unhead/vue @unhead/ssr @unhead/addons
+```
 
 ```js
-import { createHead } from '@vueuse/head'
+import { defineConfig } from 'vite'
+import viteSSR from 'vite-ssr/plugin'
+import UnheadVite from '@unhead/addons/vite'
+import Vue from '@vitejs/plugin-vue'
+
+export default defineConfig(
+  plugins: [
+    viteSSR(),
+    UnheadVite(),
+    Vue(),
+    // ...
+  ]
+)
+```
+
+```js
+import { createHead } from '@unhead/vue'
 
 export default viteSSR(App, { routes }, ({ app }) => {
   const head = createHead()
@@ -435,7 +455,7 @@ export default viteSSR(App, { routes }, ({ app }) => {
 })
 
 // In your components:
-// import { useHead } from '@vueuse/head'
+// import { useHead } from '@unhead/vue'
 // ... useHead({ ... })
 ```
 

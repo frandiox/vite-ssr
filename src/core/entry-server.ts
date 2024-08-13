@@ -16,6 +16,8 @@ import type {
 
 const getEmptyHtmlParts = () => ({
   headTags: '',
+  bodyTags: '',
+  bodyTagsOpen: '',
   htmlAttrs: '',
   bodyAttrs: '',
   body: '',
