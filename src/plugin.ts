@@ -40,7 +40,7 @@ export = function ViteSsrPlugin(
             __CONTAINER_ID__: JSON.stringify(options.containerId || 'app'),
             // Vite 2.6.0 bug: use this
             // instead of import.meta.env.DEV
-            __DEV__: env.mode !== 'production',
+            __VITE_SSR_DEV__: env.mode !== 'production',
           },
           ssr: {
             ...detectedFeats.ssr,

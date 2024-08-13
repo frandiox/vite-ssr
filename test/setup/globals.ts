@@ -1,5 +1,5 @@
 const globals = {
-  __DEV__: false,
+  __VITE_SSR_DEV__: false,
   __CONTAINER_ID__: 'app',
 }
 
