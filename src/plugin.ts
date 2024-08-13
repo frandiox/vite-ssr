@@ -38,6 +38,7 @@ export = function ViteSsrPlugin(
           define: {
             ...detectedFeats.define,
             __CONTAINER_ID__: JSON.stringify(options.containerId || 'app'),
+            __BODY_TELEPORTS_ID__: JSON.stringify(options.bodyTeleportsId || 'body-teleports'),
             // Vite 2.6.0 bug: use this
             // instead of import.meta.env.DEV
             __VITE_SSR_DEV__: env.mode !== 'production',
