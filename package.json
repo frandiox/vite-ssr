@@ -1,6 +1,6 @@
 {
   "name": "vite-ssr",
-  "version": "0.17.1",
+  "version": "0.17.2",
   "private": true,
   "description": "Vite utility for server side rendering",
   "main": "./index.js",
